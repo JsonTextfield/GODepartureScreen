@@ -21,10 +21,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class GoTrainDataSource {
     suspend fun getTrains(apiKey: String): List<Train> {
         return try {
-            val lines = DepartureScreenAPI.getNextService(apiKey)
-                .nextService.lines
-            val trips = DepartureScreenAPI.getUnionDepartures(apiKey)
-                .unionDepartures.trips
+            val lines = DepartureScreenAPI.getNextService(apiKey).nextService.lines
+            val trips = DepartureScreenAPI.getUnionDepartures(apiKey).unionDepartures.trips
             mergeLinesAndTrips(lines, trips)
         } catch (exception: Exception) {
             exception.printStackTrace()

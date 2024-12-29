@@ -12,7 +12,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.http.URLProtocol
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -35,10 +34,7 @@ object DepartureScreenAPI {
                 level = LogLevel.HEADERS
             }
             defaultRequest {
-                host = "api.openmetrolinx.com/OpenDataAPI"
-                url {
-                    protocol = URLProtocol.HTTPS
-                }
+                url("https://api.openmetrolinx.com/OpenDataAPI/")
             }
         }
     }

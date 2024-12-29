@@ -33,12 +33,12 @@ class MainActivity : ComponentActivity() {
             var trains by remember { mutableStateOf(emptyList<Train>()) }
             var remainingMs by remember { mutableIntStateOf(30000) }
             LaunchedEffect(Unit) {
-                trains = GoTrainDataSource().getTrains("")
+                trains = GoTrainDataSource().getTrains()
                 while (true) {
                     delay(20)
                     remainingMs -= 20
                     if (remainingMs <= 0) {
-                        trains = GoTrainDataSource().getTrains("")
+                        trains = GoTrainDataSource().getTrains()
                         remainingMs = 30000
                     }
                 }
