@@ -19,7 +19,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
 class GoTrainDataSource {
-    suspend fun getTrains(apiKey: String): List<Train> {
+    suspend fun getTrains(): List<Train> {
+        val apiKey = ""
         return try {
             val lines = DepartureScreenAPI.getNextService(apiKey).nextService.lines
             val trips = DepartureScreenAPI.getUnionDepartures(apiKey).unionDepartures.trips
