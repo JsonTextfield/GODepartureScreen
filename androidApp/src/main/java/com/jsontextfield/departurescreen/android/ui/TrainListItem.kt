@@ -29,7 +29,7 @@ fun TrainListItem(train: Train, useAlternateColor: Boolean = false) {
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(40.dp)
-                    .background(color = Color(train.colour))
+                    .background(color = Color(train.color))
             ) {
                 Text(
                     train.code,
@@ -52,13 +52,12 @@ fun TrainListItem(train: Train, useAlternateColor: Boolean = false) {
 @Composable
 fun TrainListItemPreview() {
     val train = Train(
-    ).apply {
-        destination = "Bloomington GO"
-        platform = "4 & 5"
-        code = "RH"
-        departureTime = "12:34"
-        colour = 0xFF0099C7.toInt()
-    }
+        destination = "Bloomington GO",
+        platform = "4 & 5",
+        code = "RH",
+        departureTime = "12:34",
+        color = 0xFF0099C7.toInt(),
+    )
     TrainListItem(train)
 }
 
@@ -66,16 +65,16 @@ fun TrainListItemPreview() {
 @Composable
 fun TrainListPreview() {
     Column {
-        TrainLine.entries.map {
+        TrainLine.entries.mapIndexed { index, item ->
             TrainListItem(
                 Train(
-                ).apply {
-                    destination = it.title
-                    code = it.code
-                    colour = it.colour
-                    departureTime = "12:34"
-                    platform = "4 & 5"
-                }
+                    destination = item.title,
+                    code = item.code,
+                    color = item.colour,
+                    departureTime = "12:34",
+                    platform = "4 & 5",
+                ),
+                index % 2 == 0,
             )
         }
     }
