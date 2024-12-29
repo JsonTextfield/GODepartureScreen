@@ -2,15 +2,40 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-	let greet = Greeting().greet()
+    @ObservedObject private(set) var viewModel: ViewModel
 
-	var body: some View {
-		Text(greet)
-	}
+    var body: some View {
+        VStack {
+            Text("Departure Screen")
+                .fontWeight(.bold)
+            List {
+                ForEach(viewModel.trains, id: \.self) { train in
+                    TrainListItem(train: train)
+                }
+            }
+        }
+    }
 }
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+extension ContentView {
+    class ViewModel: ObservableObject {
+        @Published var trains: [Train] = []
+        init() {
+            GoTrainDataSource().getTrains() { trains, error in
+                DispatchQueue.main.async {
+                    if let trains = trains {
+                        self.trains = trains
+                    } else {
+                        self.trains = []
+                    }
+                }
+            }
+        }
+    }
 }
+
+// struct ContentView_Previews: PreviewProvider {
+//     static var previews: some View {
+//         ContentView()
+//     }
+// }
