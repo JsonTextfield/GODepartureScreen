@@ -7,5 +7,6 @@ data class Train(
     val platform: String = "",
     val departureTime: String = "",
     val color: Int = 0xFF45AAFF.toInt(),
-    val tripOrder: Int = 0
+    val tripOrder: Int = 0,
+    val info: String = "",
 )

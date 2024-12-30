@@ -67,6 +67,7 @@ class GoTrainDataSource {
                     platform = matchingTrip.platform,
                     color = color,
                     tripOrder = line.tripOrder,
+                    info = matchingTrip.info,
                 )
             } else {
                 null

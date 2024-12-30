@@ -23,6 +23,7 @@ fun TrainListItem(train: Train, useAlternateColor: Boolean = false) {
     ListItem(
         tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
         headlineContent = { Text(train.destination) },
+        supportingContent = { Text(train.info) },
         leadingContent = {
             Box(
                 contentAlignment = Alignment.Center,
