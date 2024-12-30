@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
             var timeRemaining by remember { mutableIntStateOf(0) }
             LaunchedEffect(timeRemaining) {
                 if (timeRemaining <= 0) {
-                    trains = GoTrainDataSource().getTrains()
+                    trains = GoTrainDataSource().getTrains(getString(R.string.go_key))
                     timeRemaining = 30_000
                 }
                 else {
