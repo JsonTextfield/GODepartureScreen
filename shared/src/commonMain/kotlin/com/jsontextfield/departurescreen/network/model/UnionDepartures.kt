@@ -19,7 +19,6 @@ data class UnionDeparturesResponse(
             @JsonNames("TripNumber") val tripNumber: String,
             @JsonNames("Platform") val platform: String,
             @JsonNames("Service") val service: String,
-            @JsonNames("ServiceType") val serviceType: String,
             @JsonNames("Time") val time: String
         )
     }
