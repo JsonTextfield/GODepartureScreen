@@ -38,6 +38,7 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         timerJob?.cancel()
+        timerJob = null
         super.onCleared()
     }
 }
