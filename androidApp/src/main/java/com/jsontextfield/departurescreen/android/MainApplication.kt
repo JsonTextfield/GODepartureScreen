@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.android.ui
+package com.jsontextfield.departurescreen.android
 
 import android.app.Application
 
