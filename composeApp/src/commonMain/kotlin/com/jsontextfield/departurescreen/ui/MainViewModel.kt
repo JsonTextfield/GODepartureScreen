@@ -3,7 +3,7 @@ package com.jsontextfield.departurescreen.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Train
-import com.jsontextfield.departurescreen.data.GoTrainDataSource
+import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val goTrainDataSource: GoTrainDataSource) : ViewModel() {
+class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewModel() {
 
     private var _trains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
     val trains: StateFlow<List<Train>> = _trains.asStateFlow()

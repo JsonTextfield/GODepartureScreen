@@ -19,8 +19,8 @@ import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
-class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) {
-    suspend fun getTrains(apiKey: String): List<Train> {
+class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IGoTrainDataSource {
+    override suspend fun getTrains(apiKey: String): List<Train> {
         return try {
             val lines = departureScreenAPI.getNextService(apiKey).nextService.lines
             val trips = departureScreenAPI.getUnionDepartures(apiKey).unionDepartures.trips

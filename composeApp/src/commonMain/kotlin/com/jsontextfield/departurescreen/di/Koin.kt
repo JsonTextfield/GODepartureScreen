@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.di
 
 import com.jsontextfield.departurescreen.data.GoTrainDataSource
+import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import io.ktor.client.HttpClient
@@ -41,7 +42,7 @@ val networkModule = module {
 
 val dataModule = module {
     single<DepartureScreenAPI> { DepartureScreenAPI(get<HttpClient>()) }
-    single<GoTrainDataSource> { GoTrainDataSource(get<DepartureScreenAPI>()) }
+    single<IGoTrainDataSource> { GoTrainDataSource(get<DepartureScreenAPI>()) }
 }
 
 val viewModelModule = module {
