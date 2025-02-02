@@ -11,7 +11,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         return listOf(
             Train(
                 code = "LW",
-                departureTime = "10:00",
+                departureTimeString = "10:00",
                 destination = "Station A",
                 info = "Wait / Attendez",
                 platform = "-",
@@ -19,7 +19,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             ),
             Train(
                 code = "LE",
-                departureTime = "11:00",
+                departureTimeString = "11:00",
                 destination = "Station B",
                 info = "Proceed / Attendez",
                 platform = "7 & 8",
@@ -27,7 +27,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             ),
             Train(
                 code = "BR",
-                departureTime = "12:00",
+                departureTimeString = "12:00",
                 destination = "Station C",
                 info = "Proceed / Attendez",
                 platform = "3",
@@ -35,7 +35,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             ),
             Train(
                 code = "RH",
-                departureTime = "13:00",
+                departureTimeString = "13:00",
                 destination = "Station D",
                 info = "Proceed / Attendez",
                 platform = "11 & 12",

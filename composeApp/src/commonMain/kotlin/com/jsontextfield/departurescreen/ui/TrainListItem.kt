@@ -1,12 +1,17 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,7 +54,7 @@ fun TrainListItem(train: Train, useAlternateColor: Boolean = false) {
                     )
                 )
                 Text(
-                    train.departureTime,
+                    train.departureTimeString,
                     style = MaterialTheme.typography.labelMedium.copy(
                         textAlign = TextAlign.Center,
                     ),
@@ -60,12 +65,56 @@ fun TrainListItem(train: Train, useAlternateColor: Boolean = false) {
 }
 
 @Composable
-private fun TrainCodeIcon(code: String, colour: Color) {
+fun TrainListItem2(train: Train, useAlternateColor: Boolean = false) {
+    Surface(
+        tonalElevation = if (useAlternateColor) 1.dp else 0.dp
+    ) {
+        Row(
+            Modifier.padding(12.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                train.departureTimeString,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    textAlign = TextAlign.Center,
+                ),
+            )
+            TrainCodeIcon(
+                code = train.code,
+                colour = train.color,
+            )
+            Text(
+                train.destination,
+                maxLines = 2,
+                modifier = Modifier.weight(.5f),
+            )
+            Text(
+                train.platform,
+                modifier = Modifier.weight(.2f),
+                style = MaterialTheme.typography.titleMedium.run {
+                    copy(
+                        textAlign = TextAlign.Center,
+                        fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
+                        color = if (train.hasArrived) Color.Green else color
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun TrainCodeIcon(
+    code: String,
+    colour: Color,
+    modifier: Modifier = Modifier,
+) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(40.dp)
-            .background(color = colour, shape = CircleShape)
+        modifier = modifier
+            .size(30.dp)
+            .background(color = colour, shape = RoundedCornerShape(4.dp))
     ) {
         Text(
             code,
@@ -85,7 +134,7 @@ fun TrainListItemPreview() {
         destination = "Bloomington GO",
         platform = "4 & 5",
         code = "RH",
-        departureTime = "12:34",
+        departureTimeString = "12:34",
         info = "Wait / Attendez",
         color = richmondHill,
     )

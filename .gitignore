@@ -10,3 +10,4 @@ local.properties
 xcuserdata
 .kotlin
 /androidApp/src/main/res/values/api_keys.xml
+/composeApp/src/commonMain/composeResources/values/api_key.xml

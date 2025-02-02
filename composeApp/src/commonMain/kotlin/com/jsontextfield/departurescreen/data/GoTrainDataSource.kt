@@ -57,14 +57,16 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
                 val outFormatter = LocalDateTime.Format {
                     byUnicodePattern("HH:mm")
                 }
-                val departureTimeString = LocalDateTime
+                val departureTime = LocalDateTime
                     .parse(matchingTrip.time, inFormatter)
+                val departureTimeString = departureTime
                     .format(outFormatter)
                 Train(
                     code = line.lineCode,
                     name = line.lineName,
                     destination = line.directionName.split(" - ").last(),
-                    departureTime = departureTimeString,
+                    departureTime = departureTime,
+                    departureTimeString = departureTimeString,
                     platform = matchingTrip.platform,
                     color = color,
                     tripOrder = line.tripOrder,
@@ -73,6 +75,6 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
             } else {
                 null
             }
-        }.sortedWith(compareBy({ it.code }, { it.tripOrder }))
+        }.sortedBy { it.departureTime }
     }
 }

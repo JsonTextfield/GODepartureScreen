@@ -11,6 +11,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
+import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.api_key
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,8 +25,9 @@ fun App(
     val mainViewModel = koinViewModel<MainViewModel>()
     val trains by mainViewModel.trains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
+    val apiKey = stringResource(Res.string.api_key)
     LaunchedEffect(Unit) {
-        mainViewModel.start("API_KEY")
+        mainViewModel.start(apiKey)
     }
     MyApplicationTheme {
         Scaffold(topBar = {
@@ -36,17 +40,11 @@ fun App(
                 },
             )
         }) { innerPadding ->
-            if (isPortrait) {
-                TrainListPortrait(
-                    trains = trains,
-                    modifier = Modifier.padding(innerPadding),
-                )
-            } else {
-                TrainListLandscape(
-                    trains = trains,
-                    modifier = Modifier.padding(innerPadding),
-                )
-            }
+            TrainList(
+                trains = trains,
+                modifier = Modifier.padding(innerPadding),
+                isPortrait = isPortrait,
+            )
         }
     }
 }
