@@ -1,41 +1,18 @@
+import UIKit
 import SwiftUI
-import shared
+import ComposeApp
+
+struct ComposeView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
 
 struct ContentView: View {
-    @ObservedObject private(set) var viewModel: ViewModel
-
     var body: some View {
-        VStack {
-            Text("Departure Screen")
-                .fontWeight(.bold)
-            List {
-                ForEach(viewModel.trains, id: \.self) { train in
-                    TrainListItem(train: train)
-                }
-            }
-        }
+        ComposeView()
+                .ignoresSafeArea()
     }
 }
-
-extension ContentView {
-    class ViewModel: ObservableObject {
-        @Published var trains: [Train] = []
-        init() {
-            GoTrainDataSource().getTrains() { trains, error in
-                DispatchQueue.main.async {
-                    if let trains = trains {
-                        self.trains = trains
-                    } else {
-                        self.trains = []
-                    }
-                }
-            }
-        }
-    }
-}
-
-// struct ContentView_Previews: PreviewProvider {
-//     static var previews: some View {
-//         ContentView()
-//     }
-// }
