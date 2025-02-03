@@ -10,18 +10,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.api_key
+import departure_screen.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(
-    title: String = "",
-    isPortrait: Boolean = true,
-) {
+fun App() {
     val mainViewModel = koinViewModel<MainViewModel>()
     val trains by mainViewModel.trains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
@@ -33,7 +33,7 @@ fun App(
         Scaffold(topBar = {
             TopAppBar(
                 title = {
-                    Text(title)
+                    Text(stringResource(Res.string.app_name))
                 },
                 actions = {
                     CountdownTimer(timeRemaining = timeRemaining)
@@ -43,7 +43,7 @@ fun App(
             TrainList(
                 trains = trains,
                 modifier = Modifier.padding(innerPadding),
-                isPortrait = isPortrait,
+                isPortrait = getScreenWidth() < 600.dp,
             )
         }
     }

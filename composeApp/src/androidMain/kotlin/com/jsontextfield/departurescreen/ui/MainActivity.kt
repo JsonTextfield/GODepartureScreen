@@ -1,12 +1,9 @@
-package com.jsontextfield.departurescreen.android.ui
+package com.jsontextfield.departurescreen.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.res.stringResource
-import com.jsontextfield.departurescreen.android.R
-import com.jsontextfield.departurescreen.ui.App
 
 class MainActivity : ComponentActivity() {
 
@@ -14,10 +11,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        setContent {
-            App(
-                title = stringResource(R.string.app_name),
-            )
-        }
+        setContent { App() }
     }
 }

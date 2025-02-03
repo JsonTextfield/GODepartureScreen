@@ -96,7 +96,7 @@ fun TrainListItem2(train: Train, useAlternateColor: Boolean = false) {
                     copy(
                         textAlign = TextAlign.Center,
                         fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
-                        color = if (train.hasArrived) Color.Green else color
+                        color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
                     )
                 }
             )

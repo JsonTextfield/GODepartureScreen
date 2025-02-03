@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.android
+package com.jsontextfield.departurescreen
 
 import android.app.Application
 import com.jsontextfield.departurescreen.di.initKoin
