@@ -66,24 +66,34 @@ kotlin {
 }
 
 android {
-    namespace = "com.jsontextfield.departurescreen.android"
+    namespace = "com.jsontextfield.departurescreen"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.jsontextfield.departurescreen.android"
+        applicationId = "com.jsontextfield.departurescreen"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "1.2.0"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file(properties["releaseStoreFile"].toString())
+            storePassword = properties["releaseStorePassword"].toString()
+            keyAlias = properties["releaseKeyAlias"].toString()
+            keyPassword = properties["releaseKeyPassword"].toString()
+        }
+    }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
