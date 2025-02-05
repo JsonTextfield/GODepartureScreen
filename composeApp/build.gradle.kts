@@ -70,7 +70,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.jsontextfield.departurescreen"
+        applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
         targetSdk = 35
         versionCode = 5
