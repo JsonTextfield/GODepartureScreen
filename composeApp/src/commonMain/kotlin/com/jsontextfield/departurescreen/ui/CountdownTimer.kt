@@ -12,12 +12,12 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun CountdownTimer(
-    timeRemaining: Int = 30_000,
+    timeRemaining: Int = 20_000,
 ) {
     val progress by animateFloatAsState(
-        targetValue = timeRemaining.toFloat() / 30_000,
+        targetValue = timeRemaining.toFloat() / 20_000,
         animationSpec = tween(
-            durationMillis = if (timeRemaining == 30_000) 100 else 1100,
+            durationMillis = if (timeRemaining == 20_000) 100 else 1100,
             easing = LinearEasing
         )
     )

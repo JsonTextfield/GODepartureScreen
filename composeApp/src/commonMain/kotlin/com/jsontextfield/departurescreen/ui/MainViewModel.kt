@@ -26,7 +26,7 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
             while (true) {
                 if (timeRemaining.value <= 0) {
                     _trains.value = goTrainDataSource.getTrains(apiKey)
-                    _timeRemaining.value = 30_000
+                    _timeRemaining.value = 20_000
                 }
                 else {
                     delay(1000)
