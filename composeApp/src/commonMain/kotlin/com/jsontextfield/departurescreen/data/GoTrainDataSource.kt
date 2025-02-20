@@ -62,6 +62,7 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
                 val departureTimeString = departureTime
                     .format(outFormatter)
                 Train(
+                    id = line.tripNumber,
                     code = line.lineCode,
                     name = line.lineName,
                     destination = line.directionName.split(" - ").last(),

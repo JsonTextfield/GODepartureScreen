@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.compose.ui.unit.min
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.getScreenWidth
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -24,16 +23,23 @@ fun TrainList(
     if (isPortrait) {
         LazyColumn(modifier = modifier) {
             itemsIndexed(trains) { index, train ->
-                TrainListItem2(train, index % 2 == 0)
+                TrainListItem(
+                    train,
+                    useAlternateColor = index % 2 == 0
+                )
             }
         }
-    } else {
+    }
+    else {
         LazyVerticalGrid(
+            columns = GridCells.Adaptive(max(400.dp, getScreenWidth() / 3)),
             modifier = modifier,
-            columns = GridCells.Adaptive(max(300.dp, getScreenWidth() / 3)),
         ) {
             itemsIndexed(trains) { index, train ->
-                TrainListItem2(train, index % 2 == 0)
+                TrainListItem(
+                    train,
+                    useAlternateColor = index % 2 == 0
+                )
             }
         }
     }
