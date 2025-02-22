@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.ui.theme.richmondHill
+import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.express
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -38,21 +42,25 @@ fun TrainListItem(
         ) {
             Text(
                 train.departureTimeString,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    textAlign = TextAlign.Center,
-                ),
+                style = MaterialTheme.typography.labelMedium,
             )
             TrainCodeIcon(
                 code = train.code,
                 colour = train.color,
             )
-            Text(
-                train.destination,
-                maxLines = 2,
-                modifier = Modifier.weight(.5f),
-            )
-            if (train.isExpress) {
-                Text("⚡")
+            Column(modifier = Modifier.weight(.5f)) {
+                Text(
+                    train.destination,
+                    maxLines = 2,
+                )
+                if (train.isExpress) {
+                    Text(
+                        stringResource(Res.string.express),
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                    )
+                }
             }
             Text(
                 train.platform,
