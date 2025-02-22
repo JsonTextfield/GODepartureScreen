@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Départs de Union GO</string>
     <string name="express">"Express"</string>
+    <string name="platform">Quai %1$s</string>
 </resources>

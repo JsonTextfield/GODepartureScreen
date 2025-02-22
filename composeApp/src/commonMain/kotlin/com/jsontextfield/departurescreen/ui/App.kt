@@ -10,6 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
@@ -33,7 +35,10 @@ fun App() {
         Scaffold(topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(Res.string.app_name))
+                    Text(
+                        stringResource(Res.string.app_name),
+                        modifier = Modifier.semantics { heading() },
+                    )
                 },
                 actions = {
                     CountdownTimer(timeRemaining = timeRemaining)

@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Union GO Departures</string>
     <string name="express">Express</string>
+    <string name="platform">Platform %1$s</string>
 </resources>

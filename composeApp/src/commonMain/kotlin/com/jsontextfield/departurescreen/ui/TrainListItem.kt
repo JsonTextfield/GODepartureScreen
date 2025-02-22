@@ -16,6 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,7 @@ import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.ui.theme.richmondHill
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
+import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -36,7 +40,10 @@ fun TrainListItem(
         tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
     ) {
         Row(
-            modifier = modifier.padding(12.dp).fillMaxWidth(),
+            modifier = modifier
+                .padding(12.dp)
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) {},
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -47,6 +54,9 @@ fun TrainListItem(
             TrainCodeIcon(
                 code = train.code,
                 colour = train.color,
+                modifier = Modifier.semantics {
+                    contentDescription = train.name
+                }
             )
             Column(modifier = Modifier.weight(.5f)) {
                 Text(
@@ -62,16 +72,21 @@ fun TrainListItem(
                     )
                 }
             }
+            val platform = stringResource(Res.string.platform, train.platform)
             Text(
                 train.platform,
-                modifier = Modifier.weight(.2f),
+                modifier = Modifier.weight(.2f).clearAndSetSemantics {
+                    if (train.hasArrived) {
+                        contentDescription = platform
+                    }
+                },
                 style = MaterialTheme.typography.titleMedium.run {
                     copy(
                         textAlign = TextAlign.Center,
                         fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
                         color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
                     )
-                }
+                },
             )
         }
     }
@@ -85,13 +100,10 @@ private fun TrainCodeIcon(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(30.dp)
-            .background(color = colour, shape = RoundedCornerShape(4.dp))
+        modifier = modifier.size(30.dp).background(color = colour, shape = RoundedCornerShape(4.dp))
     ) {
         Text(
-            code,
-            style = MaterialTheme.typography.titleMedium.copy(
+            code, style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = Color.White,
