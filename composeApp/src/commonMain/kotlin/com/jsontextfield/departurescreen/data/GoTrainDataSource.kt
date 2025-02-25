@@ -39,8 +39,7 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
         val tripsMap = trips.associateBy { it.tripNumber }
 
         return lines.mapNotNull { line ->
-            val matchingTrip = tripsMap[line.tripNumber]
-            if (matchingTrip != null) {
+            tripsMap[line.tripNumber]?.let { matchingTrip ->
                 val color: Color = when (line.lineName) {
                     "Stouffville" -> stouffville
                     "Richmond Hill" -> richmondHill
@@ -73,8 +72,6 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
                     tripOrder = line.tripOrder,
                     info = matchingTrip.info,
                 )
-            } else {
-                null
             }
         }.sortedBy { it.departureTime }
     }
