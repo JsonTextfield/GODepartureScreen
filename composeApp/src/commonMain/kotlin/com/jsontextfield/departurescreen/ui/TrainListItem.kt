@@ -23,12 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
-import com.jsontextfield.departurescreen.ui.theme.richmondHill
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
 import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TrainListItem(
@@ -51,13 +49,24 @@ fun TrainListItem(
                 train.departureTimeString,
                 style = MaterialTheme.typography.labelMedium,
             )
-            TrainCodeIcon(
-                code = train.code,
-                colour = train.color,
-                modifier = Modifier.semantics {
-                    contentDescription = train.name
-                }
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(color = train.color, shape = RoundedCornerShape(4.dp))
+                    .semantics {
+                        contentDescription = train.name
+                    }
+            ) {
+                Text(
+                    train.code,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                    ),
+                )
+            }
             Column(modifier = Modifier.weight(.5f)) {
                 Text(
                     train.destination,
@@ -75,11 +84,13 @@ fun TrainListItem(
             val platform = stringResource(Res.string.platform, train.platform)
             Text(
                 train.platform,
-                modifier = Modifier.weight(.2f).clearAndSetSemantics {
-                    if (train.hasArrived) {
-                        contentDescription = platform
-                    }
-                },
+                modifier = Modifier
+                    .weight(.2f)
+                    .clearAndSetSemantics {
+                        if (train.hasArrived) {
+                            contentDescription = platform
+                        }
+                    },
                 style = MaterialTheme.typography.titleMedium.run {
                     copy(
                         textAlign = TextAlign.Center,
@@ -90,38 +101,4 @@ fun TrainListItem(
             )
         }
     }
-}
-
-@Composable
-private fun TrainCodeIcon(
-    code: String,
-    colour: Color,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.size(30.dp).background(color = colour, shape = RoundedCornerShape(4.dp))
-    ) {
-        Text(
-            code, style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = Color.White,
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun TrainListItemPreview() {
-    val train = Train(
-        destination = "Bloomington GO",
-        platform = "4 & 5",
-        code = "RH",
-        departureTimeString = "12:34",
-        info = "Wait / Attendez",
-        color = richmondHill,
-    )
-    TrainListItem(train)
 }

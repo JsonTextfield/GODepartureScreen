@@ -1,82 +1,44 @@
 package com.jsontextfield.departurescreen.ui
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.getScreenWidth
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
-    isPortrait: Boolean = true,
 ) {
-    if (isPortrait) {
-        LazyColumn(modifier = modifier) {
-            itemsIndexed(trains) { index, train ->
-                TrainListItem(
-                    train,
-                    useAlternateColor = index % 2 == 0
-                )
-            }
+    val columns = (getScreenWidth() / 300.dp).toInt()
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        modifier = modifier,
+    ) {
+        itemsIndexed(trains) { index, train ->
+            TrainListItem(
+                train,
+                useAlternateColor = if (columns.isOdd) {
+                    index.isEven
+                } else {
+                    val row = index / columns
+                    index.isOdd xor row.isEven
+                },
+            )
         }
-    }
-    else {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(max(400.dp, getScreenWidth() / 3)),
-            modifier = modifier,
-        ) {
-            itemsIndexed(trains) { index, train ->
-                TrainListItem(
-                    train,
-                    useAlternateColor = index % 2 == 0
-                )
-            }
+        item {
+            Spacer(Modifier.height(100.dp))
         }
     }
 }
 
-private val sampleTrains = listOf(
-    Train(
-        code = "LW",
-        departureTimeString = "10:00",
-        destination = "Station A",
-        info = "Wait / Attendez"
-    ),
-    Train(
-        code = "LE",
-        departureTimeString = "11:00",
-        destination = "Station B",
-        info = "Wait / Attendez"
-    ),
-    Train(
-        code = "BR",
-        departureTimeString = "12:00",
-        destination = "Station C",
-        info = "Wait / Attendez"
-    ),
-    Train(
-        code = "RH",
-        departureTimeString = "13:00",
-        destination = "Station D",
-        info = "Wait / Attendez"
-    ),
-)
-
-@Preview
-//@Preview(
-//    device = "spec:width=360dp,height=640dp,orientation=landscape"
-//)
-@Composable
-fun TrainListPortraitPreview() {// Sample data for the previews
-    TrainList(trains = sampleTrains, modifier = Modifier.fillMaxSize())
-}
+val Int.isEven: Boolean
+    get() = this % 2 == 0
+val Int.isOdd: Boolean
+    get() = !isEven

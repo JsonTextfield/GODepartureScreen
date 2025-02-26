@@ -12,8 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.api_key
@@ -48,7 +46,6 @@ fun App() {
             TrainList(
                 trains = trains,
                 modifier = Modifier.padding(innerPadding),
-                isPortrait = getScreenWidth() < 600.dp,
             )
         }
     }
