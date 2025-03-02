@@ -11,20 +11,20 @@ import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
 class DepartureScreenAPI(private val client: HttpClient) {
-    suspend fun getNextService(apiKey: String): NextServiceResponse {
+    suspend fun getNextService(): NextServiceResponse {
         return client.get {
             url {
                 path("api/V1/Stop/NextService/UN")
-                parameter("key", apiKey)
+                parameter("key", API_KEY)
             }
         }.body()
     }
 
-    suspend fun getUnionDepartures(apiKey: String): UnionDeparturesResponse {
+    suspend fun getUnionDepartures(): UnionDeparturesResponse {
         return client.get {
             url {
                 path("api/V1/ServiceUpdate/UnionDepartures/All")
-                parameter("key", apiKey)
+                parameter("key", API_KEY)
             }
         }.body()
     }

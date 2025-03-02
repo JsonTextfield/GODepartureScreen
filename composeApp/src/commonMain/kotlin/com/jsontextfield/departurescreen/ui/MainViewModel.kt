@@ -21,11 +21,11 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
 
     private var timerJob: Job? = null
 
-    fun start(apiKey: String) {
+    init {
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
                 if (timeRemaining.value <= 0) {
-                    _trains.value = goTrainDataSource.getTrains(apiKey)
+                    _trains.value = goTrainDataSource.getTrains()
                     _timeRemaining.value = 20_000
                 }
                 else {

@@ -20,10 +20,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
 class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IGoTrainDataSource {
-    override suspend fun getTrains(apiKey: String): List<Train> {
+    override suspend fun getTrains(): List<Train> {
         return try {
-            val lines = departureScreenAPI.getNextService(apiKey).nextService.lines
-            val trips = departureScreenAPI.getUnionDepartures(apiKey).unionDepartures.trips
+            val lines = departureScreenAPI.getNextService().nextService.lines
+            val trips = departureScreenAPI.getUnionDepartures().unionDepartures.trips
             mergeLinesAndTrips(lines, trips)
         } catch (exception: Exception) {
             exception.printStackTrace()

@@ -6,7 +6,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -14,7 +13,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
 import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.api_key
 import departure_screen.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -25,10 +23,7 @@ fun App() {
     val mainViewModel = koinViewModel<MainViewModel>()
     val trains by mainViewModel.trains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
-    val apiKey = stringResource(Res.string.api_key)
-    LaunchedEffect(Unit) {
-        mainViewModel.start(apiKey)
-    }
+
     MyApplicationTheme {
         Scaffold(topBar = {
             TopAppBar(

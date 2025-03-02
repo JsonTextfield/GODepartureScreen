@@ -7,7 +7,7 @@ import com.jsontextfield.departurescreen.ui.theme.lakeshoreWest
 import com.jsontextfield.departurescreen.ui.theme.richmondHill
 
 class FakeGoTrainDataSource : IGoTrainDataSource {
-    override suspend fun getTrains(apiKey: String): List<Train> {
+    override suspend fun getTrains(): List<Train> {
         return listOf(
             Train(
                 code = "BR",
