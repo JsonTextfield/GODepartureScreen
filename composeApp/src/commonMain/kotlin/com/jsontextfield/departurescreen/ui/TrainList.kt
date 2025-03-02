@@ -1,10 +1,13 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,15 +25,21 @@ fun TrainList(
         modifier = modifier,
     ) {
         itemsIndexed(trains) { index, train ->
-            TrainListItem(
-                train,
-                useAlternateColor = if (columns.isOdd) {
-                    index.isEven
-                } else {
-                    val row = index / columns
-                    index.isOdd xor row.isEven
-                },
-            )
+            val useAlternateColor = if (columns.isOdd) {
+                index.isEven
+            }
+            else {
+                val row = index / columns
+                index.isOdd xor row.isEven
+            }
+            Surface(
+                tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
+            ) {
+                TrainListItem(
+                    train,
+                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                )
+            }
         }
         item {
             Spacer(Modifier.height(100.dp))

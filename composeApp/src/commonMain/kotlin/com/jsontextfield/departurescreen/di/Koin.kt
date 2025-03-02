@@ -42,7 +42,10 @@ val networkModule = module {
 
 val dataModule = module {
     single<DepartureScreenAPI> { DepartureScreenAPI(get<HttpClient>()) }
-    single<IGoTrainDataSource> { GoTrainDataSource(get<DepartureScreenAPI>()) }
+    single<IGoTrainDataSource> {
+        //FakeGoTrainDataSource()
+        GoTrainDataSource(get<DepartureScreenAPI>())
+    }
 }
 
 val viewModelModule = module {

@@ -19,7 +19,7 @@ data class Train(
         get() = platform.isNotBlank() && platform != "-"
     val isExpress: Boolean
         get() = try {
-            id.substring(2, 3).toInt() >= 5
+            id[3].digitToInt() >= 5
         } catch (e: Exception) {
             false
         }

@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,73 +29,65 @@ import org.jetbrains.compose.resources.stringResource
 fun TrainListItem(
     train: Train,
     modifier: Modifier = Modifier,
-    useAlternateColor: Boolean = false,
 ) {
-    Surface(
-        tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
+    Row(
+        modifier = modifier.semantics(mergeDescendants = true) {},
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            modifier = modifier
-                .padding(12.dp)
-                .fillMaxWidth()
-                .semantics(mergeDescendants = true) {},
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Text(
+            train.departureTimeString,
+            style = MaterialTheme.typography.labelMedium,
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(30.dp)
+                .background(color = train.color, shape = RoundedCornerShape(4.dp))
+                .semantics {
+                    contentDescription = train.name
+                }
         ) {
             Text(
-                train.departureTimeString,
-                style = MaterialTheme.typography.labelMedium,
+                train.code,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                ),
             )
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(30.dp)
-                    .background(color = train.color, shape = RoundedCornerShape(4.dp))
-                    .semantics {
-                        contentDescription = train.name
-                    }
-            ) {
+        }
+        Column(modifier = Modifier.weight(.5f)) {
+            Text(
+                train.destination,
+                maxLines = 2,
+            )
+            if (train.isExpress) {
                 Text(
-                    train.code,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
+                    stringResource(Res.string.express),
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = MaterialTheme.colorScheme.primary
                     ),
                 )
             }
-            Column(modifier = Modifier.weight(.5f)) {
-                Text(
-                    train.destination,
-                    maxLines = 2,
-                )
-                if (train.isExpress) {
-                    Text(
-                        stringResource(Res.string.express),
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.primary
-                        ),
-                    )
-                }
-            }
-            val platform = stringResource(Res.string.platform, train.platform)
-            Text(
-                train.platform,
-                modifier = Modifier
-                    .weight(.2f)
-                    .clearAndSetSemantics {
-                        if (train.hasArrived) {
-                            contentDescription = platform
-                        }
-                    },
-                style = MaterialTheme.typography.titleMedium.run {
-                    copy(
-                        textAlign = TextAlign.Center,
-                        fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
-                        color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
-                    )
-                },
-            )
         }
+        val platform = stringResource(Res.string.platform, train.platform)
+        Text(
+            train.platform,
+            modifier = Modifier
+                .weight(.2f)
+                .clearAndSetSemantics {
+                    if (train.hasArrived) {
+                        contentDescription = platform
+                    }
+                },
+            style = MaterialTheme.typography.titleMedium.run {
+                copy(
+                    textAlign = TextAlign.Center,
+                    fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
+                    color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
+                )
+            },
+        )
     }
 }
