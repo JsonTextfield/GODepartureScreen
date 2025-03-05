@@ -1,8 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,6 +22,10 @@ fun TrainList(
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier,
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            bottom = 100.dp,
+        )
     ) {
         itemsIndexed(trains) { index, train ->
             val useAlternateColor = if (columns.isOdd) {
@@ -40,9 +43,6 @@ fun TrainList(
                     modifier = Modifier.fillMaxWidth().padding(12.dp)
                 )
             }
-        }
-        item {
-            Spacer(Modifier.height(100.dp))
         }
     }
 }
