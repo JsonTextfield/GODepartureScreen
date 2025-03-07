@@ -12,8 +12,9 @@ import com.jsontextfield.departurescreen.ui.theme.lakeshoreWest
 import com.jsontextfield.departurescreen.ui.theme.milton
 import com.jsontextfield.departurescreen.ui.theme.richmondHill
 import com.jsontextfield.departurescreen.ui.theme.stouffville
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -50,13 +51,13 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
                     "Kitchener" -> kitchener
                     else -> Color.Gray
                 }
-                val inFormatter = LocalDateTime.Format {
+                val inFormatter = DateTimeComponents.Format {
                     byUnicodePattern("yyyy-MM-dd HH:mm:ss")
                 }
-                val outFormatter = LocalDateTime.Format {
+                val outFormatter = DateTimeComponents.Format {
                     byUnicodePattern("HH:mm")
                 }
-                val departureTime = LocalDateTime
+                val departureTime = Instant
                     .parse(matchingTrip.time, inFormatter)
                 val departureTimeString = departureTime
                     .format(outFormatter)

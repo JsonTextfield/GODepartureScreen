@@ -27,7 +27,7 @@ fun TrainList(
             bottom = 100.dp,
         )
     ) {
-        itemsIndexed(trains) { index, train ->
+        itemsIndexed(trains, key = { _, train -> train.id }) { index, train ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven
             }
@@ -37,6 +37,7 @@ fun TrainList(
             }
             Surface(
                 tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
+                modifier = Modifier.animateItem()
             ) {
                 TrainListItem(
                     train,
