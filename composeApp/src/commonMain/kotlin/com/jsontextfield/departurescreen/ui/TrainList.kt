@@ -2,6 +2,7 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -41,7 +42,10 @@ fun TrainList(
             ) {
                 TrainListItem(
                     train,
-                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    modifier = Modifier
+                        .heightIn(min = 60.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
             }
         }
