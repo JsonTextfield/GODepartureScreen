@@ -39,8 +39,9 @@ fun App() {
             )
         }) { innerPadding ->
             TrainList(
-                trains = trains,
-                modifier = Modifier.padding(innerPadding),
+                trains = trains, Modifier.padding(
+                    top = innerPadding.calculateTopPadding(),
+                )
             )
         }
     }

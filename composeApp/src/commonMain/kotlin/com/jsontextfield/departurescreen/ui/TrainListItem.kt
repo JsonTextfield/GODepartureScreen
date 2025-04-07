@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
@@ -42,7 +43,7 @@ fun TrainListItem(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(30.dp)
+                .size(40.dp)
                 .background(color = train.color, shape = RoundedCornerShape(4.dp))
                 .semantics {
                     contentDescription = train.name
@@ -61,6 +62,7 @@ fun TrainListItem(
             Text(
                 train.destination,
                 maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
             if (train.isExpress) {
                 Text(

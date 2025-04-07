@@ -1,15 +1,21 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.getScreenWidth
@@ -43,9 +49,15 @@ fun TrainList(
                 TrainListItem(
                     train,
                     modifier = Modifier
-                        .heightIn(min = 60.dp)
+                        .heightIn(min = 80.dp)
                         .fillMaxWidth()
                         .padding(8.dp)
+                        .padding(
+                            start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                LayoutDirection.Ltr),
+                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
+                                LayoutDirection.Ltr),
+                        )
                 )
             }
         }
