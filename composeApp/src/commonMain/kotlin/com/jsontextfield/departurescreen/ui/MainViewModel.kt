@@ -25,7 +25,7 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
                 if (timeRemaining.value <= 0) {
-                    _trains.value = goTrainDataSource.getTrains()
+                    refreshData()
                     _timeRemaining.value = 20_000
                 }
                 else {
@@ -36,9 +36,9 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
         }
     }
 
-    override fun onCleared() {
-        timerJob?.cancel()
-        timerJob = null
-        super.onCleared()
+    fun refreshData() {
+        viewModelScope.launch {
+            _trains.value = goTrainDataSource.getTrains()
+        }
     }
 }

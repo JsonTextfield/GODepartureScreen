@@ -2,7 +2,6 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -12,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,24 +38,15 @@ fun TrainListItem(
             train.departureTimeString,
             style = MaterialTheme.typography.labelMedium,
         )
-        Box(
-            contentAlignment = Alignment.Center,
+        TrainCodeBox(
+            train.code,
             modifier = Modifier
                 .size(40.dp)
                 .background(color = train.color, shape = RoundedCornerShape(4.dp))
                 .semantics {
                     contentDescription = train.name
-                }
-        ) {
-            Text(
-                train.code,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                ),
-            )
-        }
+                },
+        )
         Column(modifier = Modifier.weight(.5f)) {
             Text(
                 train.destination,
