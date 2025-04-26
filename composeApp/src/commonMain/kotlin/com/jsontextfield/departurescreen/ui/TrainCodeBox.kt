@@ -11,7 +11,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun TrainCodeBox(trainCode: String, modifier: Modifier = Modifier) {
+fun TrainCodeBox(
+    trainCode: String,
+    modifier: Modifier = Modifier,
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier

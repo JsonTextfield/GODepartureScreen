@@ -11,16 +11,10 @@ data class Train(
     val platform: String = "",
     val departureTime: Instant = Instant.fromEpochMilliseconds(0),
     val departureTimeString: String = "",
-    val color: Color = Color(0xFF45AAFF),
+    val color: Color = Color.Gray,
     val tripOrder: Int = 0,
     val info: String = "",
 ) {
-    val hasArrived: Boolean
-        get() = platform.isNotBlank() && platform != "-"
-    val isExpress: Boolean
-        get() = try {
-            id[2].digitToInt() >= 5
-        } catch (e: Exception) {
-            false
-        }
+    val hasArrived = platform.isNotBlank() && platform != "-"
+    val isExpress = id[2] in "56789"
 }

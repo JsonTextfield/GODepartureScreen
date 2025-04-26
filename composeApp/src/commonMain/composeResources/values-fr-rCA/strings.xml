@@ -3,4 +3,8 @@
     <string name="app_name">Départs de Union GO</string>
     <string name="express">"Express"</string>
     <string name="platform">Quai %1$s</string>
+    <string name="filter">Filter (fr)</string>
+    <string name="sort">Sort (fr)</string>
+    <string name="done">Done (fr)</string>
+    <string name="cancel">Cancel (fr)</string>
 </resources>

@@ -3,4 +3,8 @@
     <string name="app_name">Union GO Departures</string>
     <string name="express">Express</string>
     <string name="platform">Platform %1$s</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -8,6 +8,7 @@ compose = "1.7.8"
 androidx-activityCompose = "1.10.1"
 compose-multiplatform = "1.7.3"
 kotlinx-coroutines = "1.10.1"
+materialIconsExtended = "1.7.3"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
@@ -25,6 +26,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
