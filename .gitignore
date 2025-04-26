@@ -12,3 +12,4 @@ xcuserdata
 /androidApp/src/main/res/values/api_keys.xml
 /composeApp/src/commonMain/composeResources/values/api_key.xml
 /composeApp/src/commonMain/kotlin/com/jsontextfield/departurescreen/network/ApiKey.kt
+/composeApp/release
