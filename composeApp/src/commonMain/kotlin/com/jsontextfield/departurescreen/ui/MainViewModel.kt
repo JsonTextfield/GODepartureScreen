@@ -72,7 +72,7 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
             .sortedWith(
                 when (sortMode.value) {
                     SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.LINE -> compareBy({ it.code }, { it.name })
+                    SortMode.LINE -> compareBy({ it.code }, { it.destination })
                 }
             )
     }

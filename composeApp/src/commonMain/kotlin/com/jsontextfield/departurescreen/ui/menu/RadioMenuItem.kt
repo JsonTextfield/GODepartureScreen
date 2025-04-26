@@ -1,4 +1,4 @@
-package com.textfield.json.ottawastreetcameras.ui.components.menu
+package com.jsontextfield.departurescreen.ui.menu
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -20,7 +22,11 @@ fun RadioMenuItem(
     DropdownMenuItem(
         contentPadding = PaddingValues(0.dp),
         text = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clearAndSetSemantics {
+                    contentDescription = title
+                }) {
                 RadioButton(
                     selected = isSelected,
                     modifier = Modifier.padding(0.dp),

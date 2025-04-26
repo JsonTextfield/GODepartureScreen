@@ -1,4 +1,4 @@
-package com.textfield.json.ottawastreetcameras.ui.components.menu
+package com.jsontextfield.departurescreen.ui.menu
 
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable

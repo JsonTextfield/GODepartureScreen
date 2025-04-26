@@ -3,7 +3,6 @@ package com.jsontextfield.departurescreen.ui.menu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
@@ -17,11 +16,6 @@ import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.AboutDialog
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
-import com.textfield.json.ottawastreetcameras.ui.components.menu.Action
-import com.textfield.json.ottawastreetcameras.ui.components.menu.MenuItem
-import com.textfield.json.ottawastreetcameras.ui.components.menu.OverflowMenu
-import com.textfield.json.ottawastreetcameras.ui.components.menu.PopupMenu
-import com.textfield.json.ottawastreetcameras.ui.components.menu.RadioMenuItem
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.about
 import departure_screen.composeapp.generated.resources.filter
@@ -90,6 +84,7 @@ fun getActions(
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
+        isVisible = mainViewModel.trains.value.isNotEmpty(),
         menuContent = {
             var isExpanded by remember { mutableStateOf(it) }
             DropdownMenu(
@@ -112,6 +107,7 @@ fun getActions(
     val filter = Action(
         icon = Icons.Rounded.FilterList,
         tooltip = stringResource(Res.string.filter),
+        isVisible = mainViewModel.trains.value.isNotEmpty(),
         onClick = {
             mainViewModel.showFilterDialog = true
         } // show filter dialog,

@@ -15,10 +15,17 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.SemanticsProperties.CollectionInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.getScreenWidth
+import kotlin.math.ceil
 
 @Composable
 fun TrainList(
@@ -28,7 +35,12 @@ fun TrainList(
     val columns = (getScreenWidth() / 300)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
-        modifier = modifier,
+        modifier = modifier.semantics {
+            collectionInfo = CollectionInfo(
+                rowCount = ceil(trains.size.toDouble() / columns).toInt(),
+                columnCount = columns,
+            )
+        },
         contentPadding = PaddingValues(
             top = 16.dp,
             bottom = 100.dp,
@@ -44,7 +56,14 @@ fun TrainList(
             }
             Surface(
                 tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
-                modifier = Modifier.animateItem()
+                modifier = Modifier.animateItem().semantics {
+                    collectionItemInfo = CollectionItemInfo(
+                        rowIndex = ceil(index.toDouble() / columns).toInt(),
+                        columnIndex = index % columns,
+                        rowSpan = 1,
+                        columnSpan = 1,
+                    )
+                }
             ) {
                 TrainListItem(
                     train,

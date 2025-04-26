@@ -1,4 +1,4 @@
-package com.textfield.json.ottawastreetcameras.ui.components.menu
+package com.jsontextfield.departurescreen.ui.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector

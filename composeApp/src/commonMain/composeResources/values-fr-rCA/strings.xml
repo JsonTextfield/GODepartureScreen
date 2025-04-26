@@ -7,10 +7,11 @@
     <string name="filter">Filtrer</string>
     <string name="sort">Trier</string>
     <string name="cancel">Annuler</string>
+    <string name="reset">Réinitialiser</string>
     <string name="close">Fermer</string>
     <string name="about">À propos de</string>
     <string name="licences">Licences</string>
     <string name="more">Plus</string>
-    <string name="time">l'Heure</string>
-    <string name="line">Ligne</string>
+    <string name="time">Trier par l'heure</string>
+    <string name="line">Trier par la ligne</string>
 </resources>

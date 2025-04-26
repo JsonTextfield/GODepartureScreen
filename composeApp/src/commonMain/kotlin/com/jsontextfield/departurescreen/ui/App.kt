@@ -28,7 +28,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
     MyApplicationTheme {
         if (mainViewModel.showFilterDialog) {
             FilterTrainDialog(
-                data = mainViewModel.trains.value,
+                data = mainViewModel.trains.value.distinctBy { it.code to it.name },
                 selectedItems = mainViewModel.hiddenTrains.value,
                 onSelectionChanged = { mainViewModel.setHiddenTrains(it) },
                 onDismissRequest = { mainViewModel.showFilterDialog = false },
