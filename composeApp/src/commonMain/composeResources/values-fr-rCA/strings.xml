@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Départs de Union GO</string>
+    <string name="app_name_long">Départs de Toronto Union GO</string>
     <string name="express">"Express"</string>
     <string name="platform">Quai %1$s</string>
-    <string name="filter">Filter (fr)</string>
-    <string name="sort">Sort (fr)</string>
-    <string name="done">Done (fr)</string>
-    <string name="cancel">Cancel (fr)</string>
+    <string name="filter">Filtrer</string>
+    <string name="sort">Trier</string>
+    <string name="cancel">Annuler</string>
+    <string name="close">Fermer</string>
+    <string name="about">À propos de</string>
+    <string name="licences">Licences</string>
+    <string name="more">Plus</string>
+    <string name="time">l'Heure</string>
+    <string name="line">Ligne</string>
 </resources>

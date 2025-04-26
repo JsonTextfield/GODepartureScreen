@@ -25,7 +25,7 @@ fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
 ) {
-    val columns = (getScreenWidth() / 300.dp).toInt()
+    val columns = (getScreenWidth() / 300)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier,

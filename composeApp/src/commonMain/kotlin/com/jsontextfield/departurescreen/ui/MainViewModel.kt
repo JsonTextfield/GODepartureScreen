@@ -1,15 +1,22 @@
 package com.jsontextfield.departurescreen.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
+import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.line
+import departure_screen.composeapp.generated.resources.time
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 
 class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewModel() {
 
@@ -27,6 +34,8 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
 
     private var _sortMode: MutableStateFlow<SortMode> = MutableStateFlow(SortMode.TIME)
     val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
+
+    var showFilterDialog by mutableStateOf(false)
 
     private var timerJob: Job? = null
 
@@ -63,10 +72,10 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
             .sortedWith(
                 when (sortMode.value) {
                     SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.CODE -> compareBy({ it.code }, { it.name })
+                    SortMode.LINE -> compareBy({ it.code }, { it.name })
                 }
             )
     }
 }
 
-enum class SortMode { TIME, CODE }
+enum class SortMode(val key: StringResource) { TIME(Res.string.time), LINE(Res.string.line) }

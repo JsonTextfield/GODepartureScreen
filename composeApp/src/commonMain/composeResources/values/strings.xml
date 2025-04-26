@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Union GO Departures</string>
+    <string name="app_name_long">Toronto Union GO Departures</string>
     <string name="express">Express</string>
     <string name="platform">Platform %1$s</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
-    <string name="done">Done</string>
     <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="about">About</string>
+    <string name="licences">Licences</string>
+    <string name="more">More</string>
+    <string name="time">Time</string>
+    <string name="line">Line</string>
 </resources>

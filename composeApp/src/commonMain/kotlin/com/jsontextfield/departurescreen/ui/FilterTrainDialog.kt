@@ -29,7 +29,7 @@ import androidx.compose.ui.window.Dialog
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.cancel
-import departure_screen.composeapp.generated.resources.done
+import departure_screen.composeapp.generated.resources.filter
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -87,7 +87,7 @@ fun FilterTrainDialog(
                             onDismissRequest()
                         },
                     ) {
-                        Text(stringResource(Res.string.done))
+                        Text(stringResource(Res.string.filter))
                     }
                 }
             }
