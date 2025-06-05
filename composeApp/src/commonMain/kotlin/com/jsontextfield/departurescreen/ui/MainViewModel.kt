@@ -10,8 +10,6 @@ import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.line
 import departure_screen.composeapp.generated.resources.time
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,9 +24,6 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
     private var _displayedTrains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
     val displayedTrains: StateFlow<List<Train>> = _displayedTrains.asStateFlow()
 
-    private var _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
-    val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
-
     private var _hiddenTrains: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     val hiddenTrains: StateFlow<Set<String>> = _hiddenTrains.asStateFlow()
 
@@ -37,22 +32,10 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
 
     var showFilterDialog by mutableStateOf(false)
 
-    private var timerJob: Job? = null
-
-    init {
-        timerJob = timerJob ?: viewModelScope.launch {
-            while (true) {
-                if (timeRemaining.value <= 0) {
-                    viewModelScope.launch {
-                        _trains.value = goTrainDataSource.getTrains()
-                        updateDisplayedTrains()
-                    }
-                    _timeRemaining.value = 20_000
-                } else {
-                    delay(1000)
-                    _timeRemaining.value -= 1000
-                }
-            }
+    fun getTrains() {
+        viewModelScope.launch {
+            _trains.value = goTrainDataSource.getTrains()
+            updateDisplayedTrains()
         }
     }
 
