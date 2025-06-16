@@ -17,6 +17,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -26,8 +27,9 @@ class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IG
             val lines = departureScreenAPI.getNextService().nextService.lines
             val trips = departureScreenAPI.getUnionDepartures().unionDepartures.trips
             mergeLinesAndTrips(lines, trips)
+        } catch (exception: IOException) {
+            throw exception
         } catch (exception: Exception) {
-            exception.printStackTrace()
             emptyList()
         }
     }
