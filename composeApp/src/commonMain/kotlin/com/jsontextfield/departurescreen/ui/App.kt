@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.ui
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -62,7 +63,7 @@ fun App(
                 title = {
                     Text(
                         stringResource(Res.string.app_name),
-                        modifier = Modifier.semantics { heading() },
+                        modifier = Modifier.semantics { heading() }.basicMarquee(),
                     )
                 },
                 actions = {
