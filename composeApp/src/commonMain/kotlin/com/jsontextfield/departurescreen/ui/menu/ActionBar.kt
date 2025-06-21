@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -13,11 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jsontextfield.departurescreen.getScreenWidth
-import com.jsontextfield.departurescreen.ui.AboutDialog
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
 import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.about
 import departure_screen.composeapp.generated.resources.filter
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
@@ -52,7 +49,8 @@ fun ActionBar(
             onClick = {
                 if (action.menuContent != null) {
                     showMenu = !showMenu
-                } else {
+                }
+                else {
                     action.onClick()
                 }
             }
@@ -63,9 +61,13 @@ fun ActionBar(
     if (overflowActions.isNotEmpty()) {
         Box {
             var showOverflowMenu by remember { mutableStateOf(false) }
-            OverflowMenu(showOverflowMenu, overflowActions) {
-                showOverflowMenu = false
-            }
+            OverflowMenu(
+                isExpanded = showOverflowMenu,
+                actions = overflowActions,
+                onItemSelected = {
+                    showOverflowMenu = false
+                },
+            )
             MenuItem(
                 icon = Icons.Rounded.MoreVert,
                 tooltip = stringResource(Res.string.more),
@@ -110,7 +112,7 @@ fun getActions(
         isVisible = mainViewModel.allTrains.value.isNotEmpty(),
         onClick = {
             mainViewModel.showFilterDialog = true
-        } // show filter dialog,
+        }
     )
 
     // TODO: Add theme change and about screen
@@ -138,26 +140,26 @@ fun getActions(
 //        },
 //    )
 
-    var showAboutDialog by remember { mutableStateOf(false) }
-
-    if (showAboutDialog) {
-        AboutDialog(
-            onLicences = {
-                //context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
-            },
-            onDismiss = { showAboutDialog = false },
-        )
-    }
-
-    val about = Action(
-        icon = Icons.Rounded.Info,
-        tooltip = stringResource(Res.string.about),
-        onClick = { showAboutDialog = true },
-    )
+//    var showAboutDialog by remember { mutableStateOf(false) }
+//
+//    if (showAboutDialog) {
+//        AboutDialog(
+//            onLicences = {
+//                //context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+//            },
+//            onDismiss = { showAboutDialog = false },
+//        )
+//    }
+//
+//    val about = Action(
+//        icon = Icons.Rounded.Info,
+//        tooltip = stringResource(Res.string.about),
+//        onClick = { showAboutDialog = true },
+//    )
 
     return listOf(
         filter,
         sort,
-        //about,
+//        about,
     )
 }
