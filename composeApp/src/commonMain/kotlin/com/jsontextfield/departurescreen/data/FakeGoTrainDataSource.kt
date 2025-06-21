@@ -6,6 +6,8 @@ import com.jsontextfield.departurescreen.ui.theme.lakeshoreWest
 import com.jsontextfield.departurescreen.ui.theme.milton
 import com.jsontextfield.departurescreen.ui.theme.richmondHill
 import com.jsontextfield.departurescreen.ui.theme.stouffville
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -16,6 +18,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             Train(
                 id = Uuid.random().toString(),
                 code = "BR",
+                departureTime = Instant.DISTANT_FUTURE,
                 departureTimeString = "12:34",
                 destination = "Allandale Waterfront GO",
                 platform = "3",
@@ -24,6 +27,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             Train(
                 id = Uuid.random().toString(),
                 code = "LW",
+                departureTime = Instant.DISTANT_PAST,
                 departureTimeString = "10:00",
                 destination = "Niagara Falls Go (Via Rail Station)",
                 info = "Wait / Attendez",
@@ -33,6 +37,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             Train(
                 id = Uuid.random().toString(),
                 code = "ST",
+                departureTime = Instant.fromEpochMilliseconds(0),
                 departureTimeString = "11:00",
                 destination = "Mount Joy GO",
                 info = "Proceed / Attendez",
@@ -42,6 +47,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             Train(
                 id = Uuid.random().toString(),
                 code = "RH",
+                departureTime = Instant.fromEpochMilliseconds( 30L * 366 * 24 * 60 * 60 * 1000),
                 departureTimeString = "13:00",
                 destination = "Bloomington GO",
                 info = "Proceed / Attendez",
@@ -51,6 +57,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             Train(
                 id = Uuid.random().toString(),
                 code = "MI",
+                departureTime = Clock.System.now(),
                 departureTimeString = "13:00",
                 destination = "Milton GO",
                 platform = "9",
