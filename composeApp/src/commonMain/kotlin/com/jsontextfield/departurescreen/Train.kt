@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.Instant
 
 data class Train(
-    val id: String = "",
+    val id: String,
     val code: String = "",
     val name: String = "",
     val destination: String = "",

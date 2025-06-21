@@ -2,6 +2,6 @@ package com.jsontextfield.departurescreen.data
 
 import com.jsontextfield.departurescreen.Train
 
-interface IGoTrainDataSource {
+fun interface IGoTrainDataSource {
     suspend fun getTrains() : List<Train>
 }
