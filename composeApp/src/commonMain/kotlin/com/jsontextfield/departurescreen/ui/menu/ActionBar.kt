@@ -84,7 +84,7 @@ fun getActions(
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
-        isVisible = mainViewModel.trains.value.isNotEmpty(),
+        isVisible = mainViewModel.allTrains.value.isNotEmpty(),
         menuContent = {
             var isExpanded by remember { mutableStateOf(it) }
             DropdownMenu(
@@ -107,7 +107,7 @@ fun getActions(
     val filter = Action(
         icon = Icons.Rounded.FilterList,
         tooltip = stringResource(Res.string.filter),
-        isVisible = mainViewModel.trains.value.isNotEmpty(),
+        isVisible = mainViewModel.allTrains.value.isNotEmpty(),
         onClick = {
             mainViewModel.showFilterDialog = true
         } // show filter dialog,

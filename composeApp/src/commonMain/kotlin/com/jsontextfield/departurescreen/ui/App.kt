@@ -11,6 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
 import com.jsontextfield.departurescreen.ui.menu.getActions
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
@@ -19,19 +21,40 @@ import departure_screen.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
-    val trains by mainViewModel.displayedTrains.collectAsState()
+    val allTrains by mainViewModel.allTrains.collectAsState()
+    val hiddenTrains by mainViewModel.hiddenTrains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
+    App(
+        allTrains = allTrains,
+        hiddenTrains = hiddenTrains,
+        timeRemaining = timeRemaining,
+        actions = getActions(mainViewModel),
+        shouldShowFilterDialog = mainViewModel.showFilterDialog,
+        onDismissFilterDialog = { mainViewModel.showFilterDialog = false },
+        onSetHiddenTrains = mainViewModel::setHiddenTrains,
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun App(
+    allTrains: List<Train>,
+    hiddenTrains: Set<String>,
+    timeRemaining: Int,
+    actions: List<Action>,
+    shouldShowFilterDialog: Boolean,
+    onDismissFilterDialog: () -> Unit,
+    onSetHiddenTrains: (Set<String>) -> Unit,
+) {
     MyApplicationTheme {
-        if (mainViewModel.showFilterDialog) {
+        if (shouldShowFilterDialog) {
             FilterTrainDialog(
-                data = mainViewModel.trains.value.distinctBy { it.code to it.name },
-                selectedItems = mainViewModel.hiddenTrains.value,
-                onSelectionChanged = { mainViewModel.setHiddenTrains(it) },
-                onDismissRequest = { mainViewModel.showFilterDialog = false },
+                data = allTrains.distinctBy { it.code to it.name },
+                selectedItems = hiddenTrains,
+                onSelectionChanged = onSetHiddenTrains,
+                onDismissRequest = onDismissFilterDialog,
             )
         }
         Scaffold(topBar = {
@@ -43,13 +66,14 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     )
                 },
                 actions = {
-                    ActionBar(getActions(mainViewModel))
-                    CountdownTimer(timeRemaining = timeRemaining)
+                    ActionBar(actions)
+                    CountdownTimer(timeRemaining)
                 },
             )
         }) { innerPadding ->
             TrainList(
-                trains = trains, Modifier.padding(
+                trains = allTrains.filter { it.isVisible },
+                modifier = Modifier.padding(
                     top = innerPadding.calculateTopPadding(),
                 )
             )

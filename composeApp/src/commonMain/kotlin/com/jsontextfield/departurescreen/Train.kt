@@ -14,6 +14,7 @@ data class Train(
     val color: Color = Color.Gray,
     val tripOrder: Int = 0,
     val info: String = "",
+    val isVisible: Boolean = true,
 ) {
     val hasArrived = platform.isNotBlank() && platform != "-"
     val isExpress = id[2] in "56789"

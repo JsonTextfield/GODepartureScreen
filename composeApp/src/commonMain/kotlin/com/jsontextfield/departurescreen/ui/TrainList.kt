@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
-import androidx.compose.ui.semantics.SemanticsProperties.CollectionInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
@@ -32,7 +31,7 @@ fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
 ) {
-    val columns = (getScreenWidth() / 300)
+    val columns = (getScreenWidth() / 300).coerceIn(1, 4)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {

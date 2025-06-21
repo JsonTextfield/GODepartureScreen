@@ -21,17 +21,14 @@ import org.jetbrains.compose.resources.StringResource
 
 class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewModel() {
 
-    private var _trains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
-    val trains: StateFlow<List<Train>> = _trains.asStateFlow()
-
-    private var _displayedTrains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
-    val displayedTrains: StateFlow<List<Train>> = _displayedTrains.asStateFlow()
-
-    private var _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
-    val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
+    private var _allTrains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
+    val allTrains: StateFlow<List<Train>> = _allTrains.asStateFlow()
 
     private var _hiddenTrains: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     val hiddenTrains: StateFlow<Set<String>> = _hiddenTrains.asStateFlow()
+
+    private var _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
+    val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
 
     private var _sortMode: MutableStateFlow<SortMode> = MutableStateFlow(SortMode.TIME)
     val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
@@ -45,13 +42,15 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
             while (true) {
                 if (timeRemaining.value <= 0) {
                     try {
-                        _trains.value = goTrainDataSource.getTrains()
-                        updateDisplayedTrains()
+                        _allTrains.value = goTrainDataSource.getTrains()
+                        setHiddenTrains(_hiddenTrains.value)
+                        setSortMode(_sortMode.value)
                         _timeRemaining.value = 20_000
                     } catch (exception: IOException) {
                         _timeRemaining.value = 1000
                     }
-                } else {
+                }
+                else {
                     delay(1000)
                     _timeRemaining.value -= 1000
                 }
@@ -61,23 +60,19 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
 
     fun setSortMode(mode: SortMode) {
         _sortMode.value = mode
-        updateDisplayedTrains()
+        _allTrains.value = _allTrains.value.sortedWith(
+            when (mode) {
+                SortMode.TIME -> compareBy { it.departureTime }
+                SortMode.LINE -> compareBy({ it.code }, { it.destination })
+            }
+        )
     }
 
     fun setHiddenTrains(hiddenTrains: Set<String>) {
         _hiddenTrains.value = hiddenTrains
-        updateDisplayedTrains()
-    }
-
-    private fun updateDisplayedTrains() {
-        _displayedTrains.value = _trains.value
-            .filter { train -> train.code !in _hiddenTrains.value }
-            .sortedWith(
-                when (sortMode.value) {
-                    SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.LINE -> compareBy({ it.code }, { it.destination })
-                }
-            )
+        _allTrains.value = _allTrains.value.map { train ->
+            train.copy(isVisible = train.code !in hiddenTrains)
+        }
     }
 }
 
