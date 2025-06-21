@@ -10,6 +10,16 @@ val lakeshoreEast = Color(0xFFFF0D00)
 val barrie = Color(0xFF003767)
 val kitchener = Color(0xFF00853E)
 
+val trainColours = mapOf(
+    "Stouffville" to stouffville,
+    "Richmond Hill" to richmondHill,
+    "Milton" to milton,
+    "Lakeshore West" to lakeshoreWest,
+    "Lakeshore East" to lakeshoreEast,
+    "Barrie" to barrie,
+    "Kitchener" to kitchener
+)
+
 val primaryLight = Color(0xFF3F6837)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFBFF0B1)
