@@ -1,7 +1,6 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -20,7 +19,6 @@ private val sampleTrains = (0 until 7).map {
 @PreviewLightDark
 @PreviewFontScale
 @PreviewScreenSizes
-@PreviewDynamicColors
 @Composable
 fun AppPreview() {
     App(
