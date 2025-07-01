@@ -1,13 +1,13 @@
 [versions]
 agp = "8.10.1"
 glanceMaterial3 = "1.1.1"
-kotlin = "2.1.20"
-koin = "4.0.0"
+kotlin = "2.2.0"
+koin = "4.1.0"
 kotlinxDatetime = "0.6.1"
 ktor = "3.0.3"
 compose = "1.8.3"
 androidx-activityCompose = "1.10.1"
-compose-multiplatform = "1.7.3"
+compose-multiplatform = "1.8.2"
 kotlinx-coroutines = "1.10.2"
 materialIconsExtended = "1.7.3"
 
