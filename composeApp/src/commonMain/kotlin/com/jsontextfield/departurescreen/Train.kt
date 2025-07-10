@@ -14,12 +14,14 @@ data class Train(
     val destination: String = "",
     val platform: String = "",
     val departureTime: Instant = Instant.fromEpochMilliseconds(0),
+    private val lastUpdated: Instant = Instant.fromEpochMilliseconds(0),
     val color: Color = Color.Gray,
     val tripOrder: Int = 0,
     val info: String = "",
     val isVisible: Boolean = true,
 ) {
     val departureTimeString = departureTime.format(outFormatter)
+    val departureDiffMinutes = (departureTime.epochSeconds - lastUpdated.epochSeconds) / 60
     val hasArrived = platform.isNotBlank() && platform != "-"
     val isExpress = id[2] in "56789"
 

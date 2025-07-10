@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
@@ -70,6 +72,7 @@ fun App(
                     ActionBar(actions)
                     CountdownTimer(timeRemaining)
                 },
+                modifier = Modifier.shadow(4.dp)
             )
         }) { innerPadding ->
             TrainList(

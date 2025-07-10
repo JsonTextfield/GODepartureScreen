@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -19,8 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.ui.theme.Orange
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
+import departure_screen.composeapp.generated.resources.minutes
 import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,8 +38,17 @@ fun TrainListItem(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            train.departureTimeString,
-            style = MaterialTheme.typography.labelMedium,
+            stringResource(Res.string.minutes, train.departureDiffMinutes),
+            style = MaterialTheme.typography.labelLarge.copy(
+                color = when {
+                    train.departureDiffMinutes < 3 -> Color.Red
+                    train.departureDiffMinutes < 6 -> Color.Orange
+                    else -> Color.Unspecified
+                },
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+            ),
+            modifier = Modifier.weight(.1f),
         )
         TrainCodeBox(
             train.code,
