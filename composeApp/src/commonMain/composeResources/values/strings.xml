@@ -15,6 +15,7 @@
     <string name="time">Sort by time</string>
     <string name="line">Sort by line</string>
     <string name="minutes">%1$s min</string>
+    <string name="all">All</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

@@ -46,7 +46,7 @@ fun TrainListItem(
             stringResource(Res.string.minutes, train.departureDiffMinutes),
             style = MaterialTheme.typography.labelMedium.copy(
                 textAlign = TextAlign.Center,
-                fontWeight = if (train.departureDiffMinutes < 6) FontWeight.Bold else FontWeight.Normal,
+                fontWeight = FontWeight.Bold,
             ),
             maxLines = 2,
             modifier = Modifier

@@ -1,9 +1,11 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -65,7 +67,9 @@ fun App(
                 title = {
                     Text(
                         stringResource(Res.string.app_name),
-                        modifier = Modifier.semantics { heading() }.basicMarquee(),
+                        modifier = Modifier
+                            .semantics { heading() }
+                            .basicMarquee(),
                     )
                 },
                 actions = {
@@ -75,12 +79,16 @@ fun App(
                 modifier = Modifier.shadow(4.dp)
             )
         }) { innerPadding ->
-            TrainList(
-                trains = allTrains.filter { it.isVisible },
-                modifier = Modifier.padding(
-                    top = innerPadding.calculateTopPadding(),
+            Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
+                FilterChipStrip(
+                    data = allTrains.distinctBy { it.code to it.name }.sortedBy { it.code },
+                    selectedItems = hiddenTrains,
+                    onSelectionChanged = onSetHiddenTrains
                 )
-            )
+                Surface {
+                    TrainList(trains = allTrains.filter { it.isVisible })
+                }
+            }
         }
     }
 }

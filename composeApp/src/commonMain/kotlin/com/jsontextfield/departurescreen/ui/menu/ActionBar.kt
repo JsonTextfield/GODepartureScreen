@@ -158,7 +158,7 @@ fun getActions(
 //    )
 
     return listOf(
-        filter,
+//        filter,
         sort,
 //        about,
     )

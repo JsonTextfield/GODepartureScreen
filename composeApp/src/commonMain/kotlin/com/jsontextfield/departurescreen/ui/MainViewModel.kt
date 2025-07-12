@@ -71,7 +71,7 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
     fun setHiddenTrains(hiddenTrains: Set<String>) {
         _hiddenTrains.value = hiddenTrains
         _allTrains.value = _allTrains.value.map { train ->
-            train.copy(isVisible = train.code !in hiddenTrains)
+            train.copy(isVisible = train.code in hiddenTrains || hiddenTrains.isEmpty())
         }
     }
 }
