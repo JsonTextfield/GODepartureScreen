@@ -1,8 +1,5 @@
 package com.jsontextfield.departurescreen.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Train
@@ -33,8 +30,6 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
     private var _sortMode: MutableStateFlow<SortMode> = MutableStateFlow(SortMode.TIME)
     val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
 
-    var showFilterDialog by mutableStateOf(false)
-
     private var timerJob: Job? = null
 
     init {
@@ -46,7 +41,7 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
                         setHiddenTrains(_hiddenTrains.value)
                         setSortMode(_sortMode.value)
                         _timeRemaining.value = 20_000
-                    } catch (exception: IOException) {
+                    } catch (_: IOException) {
                         _timeRemaining.value = 1000
                     }
                 }

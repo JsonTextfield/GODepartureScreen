@@ -3,7 +3,6 @@ package com.jsontextfield.departurescreen.ui.menu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
 import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.filter
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
 import org.jetbrains.compose.resources.stringResource
@@ -106,60 +104,6 @@ fun getActions(
             }
         },
     )
-    val filter = Action(
-        icon = Icons.Rounded.FilterList,
-        tooltip = stringResource(Res.string.filter),
-        isVisible = mainViewModel.allTrains.value.isNotEmpty(),
-        onClick = {
-            mainViewModel.showFilterDialog = true
-        }
-    )
 
-    // TODO: Add theme change and about screen
-//    val theme by mainViewModel.theme.collectAsStateWithLifecycle()
-//    val darkMode = Action(
-//        icon = Icons.Rounded.BrightnessMedium,
-//        tooltip = stringResource(Res.string.change_theme),
-//        menuContent = {
-//            var isExpanded by remember { mutableStateOf(it) }
-//            DropdownMenu(
-//                expanded = isExpanded xor it,
-//                onDismissRequest = { isExpanded = !isExpanded },
-//            ) {
-//                ThemeMode.entries.forEach { themeMode ->
-//                    RadioMenuItem(
-//                        title = stringResource(themeMode.key),
-//                        isSelected = theme == themeMode,
-//                        onClick = {
-//                            isExpanded = !isExpanded
-//                            mainViewModel.changeTheme(themeMode)
-//                        },
-//                    )
-//                }
-//            }
-//        },
-//    )
-
-//    var showAboutDialog by remember { mutableStateOf(false) }
-//
-//    if (showAboutDialog) {
-//        AboutDialog(
-//            onLicences = {
-//                //context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
-//            },
-//            onDismiss = { showAboutDialog = false },
-//        )
-//    }
-//
-//    val about = Action(
-//        icon = Icons.Rounded.Info,
-//        tooltip = stringResource(Res.string.about),
-//        onClick = { showAboutDialog = true },
-//    )
-
-    return listOf(
-//        filter,
-        sort,
-//        about,
-    )
+    return listOf(sort)
 }

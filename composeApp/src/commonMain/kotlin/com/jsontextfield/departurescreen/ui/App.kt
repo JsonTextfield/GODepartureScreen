@@ -2,7 +2,9 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -27,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
+fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val allTrains by mainViewModel.allTrains.collectAsState()
     val hiddenTrains by mainViewModel.hiddenTrains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
@@ -36,8 +38,6 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
         hiddenTrains = hiddenTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
-        shouldShowFilterDialog = mainViewModel.showFilterDialog,
-        onDismissFilterDialog = { mainViewModel.showFilterDialog = false },
         onSetHiddenTrains = mainViewModel::setHiddenTrains,
     )
 }
@@ -49,19 +49,9 @@ fun App(
     hiddenTrains: Set<String>,
     timeRemaining: Int,
     actions: List<Action>,
-    shouldShowFilterDialog: Boolean,
-    onDismissFilterDialog: () -> Unit,
     onSetHiddenTrains: (Set<String>) -> Unit,
 ) {
     MyApplicationTheme {
-        if (shouldShowFilterDialog) {
-            FilterTrainDialog(
-                data = allTrains.distinctBy { it.code to it.name },
-                selectedItems = hiddenTrains,
-                onSelectionChanged = onSetHiddenTrains,
-                onDismissRequest = onDismissFilterDialog,
-            )
-        }
         Scaffold(topBar = {
             TopAppBar(
                 title = {
@@ -74,6 +64,7 @@ fun App(
                 },
                 actions = {
                     ActionBar(actions)
+                    Spacer(Modifier.width(8.dp))
                     CountdownTimer(timeRemaining)
                 },
                 modifier = Modifier.shadow(4.dp)

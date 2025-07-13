@@ -39,8 +39,8 @@ fun TrainListItem(
     ) {
         val minutesContentDescription = pluralStringResource(
             Res.plurals.minutes_content_description,
-            train.departureDiffMinutes.toInt(),
-            train.departureDiffMinutes.toInt(),
+            train.departureDiffMinutes,
+            train.departureDiffMinutes,
         )
         Text(
             stringResource(Res.string.minutes, train.departureDiffMinutes),
@@ -73,9 +73,8 @@ fun TrainListItem(
             if (train.isExpress) {
                 Text(
                     stringResource(Res.string.express),
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = MaterialTheme.colorScheme.primary
-                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
         }
@@ -85,16 +84,18 @@ fun TrainListItem(
             modifier = Modifier
                 .weight(.25f)
                 .clearAndSetSemantics {
-                    if (train.hasArrived) {
+                    if (train.hasPlatform) {
                         contentDescription = platform
                     }
                 },
-            style = MaterialTheme.typography.titleMedium.run {
-                copy(
-                    textAlign = TextAlign.Center,
-                    fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
-                    color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
+            textAlign = TextAlign.Center,
+            style = if (train.hasPlatform) {
+                MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
                 )
+            } else {
+                MaterialTheme.typography.titleMedium
             },
         )
     }
