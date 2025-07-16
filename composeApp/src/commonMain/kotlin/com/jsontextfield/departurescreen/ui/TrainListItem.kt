@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
-import departure_screen.composeapp.generated.resources.minutes
+import departure_screen.composeapp.generated.resources.min
 import departure_screen.composeapp.generated.resources.minutes_content_description
 import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
@@ -42,19 +42,28 @@ fun TrainListItem(
             train.departureDiffMinutes,
             train.departureDiffMinutes,
         )
-        Text(
-            stringResource(Res.string.minutes, train.departureDiffMinutes),
-            style = MaterialTheme.typography.labelMedium.copy(
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-            ),
-            maxLines = 2,
+        Column(
             modifier = Modifier
                 .weight(.1f)
                 .semantics {
                     contentDescription = minutesContentDescription
                 },
-        )
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                train.departureDiffMinutes.toString(),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                ),
+                maxLines = 2,
+            )
+            Text(
+                stringResource(Res.string.min),
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
         TrainCodeBox(
             train.code,
             modifier = Modifier
