@@ -14,7 +14,9 @@ import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
-class GoTrainDataSource(private val departureScreenAPI: DepartureScreenAPI) : IGoTrainDataSource {
+class GoTrainDataSource(
+    private val departureScreenAPI: DepartureScreenAPI
+) : IGoTrainDataSource {
     override suspend fun getTrains(): List<Train> = coroutineScope {
         try {
             val nextService = async { departureScreenAPI.getNextService() }.await()

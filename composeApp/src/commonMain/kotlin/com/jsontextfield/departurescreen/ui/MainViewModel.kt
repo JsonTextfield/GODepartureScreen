@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.line
 import departure_screen.composeapp.generated.resources.time
@@ -16,7 +17,10 @@ import kotlinx.coroutines.launch
 import kotlinx.io.IOException
 import org.jetbrains.compose.resources.StringResource
 
-class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewModel() {
+class MainViewModel(
+    private val goTrainDataSource: IGoTrainDataSource,
+    private val preferencesRepository: IPreferencesRepository,
+) : ViewModel() {
 
     private var _allTrains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
     val allTrains: StateFlow<List<Train>> = _allTrains.asStateFlow()
@@ -33,6 +37,10 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
     private var timerJob: Job? = null
 
     init {
+        viewModelScope.launch {
+            _hiddenTrains.value = preferencesRepository.getHiddenTrains() ?: emptySet()
+            _sortMode.value = preferencesRepository.getSortMode() ?: SortMode.TIME
+        }
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
                 if (timeRemaining.value <= 0) {
@@ -61,12 +69,18 @@ class MainViewModel(private val goTrainDataSource: IGoTrainDataSource) : ViewMod
                 SortMode.LINE -> compareBy({ it.code }, { it.destination })
             }
         )
+        viewModelScope.launch {
+            preferencesRepository.setSortMode(mode)
+        }
     }
 
     fun setHiddenTrains(hiddenTrains: Set<String>) {
         _hiddenTrains.value = hiddenTrains
         _allTrains.value = _allTrains.value.map { train ->
             train.copy(isVisible = train.code in hiddenTrains || hiddenTrains.isEmpty())
+        }
+        viewModelScope.launch {
+            preferencesRepository.setHiddenTrains(hiddenTrains)
         }
     }
 }
