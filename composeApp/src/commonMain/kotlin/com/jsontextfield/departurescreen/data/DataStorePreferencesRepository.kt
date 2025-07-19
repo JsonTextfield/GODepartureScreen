@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.map
 class DataStorePreferencesRepository(
     private val dataStore: DataStore<Preferences>?
 ) : IPreferencesRepository {
-    override suspend fun getHiddenTrains(): Set<String>? {
+    override suspend fun getVisibleTrains(): Set<String>? {
         return dataStore?.data?.map { preferences ->
             preferences[stringSetPreferencesKey("hiddenTrains")] ?: emptySet()
         }?.first()
     }
 
-    override suspend fun setHiddenTrains(hiddenTrains: Set<String>) {
+    override suspend fun setVisibleTrains(visibleTrains: Set<String>) {
         dataStore?.edit { preferences ->
-            preferences[stringSetPreferencesKey("hiddenTrains")] = hiddenTrains
+            preferences[stringSetPreferencesKey("hiddenTrains")] = visibleTrains
         }
     }
 

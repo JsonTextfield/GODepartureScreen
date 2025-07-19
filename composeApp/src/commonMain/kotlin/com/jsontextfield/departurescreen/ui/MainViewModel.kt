@@ -38,7 +38,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            _visibleTrains.value = preferencesRepository.getHiddenTrains() ?: emptySet()
+            _visibleTrains.value = preferencesRepository.getVisibleTrains() ?: emptySet()
             _sortMode.value = preferencesRepository.getSortMode() ?: SortMode.TIME
         }
         timerJob = timerJob ?: viewModelScope.launch {
@@ -82,7 +82,7 @@ class MainViewModel(
             train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
         }
         viewModelScope.launch {
-            preferencesRepository.setHiddenTrains(visibleTrains)
+            preferencesRepository.setVisibleTrains(visibleTrains)
         }
     }
 }

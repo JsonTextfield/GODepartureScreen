@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.data.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,14 +35,13 @@ class MainViewModelTest {
 
     @Test
     fun `test sort by time`() = runTest(dispatcher) {
-        val goTrainDataSource = IGoTrainDataSource {
-            List(4) {
-                baseTrain.copy(
-                    departureTime = Instant.fromEpochMilliseconds(10000 - it * 1000L),
-                )
-            }
-        }
-        val viewModel = MainViewModel(goTrainDataSource)
+        val goTrainDataSource = FakeGoTrainDataSource()
+        val preferencesRepository = FakePreferencesRepository()
+
+        val viewModel = MainViewModel(
+            goTrainDataSource,
+            preferencesRepository,
+        )
         advanceUntilIdle()
 
         viewModel.setSortMode(SortMode.TIME)
@@ -64,24 +64,13 @@ class MainViewModelTest {
 
     @Test
     fun `test sort by line`() = runTest(dispatcher) {
-        val goTrainDataSource = IGoTrainDataSource {
-            listOf(
-                baseTrain.copy(
-                    code = "NY",
-                    destination = "Don Mills",
-                ),
-                baseTrain.copy(
-                    code = "AG",
-                    destination = "Scarborough",
-                ),
-                baseTrain.copy(
-                    code = "NY",
-                    destination = "North York",
-                ),
-            )
-        }
+        val goTrainDataSource = FakeGoTrainDataSource()
+        val preferencesRepository = FakePreferencesRepository()
 
-        val viewModel = MainViewModel(goTrainDataSource)
+        val viewModel = MainViewModel(
+            goTrainDataSource,
+            preferencesRepository,
+        )
         advanceUntilIdle()
 
         viewModel.setSortMode(SortMode.LINE)
