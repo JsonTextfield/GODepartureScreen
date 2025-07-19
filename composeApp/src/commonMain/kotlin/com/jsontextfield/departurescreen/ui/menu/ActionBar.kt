@@ -84,7 +84,7 @@ fun getActions(
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
-        isVisible = mainViewModel.allTrains.value.isNotEmpty(),
+        isVisible = mainViewModel.uiState.value.allTrains.isNotEmpty(),
         menuContent = {
             var isExpanded by remember { mutableStateOf(it) }
             DropdownMenu(
@@ -94,7 +94,7 @@ fun getActions(
                 SortMode.entries.forEach { sortMode ->
                     RadioMenuItem(
                         title = stringResource(sortMode.key),
-                        isSelected = mainViewModel.sortMode.value == sortMode,
+                        isSelected = mainViewModel.uiState.value.sortMode == sortMode,
                         onClick = {
                             isExpanded = !isExpanded
                             mainViewModel.setSortMode(sortMode)

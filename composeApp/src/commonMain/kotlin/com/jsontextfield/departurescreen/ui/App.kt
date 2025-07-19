@@ -30,12 +30,13 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel()) {
-    val allTrains by mainViewModel.allTrains.collectAsState()
-    val hiddenTrains by mainViewModel.visibleTrains.collectAsState()
+    val uiState by mainViewModel.uiState.collectAsState()
+    val allTrains = uiState.allTrains
+    val visibleTrains = uiState.visibleTrains
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
     App(
         allTrains = allTrains,
-        visibleTrains = hiddenTrains,
+        visibleTrains = visibleTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
