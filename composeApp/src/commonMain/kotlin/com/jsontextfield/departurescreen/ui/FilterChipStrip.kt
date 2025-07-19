@@ -48,7 +48,7 @@ fun FilterChipStrip(
     ) {
         item {
             FilterChip(
-                selected = selectedItems.isEmpty(),
+                selected = selectedItems.isEmpty() || data.isEmpty(),
                 onClick = {
                     onSelectionChanged(emptySet())
                 },

@@ -31,14 +31,14 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val allTrains by mainViewModel.allTrains.collectAsState()
-    val hiddenTrains by mainViewModel.hiddenTrains.collectAsState()
+    val hiddenTrains by mainViewModel.visibleTrains.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
     App(
         allTrains = allTrains,
-        hiddenTrains = hiddenTrains,
+        visibleTrains = hiddenTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
-        onSetHiddenTrains = mainViewModel::setHiddenTrains,
+        onSetVisibleTrains = mainViewModel::setVisibleTrains,
     )
 }
 
@@ -46,10 +46,10 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
 @Composable
 fun App(
     allTrains: List<Train>,
-    hiddenTrains: Set<String>,
+    visibleTrains: Set<String>,
     timeRemaining: Int,
     actions: List<Action>,
-    onSetHiddenTrains: (Set<String>) -> Unit,
+    onSetVisibleTrains: (Set<String>) -> Unit,
 ) {
     MyApplicationTheme {
         Scaffold(topBar = {
@@ -73,8 +73,8 @@ fun App(
             Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
                 FilterChipStrip(
                     data = allTrains.distinctBy { it.code to it.name }.sortedBy { it.code },
-                    selectedItems = hiddenTrains,
-                    onSelectionChanged = onSetHiddenTrains
+                    selectedItems = visibleTrains,
+                    onSelectionChanged = onSetVisibleTrains
                 )
                 Surface {
                     TrainList(trains = allTrains.filter { it.isVisible })

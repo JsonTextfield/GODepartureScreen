@@ -27,7 +27,7 @@ private val sampleTrains = List(11) {
 fun AppPreview() {
     App(
         allTrains = sampleTrains,
-        hiddenTrains = emptySet(),
+        visibleTrains = emptySet(),
         timeRemaining = 16000,
         actions = listOf(
             Action(
@@ -35,6 +35,6 @@ fun AppPreview() {
                 tooltip = "Sort",
             ),
         ),
-        onSetHiddenTrains = {},
+        onSetVisibleTrains = {},
     )
 }

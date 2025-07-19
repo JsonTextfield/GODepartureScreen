@@ -25,8 +25,8 @@ class MainViewModel(
     private var _allTrains: MutableStateFlow<List<Train>> = MutableStateFlow(emptyList())
     val allTrains: StateFlow<List<Train>> = _allTrains.asStateFlow()
 
-    private var _hiddenTrains: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
-    val hiddenTrains: StateFlow<Set<String>> = _hiddenTrains.asStateFlow()
+    private var _visibleTrains: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    val visibleTrains: StateFlow<Set<String>> = _visibleTrains.asStateFlow()
 
     private var _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
@@ -38,7 +38,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            _hiddenTrains.value = preferencesRepository.getHiddenTrains() ?: emptySet()
+            _visibleTrains.value = preferencesRepository.getHiddenTrains() ?: emptySet()
             _sortMode.value = preferencesRepository.getSortMode() ?: SortMode.TIME
         }
         timerJob = timerJob ?: viewModelScope.launch {
@@ -46,14 +46,13 @@ class MainViewModel(
                 if (timeRemaining.value <= 0) {
                     try {
                         _allTrains.value = goTrainDataSource.getTrains()
-                        setHiddenTrains(_hiddenTrains.value)
+                        setVisibleTrains(_visibleTrains.value)
                         setSortMode(_sortMode.value)
                         _timeRemaining.value = 20_000
                     } catch (_: IOException) {
                         _timeRemaining.value = 1000
                     }
-                }
-                else {
+                } else {
                     delay(1000)
                     _timeRemaining.value -= 1000
                 }
@@ -74,15 +73,21 @@ class MainViewModel(
         }
     }
 
-    fun setHiddenTrains(hiddenTrains: Set<String>) {
-        _hiddenTrains.value = hiddenTrains
+    fun setVisibleTrains(visibleTrains: Set<String>) {
+        // Ensure that the visible trains are a subset of all trains
+        val trainCodes = _allTrains.value.map { it.code }.toSet()
+        _visibleTrains.value = trainCodes.intersect(visibleTrains)
+
         _allTrains.value = _allTrains.value.map { train ->
-            train.copy(isVisible = train.code in hiddenTrains || hiddenTrains.isEmpty())
+            train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
         }
         viewModelScope.launch {
-            preferencesRepository.setHiddenTrains(hiddenTrains)
+            preferencesRepository.setHiddenTrains(visibleTrains)
         }
     }
 }
 
-enum class SortMode(val key: StringResource) { TIME(Res.string.time), LINE(Res.string.line) }
+enum class SortMode(val key: StringResource) {
+    TIME(Res.string.time),
+    LINE(Res.string.line),
+}
