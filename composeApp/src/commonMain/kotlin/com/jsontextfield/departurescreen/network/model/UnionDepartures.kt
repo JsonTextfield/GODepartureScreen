@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class UnionDeparturesResponse(
     @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("AllDepartures") val unionDepartures: UnionDepartures,
+    @JsonNames("AllDepartures") val unionDepartures: UnionDepartures? = null,
 ) {
     @Serializable
     data class UnionDepartures(

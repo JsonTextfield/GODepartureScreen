@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class NextServiceResponse(
     @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("NextService") val nextService: NextService,
+    @JsonNames("NextService") val nextService: NextService? = null,
 ) {
     @Serializable
     data class NextService(
