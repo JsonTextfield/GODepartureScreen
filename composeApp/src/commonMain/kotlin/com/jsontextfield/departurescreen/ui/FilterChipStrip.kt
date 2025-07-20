@@ -2,7 +2,10 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +23,7 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
@@ -43,7 +47,10 @@ fun FilterChipStrip(
                 columnCount = data.size + 1,
             )
         },
-        contentPadding = PaddingValues(horizontal = 16.dp),
+        contentPadding = PaddingValues(
+            start = WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(LayoutDirection.Ltr) + 16.dp,
+            end = WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr) + 16.dp,
+        ),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {

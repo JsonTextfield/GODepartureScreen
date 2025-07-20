@@ -44,7 +44,7 @@ fun TrainList(
         },
         contentPadding = PaddingValues(
             top = 16.dp,
-            bottom = 100.dp,
+            bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding() + 100.dp,
         )
     ) {
         itemsIndexed(trains, key = { _, train -> train.id }) { index, train ->
