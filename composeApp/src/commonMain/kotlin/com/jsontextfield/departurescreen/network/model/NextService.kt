@@ -12,18 +12,18 @@ data class NextServiceResponse(
 ) {
     @Serializable
     data class NextService(
-        @JsonNames("Lines") val lines: List<Line>
+        @JsonNames("Lines") val lines: List<Line> = emptyList(),
     ) {
         @Serializable
         data class Line(
-            @JsonNames("StopCode") val stopCode: String,
-            @JsonNames("LineCode") val lineCode: String,
-            @JsonNames("LineName") val lineName: String,
-            @JsonNames("DirectionName") val directionName: String,
-            @JsonNames("DepartureStatus") val departureStatus: String,
-            @JsonNames("TripOrder") val tripOrder: Int,
-            @JsonNames("TripNumber") val tripNumber: String,
-            @JsonNames("Status") val status: String,
+            @JsonNames("StopCode") val stopCode: String = "",
+            @JsonNames("LineCode") val lineCode: String = "",
+            @JsonNames("LineName") val lineName: String = "",
+            @JsonNames("DirectionName") val directionName: String = "",
+            @JsonNames("DepartureStatus") val departureStatus: String = "",
+            @JsonNames("TripOrder") val tripOrder: Int = -1,
+            @JsonNames("TripNumber") val tripNumber: String = "",
+            @JsonNames("Status") val status: String = "",
         )
     }
 }

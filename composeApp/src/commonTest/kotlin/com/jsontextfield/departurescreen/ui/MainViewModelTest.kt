@@ -156,4 +156,30 @@ class MainViewModelTest {
         assertEquals(emptySet(), result)
         assertEquals(true, "LE" !in result)
     }
+
+    @Test
+    fun `test set visible trains when trains have not yet departed`() = runTest(dispatcher) {
+        val goTrainDataSource = FakeGoTrainDataSource()
+        goTrainDataSource.trains = listOf(
+            baseTrain.copy(
+                code = "LW",
+            ),
+            baseTrain.copy(
+                code = "BR",
+            )
+        )
+
+        val preferencesRepository = FakePreferencesRepository()
+        preferencesRepository.setVisibleTrains(setOf("LW"))
+
+        val mainViewModel = MainViewModel(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+        mainViewModel.stop()
+
+        val result = mainViewModel.uiState.value.visibleTrains
+
+        assertEquals(true, "LW" in result)
+    }
 }

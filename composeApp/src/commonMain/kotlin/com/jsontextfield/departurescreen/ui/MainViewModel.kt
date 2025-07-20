@@ -26,7 +26,7 @@ class MainViewModel(
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState())
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
-    private var _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
 
     private var timerJob: Job? = null
@@ -77,7 +77,6 @@ class MainViewModel(
                     ),
                 )
             }
-            println(uiState.value)
         }
     }
 

@@ -42,7 +42,7 @@ val networkModule = module {
                 level = LogLevel.HEADERS
             }
             defaultRequest {
-                url("https://api.openmetrolinx.com/OpenDataAPI/")
+                url("https://api.openmetrolinx.com/OpenDataAPI/api/V1/")
             }
         }
     }

@@ -14,7 +14,7 @@ class DepartureScreenAPI(private val client: HttpClient) {
     suspend fun getNextService(): NextServiceResponse {
         return client.get {
             url {
-                path("api/V1/Stop/NextService/UN")
+                path("Stop/NextService/UN")
                 parameter("key", API_KEY)
             }
         }.body()
@@ -23,7 +23,7 @@ class DepartureScreenAPI(private val client: HttpClient) {
     suspend fun getUnionDepartures(): UnionDeparturesResponse {
         return client.get {
             url {
-                path("api/V1/ServiceUpdate/UnionDepartures/All")
+                path("ServiceUpdate/UnionDepartures/All")
                 parameter("key", API_KEY)
             }
         }.body()
