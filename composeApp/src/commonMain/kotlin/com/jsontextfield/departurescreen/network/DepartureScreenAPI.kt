@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.network
 
+import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
@@ -24,6 +25,24 @@ class DepartureScreenAPI(private val client: HttpClient) {
         return client.get {
             url {
                 path("ServiceUpdate/UnionDepartures/All")
+                parameter("key", API_KEY)
+            }
+        }.body()
+    }
+
+    suspend fun getServiceAlerts(): Alerts {
+        return client.get {
+            url {
+                path("ServiceUpdate/ServiceAlert/All")
+                parameter("key", API_KEY)
+            }
+        }.body()
+    }
+
+    suspend fun getInfromationAlerts(): Alerts {
+        return client.get {
+            url {
+                path("ServiceUpdate/InformationAlert/All")
                 parameter("key", API_KEY)
             }
         }.body()

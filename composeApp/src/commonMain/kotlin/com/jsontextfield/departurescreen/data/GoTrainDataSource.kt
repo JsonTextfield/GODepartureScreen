@@ -1,8 +1,10 @@
 package com.jsontextfield.departurescreen.data
 
 import androidx.compose.ui.graphics.Color
+import com.jsontextfield.departurescreen.Alert
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.ui.theme.trainColours
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -50,6 +52,33 @@ class GoTrainDataSource(
             emptyList()
         }
     }
+
+    override suspend fun getServiceAlerts(): List<Alert> = processAlerts(departureScreenAPI.getServiceAlerts())
+
+    override suspend fun getInformationAlerts(): List<Alert> = processAlerts(departureScreenAPI.getInfromationAlerts())
+
+    private fun processAlerts(alerts: Alerts): List<Alert> {
+        return try {
+            alerts.messages?.message?.filter { message ->
+                message.stops.any { it.code == "UN" } && message.lines.all { it.code != "UP" }
+            }?.map { message ->
+                Alert(
+                    id = message.code,
+                    date = Instant.parse(message.postedDateTime, inFormatter),
+                    subjectEn = message.subjectEnglish.orEmpty(),
+                    subjectFr = message.subjectFrench.orEmpty(),
+                    bodyEn = message.bodyEnglish.orEmpty(),
+                    bodyFr = message.bodyFrench.orEmpty(),
+                )
+            } ?: emptyList()
+        } catch (exception: IOException) {
+            throw exception
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            emptyList()
+        }
+    }
+
 
     companion object {
         @OptIn(FormatStringsInDatetimeFormats::class)

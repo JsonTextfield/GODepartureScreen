@@ -1,5 +1,8 @@
 package com.jsontextfield.departurescreen.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -42,11 +45,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
     }
     App(
         isDarkTheme = isDarkTheme,
+        showAlerts = mainViewModel.showAlerts,
         allTrains = allTrains,
         visibleTrains = visibleTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
+        onBackPressed = mainViewModel::showAlertsScreen
     )
 }
 
@@ -54,11 +59,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
 @Composable
 fun App(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
+    showAlerts: Boolean = false,
     allTrains: List<Train>,
     visibleTrains: Set<String>,
     timeRemaining: Int,
     actions: List<Action>,
     onSetVisibleTrains: (Set<String>) -> Unit,
+    onBackPressed: () -> Unit = {},
 ) {
     MyApplicationTheme(darkTheme = isDarkTheme) {
         Scaffold(
@@ -103,6 +110,13 @@ fun App(
                     TrainList(trains = allTrains.filter { it.isVisible })
                 }
             }
+        }
+        AnimatedVisibility(
+            visible = showAlerts,
+            enter = slideInHorizontally { it },
+            exit = slideOutHorizontally { it },
+        ) {
+            AlertScreen(onBackPressed = onBackPressed)
         }
     }
 }

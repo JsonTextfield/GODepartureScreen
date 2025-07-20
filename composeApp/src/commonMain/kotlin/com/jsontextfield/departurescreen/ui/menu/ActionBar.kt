@@ -3,8 +3,8 @@ package com.jsontextfield.departurescreen.ui.menu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,8 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
-import com.jsontextfield.departurescreen.ui.ThemeMode
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
 import org.jetbrains.compose.resources.stringResource
@@ -121,5 +121,14 @@ fun getActions(
 //        },
 //    )
 
-    return listOf(sort)
+    val alerts = Action(
+        icon = Icons.Rounded.Notifications,
+        tooltip = stringResource(Res.string.alerts),
+        isVisible = true,
+        onClick = {
+            mainViewModel.showAlertsScreen()
+        },
+    )
+
+    return listOf(sort, alerts)
 }

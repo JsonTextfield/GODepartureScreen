@@ -1,5 +1,8 @@
 package com.jsontextfield.departurescreen.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Train
@@ -31,6 +34,8 @@ class MainViewModel(
 
     private val _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
+
+    var showAlerts by mutableStateOf(false)
 
     private var timerJob: Job? = null
 
@@ -109,6 +114,10 @@ class MainViewModel(
                 )
             }
         }
+    }
+
+    fun showAlertsScreen() {
+        showAlerts = !showAlerts
     }
 
     fun stop() {

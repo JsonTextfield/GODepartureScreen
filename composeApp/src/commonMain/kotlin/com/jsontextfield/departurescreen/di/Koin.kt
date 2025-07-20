@@ -8,6 +8,7 @@ import com.jsontextfield.departurescreen.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.ui.AlertViewModel
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -51,7 +52,7 @@ val networkModule = module {
 val dataModule = module {
     single<DepartureScreenAPI> { DepartureScreenAPI(get<HttpClient>()) }
     single<IGoTrainDataSource> {
-        //FakeGoTrainDataSource()
+//        FakeGoTrainDataSource()
         GoTrainDataSource(get<DepartureScreenAPI>())
     }
     single<IPreferencesRepository> {
@@ -63,6 +64,7 @@ expect fun dataStoreModule(): Module
 
 val viewModelModule = module {
     factoryOf(::MainViewModel)
+    factoryOf(::AlertViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
