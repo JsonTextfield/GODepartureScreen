@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
@@ -23,7 +25,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
-import com.jsontextfield.departurescreen.getScreenWidth
 import kotlin.math.ceil
 
 @Composable
@@ -31,7 +32,8 @@ fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
 ) {
-    val columns = (getScreenWidth() / 300).coerceIn(1, 4)
+    val widthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density).toInt()
+    val columns = (widthDp / 300).coerceIn(1, 4)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {
