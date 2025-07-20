@@ -97,29 +97,29 @@ fun getActions(
         },
     )
 
-    val theme = Action(
-        icon = Icons.Rounded.BrightnessMedium,
-        tooltip = "Theme",
-        isVisible = true,
-        menuContent = {
-            var isExpanded by remember { mutableStateOf(it) }
-            DropdownMenu(
-                expanded = isExpanded xor it,
-                onDismissRequest = { isExpanded = !isExpanded },
-            ) {
-                ThemeMode.entries.forEach { themeMode ->
-                    RadioMenuItem(
-                        title = stringResource(themeMode.key),
-                        isSelected = mainViewModel.uiState.value.theme == themeMode,
-                        onClick = {
-                            isExpanded = !isExpanded
-                            mainViewModel.setTheme(themeMode)
-                        },
-                    )
-                }
-            }
-        },
-    )
+//    val theme = Action(
+//        icon = Icons.Rounded.BrightnessMedium,
+//        tooltip = "Theme",
+//        isVisible = true,
+//        menuContent = {
+//            var isExpanded by remember { mutableStateOf(it) }
+//            DropdownMenu(
+//                expanded = isExpanded xor it,
+//                onDismissRequest = { isExpanded = !isExpanded },
+//            ) {
+//                ThemeMode.entries.forEach { themeMode ->
+//                    RadioMenuItem(
+//                        title = stringResource(themeMode.key),
+//                        isSelected = mainViewModel.uiState.value.theme == themeMode,
+//                        onClick = {
+//                            isExpanded = !isExpanded
+//                            mainViewModel.setTheme(themeMode)
+//                        },
+//                    )
+//                }
+//            }
+//        },
+//    )
 
-    return listOf(sort, theme)
+    return listOf(sort)
 }

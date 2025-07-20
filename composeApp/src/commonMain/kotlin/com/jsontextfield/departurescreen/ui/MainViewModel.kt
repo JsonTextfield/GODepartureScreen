@@ -40,7 +40,7 @@ class MainViewModel(
                 it.copy(
                     visibleTrains = preferencesRepository.getVisibleTrains() ?: emptySet(),
                     sortMode = preferencesRepository.getSortMode() ?: SortMode.TIME,
-                    theme = preferencesRepository.getTheme() ?: ThemeMode.DEFAULT,
+                    //theme = preferencesRepository.getTheme() ?: ThemeMode.DEFAULT,
                 )
             }
             timerJob = timerJob ?: viewModelScope.launch {
