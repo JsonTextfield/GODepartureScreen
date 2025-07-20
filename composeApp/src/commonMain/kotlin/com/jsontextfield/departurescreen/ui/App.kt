@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,27 +37,23 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val allTrains = uiState.allTrains
     val visibleTrains = uiState.visibleTrains
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
-    val isDarkTheme = when (uiState.theme) {
-        ThemeMode.DEFAULT -> isSystemInDarkTheme()
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-    }
+
     App(
-        isDarkTheme = isDarkTheme,
+        themeMode = uiState.theme,
         showAlerts = mainViewModel.showAlerts,
         allTrains = allTrains,
         visibleTrains = visibleTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
-        onBackPressed = mainViewModel::showAlertsScreen
+        onBackPressed = mainViewModel::showAlertsScreen,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.DEFAULT,
     showAlerts: Boolean = false,
     allTrains: List<Train>,
     visibleTrains: Set<String>,
@@ -67,7 +62,7 @@ fun App(
     onSetVisibleTrains: (Set<String>) -> Unit,
     onBackPressed: () -> Unit = {},
 ) {
-    MyApplicationTheme(darkTheme = isDarkTheme) {
+    MyApplicationTheme(theme = themeMode) {
         Scaffold(
             topBar = {
                 TopAppBar(

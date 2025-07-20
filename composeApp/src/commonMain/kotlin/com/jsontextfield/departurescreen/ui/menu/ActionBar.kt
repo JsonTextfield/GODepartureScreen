@@ -130,5 +130,14 @@ fun getActions(
         },
     )
 
-    return listOf(sort, alerts)
+    val alerts = Action(
+        icon = Icons.Rounded.Notifications,
+        tooltip = stringResource(Res.string.alerts),
+        isVisible = true,
+        onClick = {
+            mainViewModel.showAlertsScreen()
+        },
+    )
+
+    return listOf(sort, alerts, theme)
 }

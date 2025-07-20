@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
@@ -60,7 +61,8 @@ fun AlertScreen(onBackPressed: () -> Unit = {}) {
                             contentDescription = "Back"
                         )
                     }
-                }
+                },
+                modifier = Modifier.shadow(4.dp)
             )
         },
     ) { innerPadding ->
