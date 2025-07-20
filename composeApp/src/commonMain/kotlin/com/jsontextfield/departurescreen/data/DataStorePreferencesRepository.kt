@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.jsontextfield.departurescreen.ui.SortMode
+import com.jsontextfield.departurescreen.ui.ThemeMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -26,8 +27,7 @@ class DataStorePreferencesRepository(
 
     override suspend fun getSortMode(): SortMode? {
         return dataStore?.data?.map { preferences ->
-            val sortModeOrdinal = preferences[intPreferencesKey("sortMode")] ?: SortMode.TIME
-            SortMode.entries.firstOrNull { sortModeOrdinal == it.ordinal } ?: SortMode.TIME
+            SortMode.entries.firstOrNull { preferences[intPreferencesKey("sortMode")] == it.ordinal }
         }?.first()
     }
 
@@ -35,5 +35,18 @@ class DataStorePreferencesRepository(
         dataStore?.edit { preferences ->
             preferences[intPreferencesKey("sortMode")] = sortMode.ordinal
         }
+    }
+
+    override suspend fun setTheme(theme: ThemeMode) {
+        dataStore?.edit { preferences ->
+            val key = intPreferencesKey("theme")
+            preferences[key] = theme.ordinal
+        }
+    }
+
+    override suspend fun getTheme(): ThemeMode? {
+        return dataStore?.data?.map { preferences ->
+            ThemeMode.entries.firstOrNull { preferences[intPreferencesKey("theme")] == it.ordinal }
+        }?.first()
     }
 }

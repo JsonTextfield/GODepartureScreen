@@ -6,7 +6,10 @@ import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.dark_mode
+import departure_screen.composeapp.generated.resources.light_mode
 import departure_screen.composeapp.generated.resources.line
+import departure_screen.composeapp.generated.resources.system_default
 import departure_screen.composeapp.generated.resources.time
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,7 +39,8 @@ class MainViewModel(
             _uiState.update {
                 it.copy(
                     visibleTrains = preferencesRepository.getVisibleTrains() ?: emptySet(),
-                    sortMode = preferencesRepository.getSortMode() ?: SortMode.TIME
+                    sortMode = preferencesRepository.getSortMode() ?: SortMode.TIME,
+                    theme = preferencesRepository.getTheme() ?: ThemeMode.DEFAULT,
                 )
             }
             timerJob = timerJob ?: viewModelScope.launch {
@@ -59,6 +63,17 @@ class MainViewModel(
                         _timeRemaining.value -= 1000
                     }
                 }
+            }
+        }
+    }
+
+    fun setTheme(theme: ThemeMode) {
+        viewModelScope.launch {
+            preferencesRepository.setTheme(theme)
+            _uiState.update {
+                it.copy(
+                    theme = theme,
+                )
             }
         }
     }
@@ -112,8 +127,15 @@ enum class SortMode(val key: StringResource) {
     LINE(Res.string.line),
 }
 
+enum class ThemeMode(val key: StringResource) {
+    LIGHT(Res.string.light_mode),
+    DARK(Res.string.dark_mode),
+    DEFAULT(Res.string.system_default),
+}
+
 data class UIState(
     val allTrains: List<Train> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
+    val theme: ThemeMode = ThemeMode.DEFAULT,
 )

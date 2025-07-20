@@ -17,6 +17,9 @@
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">All</string>
+    <string name="light_mode">Light</string>
+    <string name="dark_mode">Dark</string>
+    <string name="system_default">Default</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

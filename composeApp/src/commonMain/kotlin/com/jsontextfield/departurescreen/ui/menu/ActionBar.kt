@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.ui.menu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -10,9 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.jsontextfield.departurescreen.getScreenWidth
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
+import com.jsontextfield.departurescreen.ui.ThemeMode
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
@@ -20,18 +21,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ActionBar(
-    actions: List<Action> = emptyList(),
+    maxActions: Int,
+    actions: List<Action>,
 ) {
-    val screenWidthDp = getScreenWidth()
-    val maxActions = when {
-        screenWidthDp < 400 -> screenWidthDp / 4 / 48
-        screenWidthDp < 600 -> screenWidthDp / 3 / 48
-        screenWidthDp < 800 -> screenWidthDp / 2 / 48
-        else -> screenWidthDp * 2 / 3 / 48
-    }
-
     val visibleActions = actions.filter { it.isVisible }
-
     val displayActions = visibleActions.take(maxActions)
     displayActions.forEach { action ->
         var showMenu by remember { mutableStateOf(false) }
@@ -47,8 +40,7 @@ fun ActionBar(
             onClick = {
                 if (action.menuContent != null) {
                     showMenu = !showMenu
-                }
-                else {
+                } else {
                     action.onClick()
                 }
             }
@@ -105,5 +97,29 @@ fun getActions(
         },
     )
 
-    return listOf(sort)
+    val theme = Action(
+        icon = Icons.Rounded.BrightnessMedium,
+        tooltip = "Theme",
+        isVisible = true,
+        menuContent = {
+            var isExpanded by remember { mutableStateOf(it) }
+            DropdownMenu(
+                expanded = isExpanded xor it,
+                onDismissRequest = { isExpanded = !isExpanded },
+            ) {
+                ThemeMode.entries.forEach { themeMode ->
+                    RadioMenuItem(
+                        title = stringResource(themeMode.key),
+                        isSelected = mainViewModel.uiState.value.theme == themeMode,
+                        onClick = {
+                            isExpanded = !isExpanded
+                            mainViewModel.setTheme(themeMode)
+                        },
+                    )
+                }
+            }
+        },
+    )
+
+    return listOf(sort, theme)
 }
