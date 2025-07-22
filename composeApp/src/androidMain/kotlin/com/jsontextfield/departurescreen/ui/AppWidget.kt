@@ -30,6 +30,7 @@ import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.ui.theme.trainColours
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
+import departure_screen.composeapp.generated.resources.minutes
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 
@@ -72,7 +73,7 @@ class MyAppWidget : GlanceAppWidget() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        train.departureTimeString,
+                        stringResource(Res.string.minutes, train.departureDiffMinutes),
                         style = TextStyle(
                             fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         ),

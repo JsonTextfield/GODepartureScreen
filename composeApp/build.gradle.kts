@@ -87,6 +87,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
 
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -108,8 +111,8 @@ android {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
         targetSdk = 35
-        versionCode = 16
-        versionName = "1.4.3"
+        versionCode = 22
+        versionName = "1.5.2"
     }
     packaging {
         resources {

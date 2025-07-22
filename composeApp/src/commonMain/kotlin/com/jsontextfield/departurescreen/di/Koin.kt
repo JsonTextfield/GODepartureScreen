@@ -1,8 +1,14 @@
 package com.jsontextfield.departurescreen.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import com.jsontextfield.departurescreen.data.DataStorePreferencesRepository
 import com.jsontextfield.departurescreen.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.ui.AlertViewModel
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -13,8 +19,11 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val networkModule = module {
@@ -34,7 +43,7 @@ val networkModule = module {
                 level = LogLevel.HEADERS
             }
             defaultRequest {
-                url("https://api.openmetrolinx.com/OpenDataAPI/")
+                url("https://api.openmetrolinx.com/OpenDataAPI/api/V1/")
             }
         }
     }
@@ -43,21 +52,36 @@ val networkModule = module {
 val dataModule = module {
     single<DepartureScreenAPI> { DepartureScreenAPI(get<HttpClient>()) }
     single<IGoTrainDataSource> {
-        //FakeGoTrainDataSource()
+//        FakeGoTrainDataSource()
         GoTrainDataSource(get<DepartureScreenAPI>())
+    }
+    single<IPreferencesRepository> {
+        DataStorePreferencesRepository(get())
     }
 }
 
+expect fun dataStoreModule(): Module
+
 val viewModelModule = module {
     factoryOf(::MainViewModel)
+    factoryOf(::AlertViewModel)
 }
 
-fun initKoin() {
+fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
+        config?.invoke(this)
         modules(
             networkModule,
             dataModule,
             viewModelModule,
+            dataStoreModule(),
         )
     }
 }
+
+fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath(
+        produceFile = { producePath().toPath() }
+    )
+
+internal const val dataStoreFileName = "union_departures.preferences_pb"

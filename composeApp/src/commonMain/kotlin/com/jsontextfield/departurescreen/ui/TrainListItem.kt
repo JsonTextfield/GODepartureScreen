@@ -21,7 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.express
+import departure_screen.composeapp.generated.resources.min
+import departure_screen.composeapp.generated.resources.minutes_content_description
 import departure_screen.composeapp.generated.resources.platform
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -34,10 +37,33 @@ fun TrainListItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            train.departureTimeString,
-            style = MaterialTheme.typography.labelMedium,
+        val minutesContentDescription = pluralStringResource(
+            Res.plurals.minutes_content_description,
+            train.departureDiffMinutes,
+            train.departureDiffMinutes,
         )
+        Column(
+            modifier = Modifier
+                .weight(.1f)
+                .semantics {
+                    contentDescription = minutesContentDescription
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                train.departureDiffMinutes.toString(),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                ),
+                maxLines = 2,
+            )
+            Text(
+                stringResource(Res.string.min),
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
         TrainCodeBox(
             train.code,
             modifier = Modifier
@@ -56,9 +82,8 @@ fun TrainListItem(
             if (train.isExpress) {
                 Text(
                     stringResource(Res.string.express),
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = MaterialTheme.colorScheme.primary
-                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
         }
@@ -66,18 +91,20 @@ fun TrainListItem(
         Text(
             train.platform,
             modifier = Modifier
-                .weight(.2f)
+                .weight(.25f)
                 .clearAndSetSemantics {
-                    if (train.hasArrived) {
+                    if (train.hasPlatform) {
                         contentDescription = platform
                     }
                 },
-            style = MaterialTheme.typography.titleMedium.run {
-                copy(
-                    textAlign = TextAlign.Center,
-                    fontWeight = if (train.hasArrived) FontWeight.Bold else fontWeight,
-                    color = if (train.hasArrived) MaterialTheme.colorScheme.primary else color
+            textAlign = TextAlign.Center,
+            style = if (train.hasPlatform) {
+                MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
                 )
+            } else {
+                MaterialTheme.typography.titleMedium
             },
         )
     }

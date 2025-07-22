@@ -20,6 +20,9 @@ val trainColours = mapOf(
     "Kitchener" to kitchener
 )
 
+val Color.Companion.Orange: Color
+    get() = Color(0xFFF57F25)
+
 val primaryLight = Color(0xFF3F6837)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFBFF0B1)
