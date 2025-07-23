@@ -21,4 +21,12 @@ class FakePreferencesRepository : IPreferencesRepository {
     override suspend fun setSortMode(sortMode: SortMode) {
         this.sortMode = sortMode
     }
+
+    override suspend fun getTheme(): ThemeMode? {
+        return ThemeMode.DEFAULT
+    }
+
+    override suspend fun setTheme(theme: ThemeMode) {
+
+    }
 }

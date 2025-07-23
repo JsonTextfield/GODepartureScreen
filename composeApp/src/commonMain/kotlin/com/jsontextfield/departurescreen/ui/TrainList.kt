@@ -32,7 +32,8 @@ fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
 ) {
-    val widthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density).toInt()
+    val widthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
+        LayoutDirection.Ltr).value - WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr).value).toInt()
     val columns = (widthDp / 300).coerceIn(1, 4)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
