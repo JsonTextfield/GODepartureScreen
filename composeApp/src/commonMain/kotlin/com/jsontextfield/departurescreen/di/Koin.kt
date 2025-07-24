@@ -3,10 +3,8 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.data.DataStorePreferencesRepository
 import com.jsontextfield.departurescreen.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.ui.AlertViewModel
 import com.jsontextfield.departurescreen.ui.MainViewModel
@@ -55,12 +53,9 @@ val dataModule = module {
 //        FakeGoTrainDataSource()
         GoTrainDataSource(get<DepartureScreenAPI>())
     }
-    single<IPreferencesRepository> {
-        DataStorePreferencesRepository(get())
-    }
 }
 
-expect fun dataStoreModule(): Module
+expect fun preferencesModule(): Module
 
 val viewModelModule = module {
     factoryOf(::MainViewModel)
@@ -74,7 +69,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             networkModule,
             dataModule,
             viewModelModule,
-            dataStoreModule(),
+            preferencesModule(),
         )
     }
 }
