@@ -9,7 +9,7 @@ fun main() = application {
     initKoin()
     Window(
         onCloseRequest = ::exitApplication,
-        title = "KotlinProject",
+        title = "Union GO Departures",
     ) {
         App()
     }

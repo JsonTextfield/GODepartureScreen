@@ -6,8 +6,6 @@ import com.jsontextfield.departurescreen.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.http.path
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -21,20 +19,10 @@ class DepartureScreenAPI(private val client: HttpClient) {
     }
 
     suspend fun getServiceAlerts(): Alerts {
-        return client.get {
-            url {
-                path("ServiceUpdate/ServiceAlert/All")
-                parameter("key", API_KEY)
-            }
-        }.body()
+        return client.get("ServiceUpdate/ServiceAlert/All").body()
     }
 
     suspend fun getInfromationAlerts(): Alerts {
-        return client.get {
-            url {
-                path("ServiceUpdate/InformationAlert/All")
-                parameter("key", API_KEY)
-            }
-        }.body()
+        return client.get("ServiceUpdate/InformationAlert/All").body()
     }
 }
