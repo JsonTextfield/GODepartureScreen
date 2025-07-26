@@ -182,4 +182,24 @@ class MainViewModelTest {
 
         assertEquals(true, "LW" in result)
     }
+
+    @Test
+    fun `test setTheme`() = runTest {
+        val goTrainDataSource = FakeGoTrainDataSource()
+        val preferencesRepository = FakePreferencesRepository()
+        preferencesRepository.setTheme(ThemeMode.DARK)
+
+        val mainViewModel = MainViewModel(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+        mainViewModel.stop()
+
+        val result = mainViewModel.uiState.value.theme
+        assertEquals(ThemeMode.DARK, result)
+
+        mainViewModel.setTheme(ThemeMode.LIGHT)
+        advanceUntilIdle()
+        assertEquals(ThemeMode.LIGHT, mainViewModel.uiState.value.theme)
+    }
 }

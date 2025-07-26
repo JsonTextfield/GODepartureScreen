@@ -4,7 +4,9 @@ import com.jsontextfield.departurescreen.data.IPreferencesRepository
 
 class FakePreferencesRepository : IPreferencesRepository {
     private var visibleTrains: Set<String> = emptySet()
-    private var sortMode: SortMode? = null
+    private var sortMode: SortMode? = SortMode.TIME
+
+    private var theme: ThemeMode? = ThemeMode.DEFAULT
 
     override suspend fun getVisibleTrains(): Set<String>? {
         return visibleTrains
@@ -23,10 +25,10 @@ class FakePreferencesRepository : IPreferencesRepository {
     }
 
     override suspend fun getTheme(): ThemeMode? {
-        return ThemeMode.DEFAULT
+        return theme
     }
 
     override suspend fun setTheme(theme: ThemeMode) {
-
+        this.theme = theme
     }
 }
