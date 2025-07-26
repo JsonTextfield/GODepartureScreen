@@ -1,10 +1,11 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,9 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.heading
@@ -31,26 +29,26 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Alert
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.alerts
+import departure_screen.composeapp.generated.resources.back
 import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertScreen(onBackPressed: () -> Unit = {}) {
-    val alertViewModel: AlertViewModel = koinViewModel()
-    val informationAlerts by alertViewModel.informationAlerts.collectAsState()
-    val serviceAlerts by alertViewModel.serviceAlerts.collectAsState()
-    LaunchedEffect(Unit) {
-        alertViewModel.loadAlerts()
-    }
+fun AlertScreen(
+    informationAlerts: List<Alert>,
+    serviceAlerts: List<Alert>,
+    onBackPressed: () -> Unit = {},
+) {
+    Back(onBackPressed)
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Alerts",
+                        text = stringResource(Res.string.alerts),
                         modifier = Modifier.semantics { heading() }
                     )
                 },
@@ -58,7 +56,7 @@ fun AlertScreen(onBackPressed: () -> Unit = {}) {
                     IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(Res.string.back)
                         )
                     }
                 },
@@ -69,13 +67,15 @@ fun AlertScreen(onBackPressed: () -> Unit = {}) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(
                     start = WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(LayoutDirection.Ltr),
                     end = WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr),
-                ).padding(16.dp),
+                ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding())
+            contentPadding = PaddingValues(16.dp) + PaddingValues(
+                top = innerPadding.calculateTopPadding(),
+                bottom = 100.dp,
+            ),
         ) {
             if (serviceAlerts.isNotEmpty()) {
                 item {
@@ -92,29 +92,21 @@ fun AlertScreen(onBackPressed: () -> Unit = {}) {
                     Text(stringResource(Res.string.information_alerts), style = MaterialTheme.typography.headlineMedium)
                 }
                 items(informationAlerts, key = { it.id }) { alert ->
-                    AlertItem(
-                        alert = alert,
-                    )
+                    AlertItem(alert)
                 }
             }
         }
     }
 }
 
-@Composable
-fun AlertItem(
-    alert: Alert,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = alert.subject,
-            modifier = modifier.semantics { heading() },
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Text(
-            text = alert.body,
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
+private operator fun PaddingValues.plus(other: PaddingValues) : PaddingValues {
+    return PaddingValues(
+        start = this.calculateStartPadding(LayoutDirection.Ltr) + other.calculateStartPadding(LayoutDirection.Ltr),
+        top = this.calculateTopPadding() + other.calculateTopPadding(),
+        end = this.calculateEndPadding(LayoutDirection.Ltr) + other.calculateEndPadding(LayoutDirection.Ltr),
+        bottom = this.calculateBottomPadding() + other.calculateBottomPadding()
+    )
 }
+
+@Composable
+expect fun Back(onBackPressed: () -> Unit)

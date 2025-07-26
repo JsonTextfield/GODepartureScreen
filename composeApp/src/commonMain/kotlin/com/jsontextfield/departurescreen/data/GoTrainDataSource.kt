@@ -65,10 +65,10 @@ class GoTrainDataSource(
                 Alert(
                     id = message.code,
                     date = Instant.parse(message.postedDateTime, inFormatter),
-                    subjectEn = message.subjectEnglish.orEmpty(),
-                    subjectFr = message.subjectFrench.orEmpty(),
-                    bodyEn = message.bodyEnglish.orEmpty(),
-                    bodyFr = message.bodyFrench.orEmpty(),
+                    subjectEn = message.subjectEnglish.orEmpty().trim(),
+                    subjectFr = message.subjectFrench.orEmpty().trim(),
+                    bodyEn = message.bodyEnglish.orEmpty().trim(),
+                    bodyFr = message.bodyFrench.orEmpty().trim(),
                 )
             } ?: emptyList()
         } catch (exception: IOException) {

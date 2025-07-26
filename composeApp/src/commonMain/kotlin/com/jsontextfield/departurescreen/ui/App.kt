@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.Alert
 import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
@@ -37,10 +38,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val allTrains = uiState.allTrains
     val visibleTrains = uiState.visibleTrains
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
-
+    val informationAlerts by mainViewModel.informationAlerts.collectAsState()
+    val serviceAlerts by mainViewModel.serviceAlerts.collectAsState()
     App(
         themeMode = uiState.theme,
         showAlerts = mainViewModel.showAlerts,
+        informationAlerts = informationAlerts,
+        serviceAlerts = serviceAlerts,
         allTrains = allTrains,
         visibleTrains = visibleTrains,
         timeRemaining = timeRemaining,
@@ -55,6 +59,8 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
 fun App(
     themeMode: ThemeMode = ThemeMode.DEFAULT,
     showAlerts: Boolean = false,
+    informationAlerts: List<Alert> = emptyList(),
+    serviceAlerts: List<Alert> = emptyList(),
     allTrains: List<Train>,
     visibleTrains: Set<String>,
     timeRemaining: Int,
@@ -82,7 +88,7 @@ fun App(
                             screenWidthDp < 600 -> screenWidthDp / 3 / 48
                             screenWidthDp < 800 -> screenWidthDp / 2 / 48
                             else -> screenWidthDp * 2 / 3 / 48
-                        }
+                        } + 1
                         ActionBar(
                             maxActions = maxActions,
                             actions = actions,
@@ -111,7 +117,11 @@ fun App(
             enter = slideInHorizontally { it },
             exit = slideOutHorizontally { it },
         ) {
-            AlertScreen(onBackPressed = onBackPressed)
+            AlertScreen(
+                informationAlerts = informationAlerts,
+                serviceAlerts = serviceAlerts,
+                onBackPressed = onBackPressed,
+            )
         }
     }
 }

@@ -8,7 +8,6 @@ import com.jsontextfield.departurescreen.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.network.API_KEY
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.ui.AlertViewModel
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -73,7 +72,6 @@ expect fun preferencesModule(): Module
 
 val viewModelModule = module {
     factoryOf(::MainViewModel)
-    factoryOf(::AlertViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

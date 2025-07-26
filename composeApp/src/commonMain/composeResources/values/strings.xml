@@ -21,6 +21,7 @@
     <string name="dark_mode">Dark</string>
     <string name="system_default">Default</string>
     <string name="alerts">Alerts</string>
+    <string name="back">Back</string>
     <string name="information_alerts">Information alerts</string>
     <string name="service_alerts">Service alerts</string>
     <plurals name="minutes_content_description">

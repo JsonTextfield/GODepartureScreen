@@ -6,10 +6,10 @@ import kotlinx.datetime.Instant
 data class Alert(
     val id: String,
     val date: Instant,
-    val subjectEn: String = "",
-    val subjectFr: String = "",
-    val bodyEn: String = "",
-    val bodyFr: String = "",
+    private val subjectEn: String = "",
+    private val subjectFr: String = "",
+    private val bodyEn: String = "",
+    private val bodyFr: String = "",
 ) {
     val subject: String
         get() = if ("en" in Locale.current.language) subjectEn else subjectFr

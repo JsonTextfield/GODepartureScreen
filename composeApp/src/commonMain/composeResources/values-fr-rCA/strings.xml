@@ -20,7 +20,8 @@
     <string name="light_mode">Lumière</string>
     <string name="dark_mode">Sombre</string>
     <string name="system_default">Défaut</string>
-    <string name="alerts">Alerts</string>
+    <string name="alerts">Alertes</string>
+    <string name="back">Retourner</string>
     <string name="information_alerts">Alertes d'information</string>
     <string name="service_alerts">Alertes de service</string>
     <plurals name="minutes_content_description">
