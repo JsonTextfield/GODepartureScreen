@@ -70,7 +70,7 @@ class GoTrainDataSource(
                     bodyEn = message.bodyEnglish.orEmpty().trim(),
                     bodyFr = message.bodyFrench.orEmpty().trim(),
                 )
-            } ?: emptyList()
+            }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {
             throw exception
         } catch (exception: Exception) {
