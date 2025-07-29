@@ -2,6 +2,7 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -9,8 +10,9 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +25,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
@@ -70,7 +76,12 @@ fun AlertScreen(
                 .padding(
                     start = WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(LayoutDirection.Ltr),
                     end = WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr),
-                ),
+                ).semantics{
+                    collectionInfo = CollectionInfo(
+                        rowCount = informationAlerts.size + serviceAlerts.size,
+                        columnCount = 1,
+                    )
+                },
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp) + PaddingValues(
                 top = innerPadding.calculateTopPadding(),
@@ -79,27 +90,53 @@ fun AlertScreen(
         ) {
             if (serviceAlerts.isNotEmpty()) {
                 item {
-                    Text(stringResource(Res.string.service_alerts), style = MaterialTheme.typography.headlineMedium)
-                }
-                items(serviceAlerts, key = { it.id }) { alert ->
-                    AlertItem(
-                        alert = alert,
+                    Text(
+                        stringResource(Res.string.service_alerts),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.semantics {
+                            heading()
+                        },
                     )
+                }
+                itemsIndexed(serviceAlerts, key = { _, item -> item.id }) { index, alert ->
+                    AlertItem(alert, modifier = Modifier.semantics{
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            columnIndex = 0,
+                            rowSpan = 1,
+                            columnSpan = 1,
+                        )
+                    })
+                    Spacer(modifier = Modifier.size(24.dp))
                 }
             }
             if (informationAlerts.isNotEmpty()) {
                 item {
-                    Text(stringResource(Res.string.information_alerts), style = MaterialTheme.typography.headlineMedium)
+                    Text(
+                        stringResource(Res.string.information_alerts),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.semantics {
+                            heading()
+                        },
+                    )
                 }
-                items(informationAlerts, key = { it.id }) { alert ->
-                    AlertItem(alert)
+                itemsIndexed(informationAlerts, key = { _, item -> item.id }) { index, alert ->
+                    AlertItem(alert, modifier = Modifier.semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = serviceAlerts.size + index,
+                            columnIndex = 0,
+                            rowSpan = 1,
+                            columnSpan = 1,
+                        )
+                    })
+                    Spacer(modifier = Modifier.size(24.dp))
                 }
             }
         }
     }
 }
 
-private operator fun PaddingValues.plus(other: PaddingValues) : PaddingValues {
+private operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
     return PaddingValues(
         start = this.calculateStartPadding(LayoutDirection.Ltr) + other.calculateStartPadding(LayoutDirection.Ltr),
         top = this.calculateTopPadding() + other.calculateTopPadding(),

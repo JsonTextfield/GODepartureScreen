@@ -21,7 +21,9 @@ fun AlertItem(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .semantics(mergeDescendants = true) {},
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(

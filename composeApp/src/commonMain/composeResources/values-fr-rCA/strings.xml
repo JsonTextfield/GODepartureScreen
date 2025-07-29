@@ -20,6 +20,7 @@
     <string name="light_mode">Lumière</string>
     <string name="dark_mode">Sombre</string>
     <string name="system_default">Défaut</string>
+    <string name="theme">Thème</string>
     <string name="alerts">Alertes</string>
     <string name="back">Retourner</string>
     <string name="information_alerts">Alertes d'information</string>

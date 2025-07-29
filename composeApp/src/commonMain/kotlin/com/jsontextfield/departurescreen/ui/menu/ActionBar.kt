@@ -17,6 +17,7 @@ import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
+import departure_screen.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -99,7 +100,7 @@ fun getActions(
 
 //    val theme = Action(
 //        icon = Icons.Rounded.BrightnessMedium,
-//        tooltip = "Theme",
+//        tooltip = stringResource(Res.string.theme),
 //        isVisible = true,
 //        menuContent = {
 //            var isExpanded by remember { mutableStateOf(it) }

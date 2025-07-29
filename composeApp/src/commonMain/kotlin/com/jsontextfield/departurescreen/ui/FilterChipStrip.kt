@@ -97,13 +97,14 @@ fun FilterChipStrip(
                             fontWeight = FontWeight.Bold,
                             color = if (train.code in selectedItems) Color.White else Color.Unspecified
                         ),
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp).semantics{
+                            contentDescription = train.name
+                        }
                     )
                 },
                 modifier = Modifier
                     .animateItem()
                     .semantics {
-                        contentDescription = train.name
                         collectionItemInfo = CollectionItemInfo(
                             rowIndex = 0,
                             columnIndex = index + 1,
