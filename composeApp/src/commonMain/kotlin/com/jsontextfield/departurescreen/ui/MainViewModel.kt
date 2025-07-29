@@ -6,15 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.Alert
-import com.jsontextfield.departurescreen.Train
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.dark_mode
-import departure_screen.composeapp.generated.resources.light_mode
-import departure_screen.composeapp.generated.resources.line
-import departure_screen.composeapp.generated.resources.system_default
-import departure_screen.composeapp.generated.resources.time
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -24,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
-import org.jetbrains.compose.resources.StringResource
 
 class MainViewModel(
     private val goTrainDataSource: IGoTrainDataSource,
@@ -43,7 +35,7 @@ class MainViewModel(
     private val _serviceAlerts: MutableStateFlow<List<Alert>> = MutableStateFlow(emptyList())
     val serviceAlerts: StateFlow<List<Alert>> = _serviceAlerts.asStateFlow()
 
-    var showAlerts by mutableStateOf(false)
+    var showAlerts: Boolean by mutableStateOf(false)
 
     private var alertCounter: Int = 0
 
@@ -58,31 +50,31 @@ class MainViewModel(
                     //theme = preferencesRepository.getTheme() ?: ThemeMode.DEFAULT,
                 )
             }
-            timerJob = timerJob ?: viewModelScope.launch {
-                while (true) {
-                    if (timeRemaining.value <= 0) {
-                        alertCounter--
-                        if (alertCounter <= 0) {
-                            async { _serviceAlerts.value = goTrainDataSource.getServiceAlerts() }
-                            async { _informationAlerts.value = goTrainDataSource.getInformationAlerts() }
-                            alertCounter = 3
-                        }
-                        try {
-                            _uiState.update {
-                                it.copy(
-                                    allTrains = goTrainDataSource.getTrains(),
-                                )
-                            }
-                            setVisibleTrains(uiState.value.visibleTrains)
-                            setSortMode(uiState.value.sortMode)
-                            _timeRemaining.value = 20_000
-                        } catch (_: IOException) {
-                            _timeRemaining.value = 1000
-                        }
-                    } else {
-                        delay(1000)
-                        _timeRemaining.value -= 1000
+        }
+        timerJob = timerJob ?: viewModelScope.launch {
+            while (true) {
+                if (timeRemaining.value <= 0) {
+                    alertCounter--
+                    if (alertCounter <= 0) {
+                        async { _serviceAlerts.value = goTrainDataSource.getServiceAlerts() }
+                        async { _informationAlerts.value = goTrainDataSource.getInformationAlerts() }
+                        alertCounter = 3
                     }
+                    try {
+                        _uiState.update {
+                            it.copy(
+                                allTrains = goTrainDataSource.getTrains(),
+                            )
+                        }
+                        setVisibleTrains(uiState.value.visibleTrains)
+                        setSortMode(uiState.value.sortMode)
+                        _timeRemaining.value = 20_000
+                    } catch (_: IOException) {
+                        _timeRemaining.value = 1000
+                    }
+                } else {
+                    delay(1000)
+                    _timeRemaining.value -= 1000
                 }
             }
         }
@@ -146,21 +138,3 @@ class MainViewModel(
         stop()
     }
 }
-
-enum class SortMode(val key: StringResource) {
-    TIME(Res.string.time),
-    LINE(Res.string.line),
-}
-
-enum class ThemeMode(val key: StringResource) {
-    LIGHT(Res.string.light_mode),
-    DARK(Res.string.dark_mode),
-    DEFAULT(Res.string.system_default),
-}
-
-data class UIState(
-    val allTrains: List<Train> = emptyList(),
-    val visibleTrains: Set<String> = emptySet(),
-    val sortMode: SortMode = SortMode.TIME,
-    val theme: ThemeMode = ThemeMode.DEFAULT,
-)
