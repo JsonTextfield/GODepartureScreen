@@ -23,11 +23,13 @@ class GoTrainDataSource(
         try {
             val nextService = async { departureScreenAPI.getNextService() }.await()
             val unionDepartures = async { departureScreenAPI.getUnionDepartures() }.await()
+            val exceptions = async { departureScreenAPI.getExceptions() }.await()
 
             val lastUpdated = nextService.metadata?.timestamp.orEmpty()
             val lines = nextService.nextService?.lines
             val trips = unionDepartures.unionDepartures?.trips
             val tripsMap = trips?.associateBy { it.tripNumber } ?: emptyMap()
+            val cancelledTrips = exceptions.trip.filter { it.isCancelled == "1" }.map { it.tripNumber }
 
             lines?.mapNotNull { line ->
                 tripsMap[line.tripNumber]?.let { matchingTrip ->
@@ -42,6 +44,7 @@ class GoTrainDataSource(
                         tripOrder = line.tripOrder,
                         info = matchingTrip.info,
                         lastUpdated = Instant.parse(lastUpdated, inFormatter),
+                        isCancelled = line.tripNumber in cancelledTrips,
                     )
                 }
             }?.sortedBy { it.departureTime } ?: emptyList()

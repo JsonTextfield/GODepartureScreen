@@ -17,6 +17,7 @@ private val sampleTrains = List(11) {
         destination = "Station",
         platform = "${it + 1} & ${it + 2}",
         color = trainColours.values.random(),
+        isCancelled = it % 3 == 0,
     )
 }
 

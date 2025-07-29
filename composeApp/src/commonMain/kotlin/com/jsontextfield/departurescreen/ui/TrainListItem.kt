@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.Train
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.cancelled
 import departure_screen.composeapp.generated.resources.express
 import departure_screen.composeapp.generated.resources.min
 import departure_screen.composeapp.generated.resources.minutes_content_description
@@ -79,7 +80,14 @@ fun TrainListItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (train.isExpress) {
+            if (train.isCancelled) {
+                Text(
+                    stringResource(Res.string.cancelled),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+            else if (train.isExpress) {
                 Text(
                     stringResource(Res.string.express),
                     color = MaterialTheme.colorScheme.primary,

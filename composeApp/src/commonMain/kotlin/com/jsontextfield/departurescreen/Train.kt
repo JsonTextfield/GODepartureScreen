@@ -16,6 +16,7 @@ data class Train(
     val tripOrder: Int = 0,
     val info: String = "",
     val isVisible: Boolean = true,
+    val isCancelled: Boolean = false,
 ) {
     val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"

@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.network
 
 import com.jsontextfield.departurescreen.network.model.Alerts
+import com.jsontextfield.departurescreen.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
@@ -24,5 +25,9 @@ class DepartureScreenAPI(private val client: HttpClient) {
 
     suspend fun getInfromationAlerts(): Alerts {
         return client.get("ServiceUpdate/InformationAlert/All").body()
+    }
+
+    suspend fun getExceptions(): ExceptionsResponse {
+        return client.get("ServiceUpdate/Exceptions/Train").body()
     }
 }
