@@ -9,7 +9,6 @@ import com.jsontextfield.departurescreen.Alert
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,9 +36,8 @@ class MainViewModel(
 
     var showAlerts: Boolean by mutableStateOf(false)
 
-    private var alertCounter: Int = 0
-
     private var timerJob: Job? = null
+    private var alertsJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -54,27 +52,32 @@ class MainViewModel(
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
                 if (timeRemaining.value <= 0) {
-                    alertCounter--
-                    if (alertCounter <= 0) {
-                        async { _serviceAlerts.value = goTrainDataSource.getServiceAlerts() }
-                        async { _informationAlerts.value = goTrainDataSource.getInformationAlerts() }
-                        alertCounter = 3
-                    }
-                    try {
-                        _uiState.update {
-                            it.copy(
-                                allTrains = goTrainDataSource.getTrains(),
-                            )
-                        }
+                    runCatching {
+                        _uiState.update { it.copy(allTrains = goTrainDataSource.getTrains()) }
                         setVisibleTrains(uiState.value.visibleTrains)
                         setSortMode(uiState.value.sortMode)
-                        _timeRemaining.value = 20_000
-                    } catch (_: IOException) {
-                        _timeRemaining.value = 1000
+                        _timeRemaining.update { 20_000 }
+                    }.onFailure { exception ->
+                        if (exception is IOException) {
+                            _timeRemaining.update { 1000 }
+                        }
                     }
                 } else {
                     delay(1000)
-                    _timeRemaining.value -= 1000
+                    _timeRemaining.update { it - 1000 }
+                }
+            }
+        }
+        alertsJob = alertsJob ?: viewModelScope.launch {
+            while (true) {
+                runCatching {
+                    _serviceAlerts.update { goTrainDataSource.getServiceAlerts() }
+                    _informationAlerts.update { goTrainDataSource.getInformationAlerts() }
+                    delay(60_000)
+                }.onFailure { exception ->
+                    if (exception is IOException) {
+                        delay(1000)
+                    }
                 }
             }
         }
@@ -83,11 +86,7 @@ class MainViewModel(
     fun setTheme(theme: ThemeMode) {
         viewModelScope.launch {
             preferencesRepository.setTheme(theme)
-            _uiState.update {
-                it.copy(
-                    theme = theme,
-                )
-            }
+            _uiState.update { it.copy(theme = theme) }
         }
     }
 
@@ -131,6 +130,8 @@ class MainViewModel(
     fun stop() {
         timerJob?.cancel()
         timerJob = null
+        alertsJob?.cancel()
+        alertsJob = null
     }
 
     override fun onCleared() {
