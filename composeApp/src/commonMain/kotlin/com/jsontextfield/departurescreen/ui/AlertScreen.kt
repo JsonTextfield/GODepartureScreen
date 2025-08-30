@@ -33,7 +33,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.Alert
+import com.jsontextfield.departurescreen.entities.Alert
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.back

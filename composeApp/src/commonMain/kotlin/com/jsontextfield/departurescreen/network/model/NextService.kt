@@ -24,6 +24,11 @@ data class NextServiceResponse(
             @JsonNames("TripOrder") val tripOrder: Int = -1,
             @JsonNames("TripNumber") val tripNumber: String = "",
             @JsonNames("Status") val status: String = "",
+            @JsonNames("ScheduledPlatform") val scheduledPlatform: String? = "",
+            @JsonNames("ActualPlatform") val actualPlatform: String? = "",
+            @JsonNames("ScheduledDepartureTime") val scheduledDepartureTime: String? = "",
+            @JsonNames("ComputedDepartureTime") val computedDepartureTime: String? = "",
+            @JsonNames("ServiceType") val serviceType: String? = "",
         )
     }
 }

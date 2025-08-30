@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.Alert
+import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.data.GoTrainDataSource.Companion.inFormatter
 import kotlinx.datetime.format
 

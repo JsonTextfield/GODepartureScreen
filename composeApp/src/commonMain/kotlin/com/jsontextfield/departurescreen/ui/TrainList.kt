@@ -24,7 +24,7 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Train
 import kotlin.math.ceil
 
 @Composable

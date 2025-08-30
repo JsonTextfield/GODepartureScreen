@@ -5,9 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.Alert
+import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.entities.Station
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,17 +50,63 @@ class MainViewModel(
                 )
             }
         }
+        loadData()
+    }
+
+    fun loadData() {
+        _uiState.update {
+            it.copy(status = Status.LOADING)
+        }
+        viewModelScope.launch {
+            runCatching {
+                val allStations = goTrainDataSource.getAllStations()
+                    .filter { stop ->
+                        "Station" in stop.type && stop.code != "PA"
+                    }.sortedWith(
+                        compareBy({ it.code != "UN" }, { it.name })
+                    )
+                val selectedStation = uiState.value.selectedStation
+                    ?: allStations.firstOrNull {
+                        it.code == preferencesRepository.getSelectedStationCode()
+                    } ?: allStations.firstOrNull {
+                        it.code == "UN"
+                    } ?: allStations.firstOrNull()
+                _uiState.update {
+                    it.copy(
+                        allStations = allStations,
+                        selectedStation = selectedStation,
+                    )
+                }
+            }.onFailure {
+                _uiState.update {
+                    it.copy(status = Status.ERROR)
+                }
+            }.onSuccess {
+                startTimerJob()
+                startAlertsJob()
+            }
+        }
+    }
+
+    private fun startTimerJob() {
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
                 if (timeRemaining.value <= 0) {
-                    runCatching {
-                        _uiState.update { it.copy(allTrains = goTrainDataSource.getTrains()) }
-                        setVisibleTrains(uiState.value.visibleTrains)
-                        setSortMode(uiState.value.sortMode)
-                        _timeRemaining.update { 20_000 }
-                    }.onFailure { exception ->
-                        if (exception is IOException) {
-                            _timeRemaining.update { 1000 }
+                    uiState.value.selectedStation?.code?.let { stationCode ->
+                        runCatching {
+                            goTrainDataSource.getTrains(stationCode)
+                        }.onFailure { exception ->
+                            if (exception is IOException) {
+                                _timeRemaining.update { 1000 }
+                            }
+                        }.onSuccess { trains ->
+                            _uiState.update {
+                                it.copy(
+                                    status = Status.LOADED,
+                                    _allTrains = trains,
+                                )
+                            }
+                            _timeRemaining.update { 20_000 }
                         }
                     }
                 } else {
@@ -68,57 +115,66 @@ class MainViewModel(
                 }
             }
         }
+    }
+
+    private fun startAlertsJob() {
         alertsJob = alertsJob ?: viewModelScope.launch {
             while (true) {
                 runCatching {
-                    _serviceAlerts.update { goTrainDataSource.getServiceAlerts() }
-                    _informationAlerts.update { goTrainDataSource.getInformationAlerts() }
-                    delay(60_000)
+                    _serviceAlerts.update {
+                        goTrainDataSource.getServiceAlerts().filter {
+                            uiState.value.selectedStation?.code in it.affectedStations || it.affectedStations.isEmpty()
+                        }
+                    }
+                    _informationAlerts.update {
+                        goTrainDataSource.getInformationAlerts().filter {
+                            uiState.value.selectedStation?.code in it.affectedStations || it.affectedStations.isEmpty()
+                        }
+                    }
                 }.onFailure { exception ->
                     if (exception is IOException) {
                         delay(1000)
                     }
+                }.onSuccess {
+                    delay(60_000)
                 }
             }
         }
     }
 
     fun setTheme(theme: ThemeMode) {
+        _uiState.update { it.copy(theme = theme) }
         viewModelScope.launch {
             preferencesRepository.setTheme(theme)
-            _uiState.update { it.copy(theme = theme) }
         }
     }
 
     fun setSortMode(mode: SortMode) {
+        _uiState.update { it.copy(sortMode = mode) }
         viewModelScope.launch {
             preferencesRepository.setSortMode(mode)
-            _uiState.update { uiState ->
-                uiState.copy(
-                    sortMode = mode,
-                    allTrains = uiState.allTrains.sortedWith(
-                        when (mode) {
-                            SortMode.TIME -> compareBy { it.departureTime }
-                            SortMode.LINE -> compareBy({ it.code }, { it.destination })
-                        }
-                    ),
-                )
-            }
         }
     }
 
     fun setVisibleTrains(selectedTrains: Set<String>) {
+        // Ensure that the visible trains are a subset of all trains
+        val trainCodes = uiState.value.allTrains.map { it.code }.toSet() intersect selectedTrains
+        _uiState.update { it.copy(visibleTrains = trainCodes) }
         viewModelScope.launch {
-            // Ensure that the visible trains are a subset of all trains
-            val trainCodes = uiState.value.allTrains.map { it.code }.toSet() intersect selectedTrains
             preferencesRepository.setVisibleTrains(trainCodes)
-            _uiState.update {
-                it.copy(
-                    visibleTrains = trainCodes,
-                    allTrains = it.allTrains.map { train ->
-                        train.copy(isVisible = train.code in trainCodes || trainCodes.isEmpty())
-                    }
-                )
+        }
+    }
+
+    fun setSelectedStation(station: Station) {
+        _uiState.update { it.copy(selectedStation = station) }
+        viewModelScope.launch {
+            runCatching {
+                goTrainDataSource.getTrains(station.code)
+            }.onSuccess { trains ->
+                _uiState.update { it.copy(_allTrains = trains) }
+                setVisibleTrains(uiState.value.visibleTrains)
+            }.onFailure {
+                _uiState.update { it.copy(_allTrains = emptyList()) }
             }
         }
     }

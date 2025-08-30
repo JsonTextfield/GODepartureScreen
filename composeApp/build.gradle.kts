@@ -38,12 +38,6 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
-
-            // For AppWidgets support
-            implementation(libs.androidx.glance.appwidget)
-
-            // For interop APIs with Material 3
-            implementation(libs.androidx.glance.material3)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -85,14 +79,14 @@ kotlin {
 
 android {
     namespace = "com.jsontextfield.departurescreen"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
-        targetSdk = 35
-        versionCode = 25
-        versionName = "1.6.2"
+        targetSdk = 36
+        versionCode = 26
+        versionName = "1.7.0"
     }
     packaging {
         resources {

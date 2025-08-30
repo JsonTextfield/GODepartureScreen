@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen
+package com.jsontextfield.departurescreen.entities
 
 import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.Instant
@@ -6,6 +6,8 @@ import kotlinx.datetime.Instant
 data class Alert(
     val id: String,
     val date: Instant,
+    val affectedLines: List<String> = emptyList(),
+    val affectedStations: List<String> = emptyList(),
     private val subjectEn: String = "",
     private val subjectFr: String = "",
     private val bodyEn: String = "",

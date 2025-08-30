@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen
+package com.jsontextfield.departurescreen.entities
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.Instant

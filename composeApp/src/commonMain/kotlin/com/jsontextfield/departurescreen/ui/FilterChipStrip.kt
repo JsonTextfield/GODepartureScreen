@@ -25,7 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Train
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.all
 import departure_screen.composeapp.generated.resources.filter
@@ -97,7 +97,7 @@ fun FilterChipStrip(
                             fontWeight = FontWeight.Bold,
                             color = if (train.code in selectedItems) Color.White else Color.Unspecified
                         ),
-                        modifier = Modifier.padding(8.dp).semantics{
+                        modifier = Modifier.padding(8.dp).semantics {
                             contentDescription = train.name
                         }
                     )

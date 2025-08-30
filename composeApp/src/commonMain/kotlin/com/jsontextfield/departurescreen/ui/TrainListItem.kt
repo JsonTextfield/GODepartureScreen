@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Train
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.cancelled
 import departure_screen.composeapp.generated.resources.express

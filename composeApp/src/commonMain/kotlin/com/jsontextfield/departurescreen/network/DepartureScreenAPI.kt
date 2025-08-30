@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.network
 import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.network.model.NextServiceResponse
+import com.jsontextfield.departurescreen.network.model.StopResponse
 import com.jsontextfield.departurescreen.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,8 +12,12 @@ import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSerializationApi::class)
 class DepartureScreenAPI(private val client: HttpClient) {
-    suspend fun getNextService(): NextServiceResponse {
-        return client.get("Stop/NextService/UN").body()
+
+    suspend fun getAllStops(): StopResponse {
+        return client.get("Stop/All").body()
+    }
+    suspend fun getNextService(stationCode: String): NextServiceResponse {
+        return client.get("Stop/NextService/$stationCode").body()
     }
 
     suspend fun getUnionDepartures(): UnionDeparturesResponse {

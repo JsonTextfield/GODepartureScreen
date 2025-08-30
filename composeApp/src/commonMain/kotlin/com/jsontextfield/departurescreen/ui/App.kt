@@ -7,8 +7,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.jsontextfield.departurescreen.Alert
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Alert
+import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.getActions
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
@@ -17,46 +17,45 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel()) {
     val uiState by mainViewModel.uiState.collectAsState()
-    val allTrains = uiState.allTrains
-    val visibleTrains = uiState.visibleTrains
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
     val informationAlerts by mainViewModel.informationAlerts.collectAsState()
     val serviceAlerts by mainViewModel.serviceAlerts.collectAsState()
     App(
-        themeMode = uiState.theme,
+        uiState = uiState,
         showAlerts = mainViewModel.showAlerts,
         informationAlerts = informationAlerts,
         serviceAlerts = serviceAlerts,
-        allTrains = allTrains,
-        visibleTrains = visibleTrains,
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
+        onRetryClicked = mainViewModel::loadData,
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
         onBackPressed = mainViewModel::showAlertsScreen,
+        onStationSelected = mainViewModel::setSelectedStation
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
-    themeMode: ThemeMode = ThemeMode.DEFAULT,
+    uiState: UIState,
     showAlerts: Boolean = false,
     informationAlerts: List<Alert> = emptyList(),
     serviceAlerts: List<Alert> = emptyList(),
-    allTrains: List<Train>,
-    visibleTrains: Set<String>,
     timeRemaining: Int,
     actions: List<Action>,
+    onRetryClicked: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
+    onStationSelected: (Station) -> Unit,
     onBackPressed: () -> Unit = {},
 ) {
-    MyApplicationTheme(theme = themeMode) {
+    MyApplicationTheme(theme = uiState.theme) {
         MainScreen(
-            allTrains = allTrains,
-            visibleTrains = visibleTrains,
+            uiState = uiState,
             timeRemaining = timeRemaining,
             actions = actions,
+            onRetryClicked = onRetryClicked,
             onSetVisibleTrains = onSetVisibleTrains,
+            onStationSelected = onStationSelected,
         )
         AnimatedVisibility(
             visible = showAlerts,

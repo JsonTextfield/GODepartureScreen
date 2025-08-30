@@ -9,6 +9,8 @@ interface IPreferencesRepository {
     suspend fun getSortMode(): SortMode?
     suspend fun setSortMode(sortMode: SortMode)
 
+    suspend fun getSelectedStationCode(): String?
+    suspend fun setSelectedStationCode(stationCode: String)
     suspend fun getTheme(): ThemeMode?
     suspend fun setTheme(theme: ThemeMode)
 }

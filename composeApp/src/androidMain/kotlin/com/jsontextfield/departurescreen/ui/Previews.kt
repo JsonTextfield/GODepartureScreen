@@ -6,7 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Station
+import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.theme.trainColours
 
@@ -27,8 +28,11 @@ private val sampleTrains = List(11) {
 @Composable
 fun AppPreview() {
     App(
-        allTrains = sampleTrains,
-        visibleTrains = emptySet(),
+        uiState = UIState(
+            _allTrains = sampleTrains,
+            visibleTrains = emptySet(),
+            selectedStation = Station("Union GO Station", "UN", type = "Train Station"),
+        ),
         timeRemaining = 16000,
         actions = listOf(
             Action(
@@ -37,5 +41,7 @@ fun AppPreview() {
             ),
         ),
         onSetVisibleTrains = {},
+        onStationSelected = {},
+        onRetryClicked = {},
     )
 }

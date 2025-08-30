@@ -1,15 +1,11 @@
 package com.jsontextfield.departurescreen.ui
 
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.data.FakeGoTrainDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest

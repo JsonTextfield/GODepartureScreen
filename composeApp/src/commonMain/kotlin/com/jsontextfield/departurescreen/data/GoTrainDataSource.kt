@@ -1,15 +1,15 @@
 package com.jsontextfield.departurescreen.data
 
 import androidx.compose.ui.graphics.Color
-import com.jsontextfield.departurescreen.Alert
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Alert
+import com.jsontextfield.departurescreen.entities.Station
+import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.ui.theme.trainColours
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.io.IOException
@@ -19,35 +19,54 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
-    override suspend fun getTrains(): List<Train> = coroutineScope {
-        try {
-            val nextService = async { departureScreenAPI.getNextService() }.await()
-            val unionDepartures = async { departureScreenAPI.getUnionDepartures() }.await()
-            val exceptions = async { departureScreenAPI.getExceptions() }.await()
+    override suspend fun getTrains(stationCode: String): List<Train> {
+        return try {
+            val nextService = departureScreenAPI.getNextService(stationCode)
+            val exceptions = departureScreenAPI.getExceptions()
 
             val lastUpdated = nextService.metadata?.timestamp.orEmpty()
             val lines = nextService.nextService?.lines
-            val trips = unionDepartures.unionDepartures?.trips
-            val tripsMap = trips?.associateBy { it.tripNumber } ?: emptyMap()
             val cancelledTrips = exceptions.trip.filter { it.isCancelled == "1" }.map { it.tripNumber }
 
-            lines?.mapNotNull { line ->
-                tripsMap[line.tripNumber]?.let { matchingTrip ->
-                    Train(
-                        id = line.tripNumber,
-                        code = line.lineCode,
-                        name = line.lineName,
-                        destination = line.directionName.split(" - ").last(),
-                        departureTime = Instant.parse(matchingTrip.time, inFormatter),
-                        platform = matchingTrip.platform,
-                        color = trainColours[line.lineName] ?: Color.Gray,
-                        tripOrder = line.tripOrder,
-                        info = matchingTrip.info,
-                        lastUpdated = Instant.parse(lastUpdated, inFormatter),
-                        isCancelled = line.tripNumber in cancelledTrips,
-                    )
-                }
+            val result = lines?.filter { line ->
+                line.serviceType == "T"
+            }?.map { line ->
+                val departureTime =
+                    Instant.parseOrNull(line.computedDepartureTime.orEmpty(), inFormatter)
+                        ?: Instant.parseOrNull(line.scheduledDepartureTime.orEmpty(), inFormatter)
+                        ?: Instant.fromEpochMilliseconds(0)
+                val platform =
+                    line.actualPlatform.takeIf { !it.isNullOrBlank() }
+                        ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
+                        ?: "-"
+                Train(
+                    id = line.tripNumber,
+                    code = line.lineCode,
+                    name = line.lineName,
+                    destination = line.directionName.split(" - ").last(),
+                    color = trainColours[line.lineName] ?: Color.Gray,
+                    tripOrder = line.tripOrder,
+                    lastUpdated = Instant.parse(lastUpdated, inFormatter),
+                    isCancelled = line.tripNumber in cancelledTrips,
+                    departureTime = departureTime,
+                    platform = platform,
+                )
             }?.sortedBy { it.departureTime } ?: emptyList()
+            if (stationCode == "UN") {
+                val unionDepartures = departureScreenAPI.getUnionDepartures()
+                val tripsMap = unionDepartures.unionDepartures?.trips?.associateBy { it.tripNumber } ?: emptyMap()
+                result.mapNotNull { train ->
+                    tripsMap[train.id]?.let { matchingTrip ->
+                        train.copy(
+                            info = matchingTrip.info,
+                            platform = matchingTrip.platform,
+                            departureTime = Instant.parse(matchingTrip.time, inFormatter),
+                        )
+                    }
+                }
+            } else {
+                result
+            }
         } catch (exception: IOException) {
             throw exception
         } catch (exception: Exception) {
@@ -60,14 +79,30 @@ class GoTrainDataSource(
 
     override suspend fun getInformationAlerts(): List<Alert> = processAlerts(departureScreenAPI.getInfromationAlerts())
 
+    override suspend fun getAllStations(): List<Station> {
+        return try {
+            departureScreenAPI.getAllStops().stations?.stops?.map { stop ->
+                Station(
+                    name = stop.locationName,
+                    code = stop.locationCode,
+                    type = stop.locationType,
+                )
+            } ?: emptyList()
+        } catch (exception: IOException) {
+            throw exception
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
     private fun processAlerts(alerts: Alerts): List<Alert> {
         return try {
-            alerts.messages?.message?.filter { message ->
-                message.stops.any { it.code == "UN" } && message.lines.all { it.code != "UP" }
-            }?.map { message ->
+            alerts.messages?.message?.map { message ->
                 Alert(
                     id = message.code,
                     date = Instant.parse(message.postedDateTime, inFormatter),
+                    affectedLines = message.lines.map { it.code },
+                    affectedStations = message.stops.map { it.code },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
                     bodyEn = message.bodyEnglish.orEmpty().trim(),
@@ -88,5 +123,13 @@ class GoTrainDataSource(
         val inFormatter = DateTimeComponents.Format {
             byUnicodePattern("yyyy-MM-dd HH:mm:ss")
         }
+    }
+}
+
+fun Instant.Companion.parseOrNull(input: CharSequence, format: DateTimeFormat<DateTimeComponents>): Instant? {
+    return try {
+        Instant.parse(input, format)
+    } catch (_: Exception) {
+        null
     }
 }

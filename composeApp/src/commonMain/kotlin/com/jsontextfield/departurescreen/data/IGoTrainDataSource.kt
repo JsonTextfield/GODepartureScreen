@@ -1,12 +1,15 @@
 package com.jsontextfield.departurescreen.data
 
-import com.jsontextfield.departurescreen.Alert
-import com.jsontextfield.departurescreen.Train
+import com.jsontextfield.departurescreen.entities.Alert
+import com.jsontextfield.departurescreen.entities.Station
+import com.jsontextfield.departurescreen.entities.Train
 
 interface IGoTrainDataSource {
-    suspend fun getTrains() : List<Train>
+    suspend fun getTrains(stationCode: String) : List<Train>
 
     suspend fun getServiceAlerts() : List<Alert>
 
     suspend fun getInformationAlerts() : List<Alert>
+
+    suspend fun getAllStations(): List<Station>
 }

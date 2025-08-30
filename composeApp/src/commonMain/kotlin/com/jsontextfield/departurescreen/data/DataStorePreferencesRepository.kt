@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.jsontextfield.departurescreen.ui.SortMode
 import com.jsontextfield.departurescreen.ui.ThemeMode
@@ -34,6 +35,18 @@ class DataStorePreferencesRepository(
     override suspend fun setSortMode(sortMode: SortMode) {
         dataStore?.edit { preferences ->
             preferences[intPreferencesKey("sortMode")] = sortMode.ordinal
+        }
+    }
+
+    override suspend fun getSelectedStationCode(): String? {
+        return dataStore?.data?.map { preferences ->
+            preferences[stringPreferencesKey("selectedStationCode")]
+        }?.first()
+    }
+
+    override suspend fun setSelectedStationCode(stationCode: String) {
+        dataStore?.edit { preferences ->
+            preferences[stringPreferencesKey("selectedStationCode")] = stationCode
         }
     }
 
