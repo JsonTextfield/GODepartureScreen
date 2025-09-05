@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,9 +43,9 @@ fun TrainListItem(
             train.departureDiffMinutes,
             train.departureDiffMinutes,
         )
+        val fontScale = LocalDensity.current.fontScale
         Column(
             modifier = Modifier
-                .weight(.1f)
                 .semantics {
                     contentDescription = minutesContentDescription
                 },
@@ -58,23 +58,33 @@ fun TrainListItem(
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                 ),
-                maxLines = 2,
+                maxLines = 1,
             )
             Text(
                 stringResource(Res.string.min),
                 style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
             )
         }
-        TrainCodeBox(
-            train.code,
-            modifier = Modifier
-                .size(40.dp)
-                .background(color = train.color, shape = RoundedCornerShape(4.dp))
-                .semantics {
-                    contentDescription = train.name
-                },
-        )
+        if (fontScale < 1.8f) {
+            TrainCodeBox(
+                train.code,
+                modifier = Modifier
+                    .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
+                    .background(color = train.color, shape = SquircleShape(kotlin.math.E))
+                    .semantics {
+                        contentDescription = train.name
+                    },
+            )
+        }
+
         Column(modifier = Modifier.weight(.5f)) {
+            if (fontScale >= 1.8f) {
+                Text(
+                    train.name,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
             Text(
                 train.destination,
                 maxLines = 2,
@@ -111,9 +121,11 @@ fun TrainListItem(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                 )
-            } else {
+            }
+            else {
                 MaterialTheme.typography.titleMedium
             },
+            maxLines = 2,
         )
     }
 }

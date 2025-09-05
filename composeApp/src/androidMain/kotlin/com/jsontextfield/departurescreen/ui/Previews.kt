@@ -29,6 +29,7 @@ private val sampleTrains = List(11) {
 fun AppPreview() {
     App(
         uiState = UIState(
+            status = Status.LOADED,
             _allTrains = sampleTrains,
             visibleTrains = emptySet(),
             selectedStation = Station("Union GO Station", "UN", type = "Train Station"),

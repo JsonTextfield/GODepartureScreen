@@ -20,6 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.entities.Station
@@ -56,9 +61,16 @@ fun StationComboBox(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .semantics {
+                    collectionInfo = CollectionInfo(
+                        rowCount = items.size,
+                        columnCount = 1,
+                    )
+                }
         ) {
-            items.forEach { station ->
+            items.forEachIndexed { index, station ->
                 DropdownMenuItem(
                     contentPadding = PaddingValues(0.dp),
                     enabled = station.isEnabled,
@@ -66,6 +78,14 @@ fun StationComboBox(
                     onClick = {
                         onItemSelected(station)
                         expanded = false
+                    },
+                    modifier = Modifier.semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            rowSpan = 1,
+                            columnIndex = 0,
+                            columnSpan = 1,
+                        )
                     }
                 )
             }
