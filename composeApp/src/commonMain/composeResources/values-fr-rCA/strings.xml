@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Départs de Union GO</string>
-    <string name="app_name_long">Départs de Toronto Union GO</string>
+    <string name="app_name">Départs GO</string>
     <string name="express">Express</string>
     <string name="cancelled">Annullée</string>
     <string name="platform">Quai %1$s</string>
