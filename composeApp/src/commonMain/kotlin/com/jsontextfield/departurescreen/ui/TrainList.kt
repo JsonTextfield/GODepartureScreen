@@ -26,15 +26,17 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.entities.Train
 import kotlin.math.ceil
+import kotlin.math.min
 
 @Composable
 fun TrainList(
     trains: List<Train>,
     modifier: Modifier = Modifier,
 ) {
-    val widthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
+    val density = LocalDensity.current
+    val widthDp = (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
         LayoutDirection.Ltr).value - WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = (widthDp / 300).coerceIn(1, 4)
+    val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {

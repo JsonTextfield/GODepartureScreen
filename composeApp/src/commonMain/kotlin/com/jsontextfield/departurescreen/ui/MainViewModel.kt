@@ -168,6 +168,7 @@ class MainViewModel(
     fun setSelectedStation(station: Station) {
         _uiState.update { it.copy(selectedStation = station) }
         viewModelScope.launch {
+            preferencesRepository.setSelectedStationCode(station.code)
             runCatching {
                 goTrainDataSource.getTrains(station.code)
             }.onSuccess { trains ->

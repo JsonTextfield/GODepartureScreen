@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,9 +44,12 @@ fun TrainListItem(
             train.departureDiffMinutes,
             train.departureDiffMinutes,
         )
-        val fontScale = LocalDensity.current.fontScale
+        val shouldShowTrainCode = with(LocalDensity.current) {
+            fontScale <= 1.5f
+        }
         Column(
             modifier = Modifier
+                .weight(3 / 12f)
                 .semantics {
                     contentDescription = minutesContentDescription
                 },
@@ -53,7 +57,8 @@ fun TrainListItem(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                train.departureDiffMinutes.toString(),
+                text = train.departureDiffMinutes.toString(),
+                modifier = Modifier.basicMarquee(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
@@ -61,12 +66,13 @@ fun TrainListItem(
                 maxLines = 1,
             )
             Text(
-                stringResource(Res.string.min),
+                text = stringResource(Res.string.min),
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
             )
         }
-        if (fontScale < 1.8f) {
+        if (shouldShowTrainCode) {
+            val fontScale = LocalDensity.current.fontScale
             TrainCodeBox(
                 train.code,
                 modifier = Modifier
@@ -77,29 +83,27 @@ fun TrainListItem(
                     },
             )
         }
-
-        Column(modifier = Modifier.weight(.5f)) {
-            if (fontScale >= 1.8f) {
+        Column(modifier = Modifier.weight(6 / 12f)) {
+            if (!shouldShowTrainCode) {
                 Text(
-                    train.name,
+                    text = train.name,
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
             Text(
-                train.destination,
+                text = train.destination,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             if (train.isCancelled) {
                 Text(
-                    stringResource(Res.string.cancelled),
+                    text = stringResource(Res.string.cancelled),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelMedium,
                 )
-            }
-            else if (train.isExpress) {
+            } else if (train.isExpress) {
                 Text(
-                    stringResource(Res.string.express),
+                    text = stringResource(Res.string.express),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelMedium,
                 )
@@ -107,9 +111,10 @@ fun TrainListItem(
         }
         val platform = stringResource(Res.string.platform, train.platform)
         Text(
-            train.platform,
+            text = train.platform,
+            maxLines = 3,
             modifier = Modifier
-                .weight(.25f)
+                .weight(3 / 12f)
                 .clearAndSetSemantics {
                     if (train.hasPlatform) {
                         contentDescription = platform
@@ -121,11 +126,9 @@ fun TrainListItem(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                 )
-            }
-            else {
+            } else {
                 MaterialTheme.typography.titleMedium
             },
-            maxLines = 2,
         )
     }
 }
