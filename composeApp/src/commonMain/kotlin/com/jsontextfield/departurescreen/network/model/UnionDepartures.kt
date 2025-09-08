@@ -8,10 +8,10 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class UnionDeparturesResponse(
     @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("AllDepartures") val unionDepartures: UnionDepartures? = null,
+    @JsonNames("AllDepartures") val allDepartures: AllDepartures? = null,
 ) {
     @Serializable
-    data class UnionDepartures(
+    data class AllDepartures(
         @JsonNames("Trip") val trips: List<Trip> = emptyList(),
     ) {
         @Serializable
@@ -21,6 +21,13 @@ data class UnionDeparturesResponse(
             @JsonNames("Platform") val platform: String = "",
             @JsonNames("Service") val service: String = "",
             @JsonNames("Time") val time: String = "",
-        )
+            @JsonNames("Stops") val stops: List<Stop> = emptyList(),
+        ) {
+            @Serializable
+            data class Stop(
+                @JsonNames("Name") val name: String = "",
+                @JsonNames("Code") val code: String? = null,
+            )
+        }
     }
 }

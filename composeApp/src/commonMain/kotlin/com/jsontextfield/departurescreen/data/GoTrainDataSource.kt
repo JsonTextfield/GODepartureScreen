@@ -54,7 +54,7 @@ class GoTrainDataSource(
             }?.sortedBy { it.departureTime } ?: emptyList()
             if (stationCode == "UN") {
                 val unionDepartures = departureScreenAPI.getUnionDepartures()
-                val tripsMap = unionDepartures.unionDepartures?.trips?.associateBy { it.tripNumber } ?: emptyMap()
+                val tripsMap = unionDepartures.allDepartures?.trips?.associateBy { it.tripNumber } ?: emptyMap()
                 result.mapNotNull { train ->
                     tripsMap[train.id]?.let { matchingTrip ->
                         train.copy(
