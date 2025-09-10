@@ -36,7 +36,7 @@ fun TrainListItem(
     Row(
         modifier = modifier.semantics(mergeDescendants = true) {},
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         val minutesContentDescription = pluralStringResource(
             Res.plurals.minutes_content_description,
