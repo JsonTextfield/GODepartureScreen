@@ -100,10 +100,12 @@ class MainViewModel(
                                 _timeRemaining.update { 1000 }
                             }
                         }.onSuccess { trains ->
+                            val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                             _uiState.update {
                                 it.copy(
                                     status = Status.LOADED,
                                     _allTrains = trains,
+                                    visibleTrains = trainCodes,
                                 )
                             }
                             _timeRemaining.update { 20_000 }

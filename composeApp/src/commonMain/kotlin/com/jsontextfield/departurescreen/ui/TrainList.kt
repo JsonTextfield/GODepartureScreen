@@ -62,7 +62,7 @@ fun TrainList(
                 tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
                 modifier = Modifier.animateItem().semantics {
                     collectionItemInfo = CollectionItemInfo(
-                        rowIndex = ceil(index.toDouble() / columns).toInt(),
+                        rowIndex = index / columns,
                         columnIndex = index % columns,
                         rowSpan = 1,
                         columnSpan = 1,
