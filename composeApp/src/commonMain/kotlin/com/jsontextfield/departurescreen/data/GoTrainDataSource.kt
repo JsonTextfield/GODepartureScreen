@@ -39,9 +39,11 @@ class GoTrainDataSource(
                     line.actualPlatform.takeIf { !it.isNullOrBlank() }
                         ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
                         ?: "-"
+
+                val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
                 Train(
                     id = line.tripNumber,
-                    code = line.lineCode,
+                    code = lineCode,
                     name = line.lineName,
                     destination = line.directionName.split(" - ").last(),
                     color = trainColours[line.lineName] ?: Color.Gray,
