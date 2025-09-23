@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.Station
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -44,6 +44,7 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
+                    favouriteStations = preferencesRepository.getFavouriteStations() ?: emptySet(),
                     visibleTrains = preferencesRepository.getVisibleTrains() ?: emptySet(),
                     sortMode = preferencesRepository.getSortMode() ?: SortMode.TIME,
                     //theme = preferencesRepository.getTheme() ?: ThemeMode.DEFAULT,
@@ -73,7 +74,7 @@ class MainViewModel(
                     } ?: allStations.firstOrNull()
                 _uiState.update {
                     it.copy(
-                        allStations = allStations,
+                        allStations = allStations.map { it.copy(isFavourite = it.code in uiState.value.favouriteStations) },
                         selectedStation = selectedStation,
                     )
                 }
@@ -111,7 +112,8 @@ class MainViewModel(
                             _timeRemaining.update { 20_000 }
                         }
                     }
-                } else {
+                }
+                else {
                     delay(1000)
                     _timeRemaining.update { it - 1000 }
                 }
@@ -178,6 +180,32 @@ class MainViewModel(
                 setVisibleTrains(uiState.value.visibleTrains)
             }.onFailure {
                 _uiState.update { it.copy(_allTrains = emptyList()) }
+            }
+        }
+    }
+
+    fun setFavouriteStations() {
+        uiState.value.selectedStation?.let { selectedStation ->
+            val stations = uiState.value.favouriteStations
+
+            viewModelScope.launch {
+                if (selectedStation.code in stations) {
+                    preferencesRepository.setFavouriteStations(stations - selectedStation.code)
+                }
+                else {
+                    preferencesRepository.setFavouriteStations(stations + selectedStation.code)
+                }
+                val favouriteStations = preferencesRepository.getFavouriteStations() ?: emptySet()
+                _uiState.run {
+                    update {
+                        it.copy(
+                            allStations = value.allStations.map { station ->
+                                station.copy(isFavourite = station.code in favouriteStations)
+                            },
+                            favouriteStations = favouriteStations,
+                        )
+                    }
+                }
             }
         }
     }

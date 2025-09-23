@@ -62,4 +62,16 @@ class DataStorePreferencesRepository(
             ThemeMode.entries.firstOrNull { preferences[intPreferencesKey("theme")] == it.ordinal }
         }?.first()
     }
+
+    override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
+        dataStore?.edit { preferences ->
+            preferences[stringSetPreferencesKey("favouriteStations")] = favouriteStations
+        }
+    }
+
+    override suspend fun getFavouriteStations(): Set<String>? {
+        return dataStore?.data?.map { preferences ->
+            preferences[stringSetPreferencesKey("favouriteStations")] ?: emptySet()
+        }?.first()
+    }
 }

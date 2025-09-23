@@ -27,6 +27,7 @@
     <string name="service_alerts">Service alerts</string>
     <string name="error">An error occurred</string>
     <string name="retry">Retry</string>
+    <string name="favourite">Favourite</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

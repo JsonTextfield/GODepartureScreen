@@ -1,9 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
-import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.entities.Station
-import kotlin.collections.sortedWith
-import kotlin.comparisons.compareBy
+import com.jsontextfield.departurescreen.entities.Train
 
 data class UIState(
     val status: Status = Status.LOADING,
@@ -11,6 +9,7 @@ data class UIState(
     private val _allTrains: List<Train> = emptyList(),
     val allStations: List<Station> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
+    val favouriteStations: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
 ) {

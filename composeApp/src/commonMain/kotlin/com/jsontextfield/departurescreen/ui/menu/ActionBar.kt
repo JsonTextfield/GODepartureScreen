@@ -5,8 +5,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +19,7 @@ import com.jsontextfield.departurescreen.ui.MainViewModel
 import com.jsontextfield.departurescreen.ui.SortMode
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
+import departure_screen.composeapp.generated.resources.favourite
 import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.sort
 import departure_screen.composeapp.generated.resources.theme
@@ -74,6 +79,21 @@ fun ActionBar(
 fun getActions(
     mainViewModel: MainViewModel,
 ): List<Action> {
+    val uiState by mainViewModel.uiState.collectAsState()
+    var icon by mutableStateOf(Icons.Rounded.StarBorder)
+    LaunchedEffect(uiState) {
+        icon = if (uiState.selectedStation?.isFavourite == true) {
+            Icons.Rounded.Star
+        } else {
+            Icons.Rounded.StarBorder
+        }
+    }
+    val favourite = Action(
+        icon = icon,
+        tooltip = stringResource(Res.string.favourite),
+        onClick = mainViewModel::setFavouriteStations,
+    )
+
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
@@ -140,5 +160,10 @@ fun getActions(
         },
     )
 
-    return listOf(sort, alerts, theme)
+    return listOf(
+        favourite,
+        sort,
+        alerts,
+        theme,
+    )
 }

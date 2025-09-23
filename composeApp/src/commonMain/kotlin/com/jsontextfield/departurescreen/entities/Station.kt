@@ -5,4 +5,5 @@ data class Station(
     val code: String,
     val type: String,
     val isEnabled: Boolean = true,
+    val isFavourite: Boolean = true,
 )

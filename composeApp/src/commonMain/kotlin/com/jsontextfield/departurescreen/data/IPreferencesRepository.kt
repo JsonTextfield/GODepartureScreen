@@ -8,9 +8,10 @@ interface IPreferencesRepository {
     suspend fun setVisibleTrains(visibleTrains: Set<String>)
     suspend fun getSortMode(): SortMode?
     suspend fun setSortMode(sortMode: SortMode)
-
     suspend fun getSelectedStationCode(): String?
     suspend fun setSelectedStationCode(stationCode: String)
     suspend fun getTheme(): ThemeMode?
     suspend fun setTheme(theme: ThemeMode)
+    suspend fun getFavouriteStations(): Set<String>?
+    suspend fun setFavouriteStations(favouriteStations: Set<String>)
 }
