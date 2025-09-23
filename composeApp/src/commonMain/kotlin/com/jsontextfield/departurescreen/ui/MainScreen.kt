@@ -52,16 +52,15 @@ fun MainScreen(
                         )
                     },
                     actions = {
-                        val screenWidthDp =
-                            (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density).toInt()
+                        val screenWidthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density)
                         val maxActions = when {
                             screenWidthDp < 400 -> screenWidthDp / 4 / 48
                             screenWidthDp < 600 -> screenWidthDp / 3 / 48
                             screenWidthDp < 800 -> screenWidthDp / 2 / 48
                             else -> screenWidthDp * 2 / 3 / 48
-                        } + 1
+                        }
                         ActionBar(
-                            maxActions = maxActions,
+                            maxActions = maxActions.toInt() + 1,
                             actions = actions,
                         )
                     },

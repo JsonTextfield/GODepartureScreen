@@ -72,9 +72,11 @@ class MainViewModel(
                     } ?: allStations.firstOrNull {
                         it.code == "UN"
                     } ?: allStations.firstOrNull()
-                _uiState.update {
-                    it.copy(
-                        allStations = allStations.map { it.copy(isFavourite = it.code in uiState.value.favouriteStations) },
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        allStations = allStations.map {
+                            it.copy(isFavourite = it.code in uiState.favouriteStations)
+                        },
                         selectedStation = selectedStation,
                     )
                 }
@@ -112,8 +114,7 @@ class MainViewModel(
                             _timeRemaining.update { 20_000 }
                         }
                     }
-                }
-                else {
+                } else {
                     delay(1000)
                     _timeRemaining.update { it - 1000 }
                 }
@@ -187,25 +188,22 @@ class MainViewModel(
     fun setFavouriteStations() {
         uiState.value.selectedStation?.let { selectedStation ->
             val stations = uiState.value.favouriteStations
-
+            val updatedStations = if (selectedStation.code in stations) {
+                stations - selectedStation.code
+            } else {
+                stations + selectedStation.code
+            }
+            _uiState.update {
+                it.copy(
+                    allStations = it.allStations.map { station ->
+                        station.copy(isFavourite = station.code in updatedStations)
+                    },
+                    favouriteStations = updatedStations,
+                    selectedStation = selectedStation.copy(isFavourite = !selectedStation.isFavourite)
+                )
+            }
             viewModelScope.launch {
-                if (selectedStation.code in stations) {
-                    preferencesRepository.setFavouriteStations(stations - selectedStation.code)
-                }
-                else {
-                    preferencesRepository.setFavouriteStations(stations + selectedStation.code)
-                }
-                val favouriteStations = preferencesRepository.getFavouriteStations() ?: emptySet()
-                _uiState.run {
-                    update {
-                        it.copy(
-                            allStations = value.allStations.map { station ->
-                                station.copy(isFavourite = station.code in favouriteStations)
-                            },
-                            favouriteStations = favouriteStations,
-                        )
-                    }
-                }
+                preferencesRepository.setFavouriteStations(updatedStations)
             }
         }
     }

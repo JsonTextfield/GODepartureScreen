@@ -9,7 +9,6 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,14 +29,13 @@ fun ActionBar(
     maxActions: Int,
     actions: List<Action>,
 ) {
-    val visibleActions = actions.filter { it.isVisible }
-    val displayActions = visibleActions.take(maxActions)
+    val displayActions = actions.take(maxActions)
     displayActions.forEach { action ->
         var showMenu by remember { mutableStateOf(false) }
-        if (action.menuContent != null) {
+        action.menuContent?.let {
             PopupMenu(
                 showMenu = showMenu,
-                menuContent = action.menuContent,
+                menuContent = it,
             )
         }
         MenuItem(
@@ -53,7 +51,7 @@ fun ActionBar(
         )
     }
 
-    val overflowActions = visibleActions.drop(maxActions)
+    val overflowActions = actions.drop(maxActions)
     if (overflowActions.isNotEmpty()) {
         Box {
             var showOverflowMenu by remember { mutableStateOf(false) }
@@ -80,17 +78,14 @@ fun getActions(
     mainViewModel: MainViewModel,
 ): List<Action> {
     val uiState by mainViewModel.uiState.collectAsState()
-    var icon by mutableStateOf(Icons.Rounded.StarBorder)
-    LaunchedEffect(uiState) {
+    val favourite = Action(
         icon = if (uiState.selectedStation?.isFavourite == true) {
             Icons.Rounded.Star
         } else {
             Icons.Rounded.StarBorder
-        }
-    }
-    val favourite = Action(
-        icon = icon,
+        },
         tooltip = stringResource(Res.string.favourite),
+        isVisible = uiState.selectedStation != null,
         onClick = mainViewModel::setFavouriteStations,
     )
 
@@ -118,43 +113,32 @@ fun getActions(
         },
     )
 
-//    val theme = Action(
-//        icon = Icons.Rounded.BrightnessMedium,
-//        tooltip = stringResource(Res.string.theme),
-//        isVisible = true,
-//        menuContent = {
-//            var isExpanded by remember { mutableStateOf(it) }
-//            DropdownMenu(
-//                expanded = isExpanded xor it,
-//                onDismissRequest = { isExpanded = !isExpanded },
-//            ) {
-//                ThemeMode.entries.forEach { themeMode ->
-//                    RadioMenuItem(
-//                        title = stringResource(themeMode.key),
-//                        isSelected = mainViewModel.uiState.value.theme == themeMode,
-//                        onClick = {
-//                            isExpanded = !isExpanded
-//                            mainViewModel.setTheme(themeMode)
-//                        },
-//                    )
-//                }
-//            }
-//        },
-//    )
-
-    val alerts = Action(
-        icon = Icons.Rounded.Notifications,
-        tooltip = stringResource(Res.string.alerts),
-        isVisible = true,
-        onClick = {
-            mainViewModel.showAlertsScreen()
+    val theme = Action(
+        icon = Icons.Rounded.BrightnessMedium,
+        tooltip = stringResource(Res.string.theme),
+        menuContent = {
+            var isExpanded by remember { mutableStateOf(it) }
+            DropdownMenu(
+                expanded = isExpanded xor it,
+                onDismissRequest = { isExpanded = !isExpanded },
+            ) {
+                ThemeMode.entries.forEach { themeMode ->
+                    RadioMenuItem(
+                        title = stringResource(themeMode.key),
+                        isSelected = mainViewModel.uiState.value.theme == themeMode,
+                        onClick = {
+                            isExpanded = !isExpanded
+                            mainViewModel.setTheme(themeMode)
+                        },
+                    )
+                }
+            }
         },
     )
 
     val alerts = Action(
         icon = Icons.Rounded.Notifications,
         tooltip = stringResource(Res.string.alerts),
-        isVisible = true,
         onClick = {
             mainViewModel.showAlertsScreen()
         },
@@ -165,5 +149,5 @@ fun getActions(
         sort,
         alerts,
         theme,
-    )
+    ).filter { it.isVisible }
 }

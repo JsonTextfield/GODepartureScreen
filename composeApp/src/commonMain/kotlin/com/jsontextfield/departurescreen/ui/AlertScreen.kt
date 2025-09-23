@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -107,11 +108,11 @@ fun AlertScreen(
                             columnSpan = 1,
                         )
                     })
-                    Spacer(modifier = Modifier.size(24.dp))
                 }
             }
             if (informationAlerts.isNotEmpty()) {
                 item {
+                    Spacer(modifier = Modifier.height(24.dp))
                     Text(
                         stringResource(Res.string.information_alerts),
                         style = MaterialTheme.typography.headlineMedium,

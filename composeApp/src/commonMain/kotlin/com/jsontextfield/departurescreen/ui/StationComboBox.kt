@@ -92,7 +92,7 @@ fun StationComboBox(
                             ListItem(
                                 modifier = Modifier.alpha(if (station.isEnabled) 1f else 0.5f),
                                 colors = ListItemDefaults.colors(
-                                    containerColor = if (selectedItem == station) {
+                                    containerColor = if (selectedItem?.code == station.code) {
                                         MaterialTheme.colorScheme.primaryContainer
                                     }
                                     else if (!station.isEnabled) {
