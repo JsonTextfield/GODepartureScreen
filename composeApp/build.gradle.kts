@@ -85,8 +85,8 @@ android {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
         targetSdk = 36
-        versionCode = 29
-        versionName = "1.7.3"
+        versionCode = 30
+        versionName = "1.8.0"
     }
     packaging {
         resources {
