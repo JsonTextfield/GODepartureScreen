@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -77,7 +76,7 @@ fun AlertScreen(
                 .padding(
                     start = WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(LayoutDirection.Ltr),
                     end = WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr),
-                ).semantics{
+                ).semantics {
                     collectionInfo = CollectionInfo(
                         rowCount = informationAlerts.size + serviceAlerts.size,
                         columnCount = 1,
@@ -100,14 +99,17 @@ fun AlertScreen(
                     )
                 }
                 itemsIndexed(serviceAlerts, key = { _, item -> item.id }) { index, alert ->
-                    AlertItem(alert, modifier = Modifier.semantics{
-                        collectionItemInfo = CollectionItemInfo(
-                            rowIndex = index,
-                            columnIndex = 0,
-                            rowSpan = 1,
-                            columnSpan = 1,
-                        )
-                    })
+                    AlertItem(
+                        alert,
+                        modifier = Modifier.semantics {
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = index,
+                                columnIndex = 0,
+                                rowSpan = 1,
+                                columnSpan = 1,
+                            )
+                        }.animateItem()
+                    )
                 }
             }
             if (informationAlerts.isNotEmpty()) {
@@ -122,15 +124,17 @@ fun AlertScreen(
                     )
                 }
                 itemsIndexed(informationAlerts, key = { _, item -> item.id }) { index, alert ->
-                    AlertItem(alert, modifier = Modifier.semantics {
-                        collectionItemInfo = CollectionItemInfo(
-                            rowIndex = serviceAlerts.size + index,
-                            columnIndex = 0,
-                            rowSpan = 1,
-                            columnSpan = 1,
-                        )
-                    })
-                    Spacer(modifier = Modifier.size(24.dp))
+                    AlertItem(
+                        alert,
+                        modifier = Modifier.semantics {
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = serviceAlerts.size + index,
+                                columnIndex = 0,
+                                rowSpan = 1,
+                                columnSpan = 1,
+                            )
+                        }.animateItem()
+                    )
                 }
             }
         }

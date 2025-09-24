@@ -126,14 +126,20 @@ class MainViewModel(
         alertsJob = alertsJob ?: viewModelScope.launch {
             while (true) {
                 runCatching {
+                    val selectedStationCode = uiState.value.selectedStation?.code
+                    val allTrainCodes = uiState.value.allTrains.map { it.code }.toSet()
                     _serviceAlerts.update {
                         goTrainDataSource.getServiceAlerts().filter {
-                            uiState.value.selectedStation?.code in it.affectedStations || it.affectedStations.isEmpty()
+                            (selectedStationCode in it.affectedStations || it.affectedStations.isEmpty())
+                                    &&
+                                    ((allTrainCodes intersect it.affectedLines).isNotEmpty() || it.affectedLines.isEmpty())
                         }
                     }
                     _informationAlerts.update {
                         goTrainDataSource.getInformationAlerts().filter {
-                            uiState.value.selectedStation?.code in it.affectedStations || it.affectedStations.isEmpty()
+                            (selectedStationCode in it.affectedStations || it.affectedStations.isEmpty())
+                                    &&
+                                    ((allTrainCodes intersect it.affectedLines).isNotEmpty() || it.affectedLines.isEmpty())
                         }
                     }
                 }.onFailure { exception ->
