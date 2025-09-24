@@ -44,5 +44,6 @@ fun AppPreview() {
         onSetVisibleTrains = {},
         onStationSelected = {},
         onRetryClicked = {},
+        onRefresh = {}
     )
 }

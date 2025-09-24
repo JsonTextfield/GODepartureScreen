@@ -70,7 +70,7 @@ class MainViewModel(
                 _uiState.update { uiState ->
                     uiState.copy(
                         allStations = allStations
-                            .filter { "Station" in it.type }
+                            .filter { "Station" in it.type || "Terminal" in it.type }
                             .map {
                                 it.copy(isFavourite = it.code in uiState.favouriteStations)
                             }
@@ -89,6 +89,21 @@ class MainViewModel(
             }.onSuccess {
                 startTimerJob()
                 startAlertsJob()
+            }
+        }
+    }
+
+    fun refresh() {
+        _uiState.update {
+            it.copy(isRefreshing = true)
+        }
+        viewModelScope.launch {
+            delay(1000)
+            if (timeRemaining.value < 16000) {
+                _timeRemaining.update { 1000 }
+            }
+            _uiState.update {
+                it.copy(isRefreshing = false)
             }
         }
     }

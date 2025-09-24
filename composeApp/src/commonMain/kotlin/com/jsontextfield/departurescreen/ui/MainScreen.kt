@@ -15,6 +15,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +39,7 @@ fun MainScreen(
     timeRemaining: Int,
     actions: List<Action>,
     onRetryClicked: () -> Unit,
+    onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
     onStationSelected: (Station) -> Unit,
 ) {
@@ -108,7 +111,12 @@ fun MainScreen(
                         }
                     }
                     Surface {
-                        TrainList(trains = uiState.allTrains.filter { it.isVisible })
+                        PullToRefreshBox(
+                            isRefreshing = uiState.isRefreshing,
+                            onRefresh = onRefresh,
+                        ) {
+                            TrainList(trains = uiState.allTrains.filter { it.isVisible })
+                        }
                     }
                 }
             }

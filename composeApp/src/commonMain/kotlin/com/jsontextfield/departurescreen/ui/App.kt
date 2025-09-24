@@ -28,6 +28,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
         timeRemaining = timeRemaining,
         actions = getActions(mainViewModel),
         onRetryClicked = mainViewModel::loadData,
+        onRefresh = mainViewModel::refresh,
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
         onBackPressed = mainViewModel::showAlertsScreen,
         onStationSelected = mainViewModel::setSelectedStation
@@ -44,6 +45,7 @@ fun App(
     timeRemaining: Int,
     actions: List<Action>,
     onRetryClicked: () -> Unit,
+    onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
     onStationSelected: (Station) -> Unit,
     onBackPressed: () -> Unit = {},
@@ -54,6 +56,7 @@ fun App(
             timeRemaining = timeRemaining,
             actions = actions,
             onRetryClicked = onRetryClicked,
+            onRefresh = onRefresh,
             onSetVisibleTrains = onSetVisibleTrains,
             onStationSelected = onStationSelected,
         )

@@ -12,6 +12,7 @@ data class UIState(
     val favouriteStations: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
+    val isRefreshing: Boolean = false,
 ) {
     val allTrains: List<Train>
         get() {
