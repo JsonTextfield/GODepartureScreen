@@ -2,26 +2,54 @@ package com.jsontextfield.departurescreen.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val stouffville = Color(0xFF794500)
-val richmondHill = Color(0xFF0099C7)
-val milton = Color(0xFFF57F25)
-val lakeshoreWest = Color(0xFF98002E)
-val lakeshoreEast = Color(0xFFFF0D00)
-val barrie = Color(0xFF003767)
-val kitchener = Color(0xFF00853E)
-
-val trainColours = mapOf(
-    "Stouffville" to stouffville,
-    "Richmond Hill" to richmondHill,
-    "Milton" to milton,
-    "Lakeshore West" to lakeshoreWest,
-    "Lakeshore East" to lakeshoreEast,
-    "Barrie" to barrie,
-    "Kitchener" to kitchener
+val lineColours = mapOf(
+    "11" to Color(0xFF98002E),
+    "12" to Color(0xFF98002E),
+    "15" to Color(0xFF98002E),
+    "16" to Color(0xFF98002E),
+    "17" to Color(0xFFF78025),
+    "18" to Color(0xFF98002E),
+    "19" to Color(0xFFF57F25),
+    "21" to Color(0xFFF57F25),
+    "22" to Color(0xFFF78025),
+    "25" to Color(0xFFF57F25),
+    "27" to Color(0xFFF57F25),
+    "29" to Color(0xFF00853E),
+    "30" to Color(0xFF00853E),
+    "31" to Color(0xFF00853E),
+    "32" to Color(0xFF00853E),
+    "33" to Color(0xFF00853E),
+    "35" to Color(0xFF00A6FF),
+    "36" to Color(0xFF00853E),
+    "37" to Color(0xFF00853E),
+    "38" to Color(0xFF00853E),
+    "40" to Color(0xFFA11984),
+    "41" to Color(0xFFA21984),
+    "47" to Color(0xFFA21984),
+    "48" to Color(0xFFA21884),
+    "52" to Color(0xFF6F298D),
+    "54" to Color(0xFF6F298D),
+    "56" to Color(0xFF6F298D),
+    "61" to Color(0xFF0099C7),
+    "65" to Color(0xFF003767),
+    "66" to Color(0xFF003767),
+    "67" to Color(0xFF003767),
+    "68" to Color(0xFF003767),
+    "70" to Color(0xFF794500),
+    "71" to Color(0xFF794500),
+    "88" to Color(0xFFFF0D00),
+    "90" to Color(0xFFFF0D00),
+    "92" to Color(0xFFFF0D00),
+    "94" to Color(0xFFA21884),
+    "96" to Color(0xFFFF0D00),
+    "LW" to Color(0xFF98002E),
+    "LE" to Color(0xFFFF0D00),
+    "KI" to Color(0xFF00853E),
+    "ST" to Color(0xFF794500),
+    "RH" to Color(0xFF0099C7),
+    "BR" to Color(0xFF003767),
+    "MI" to Color(0xFFF57F25)
 )
-
-val Color.Companion.Orange: Color
-    get() = Color(0xFFF57F25)
 
 val primaryLight = Color(0xFF3F6837)
 val onPrimaryLight = Color(0xFFFFFFFF)

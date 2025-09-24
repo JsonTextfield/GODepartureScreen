@@ -6,7 +6,7 @@ import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.network.model.Alerts
-import com.jsontextfield.departurescreen.ui.theme.trainColours
+import com.jsontextfield.departurescreen.ui.theme.lineColours
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
@@ -28,9 +28,7 @@ class GoTrainDataSource(
             val lines = nextService.nextService?.lines
             val cancelledTrips = exceptions.trip.filter { it.isCancelled == "1" }.map { it.tripNumber }
 
-            val result = lines?.filter { line ->
-                line.serviceType == "T"
-            }?.map { line ->
+            val result = lines?.map { line ->
                 val departureTime =
                     Instant.parseOrNull(line.computedDepartureTime.orEmpty(), inFormatter)
                         ?: Instant.parseOrNull(line.scheduledDepartureTime.orEmpty(), inFormatter)
@@ -46,7 +44,7 @@ class GoTrainDataSource(
                     code = lineCode,
                     name = line.lineName,
                     destination = line.directionName.split(" - ").last(),
-                    color = trainColours[line.lineName] ?: Color.Gray,
+                    color = lineColours[lineCode] ?: Color.Gray,
                     tripOrder = line.tripOrder,
                     lastUpdated = Instant.parse(lastUpdated, inFormatter),
                     isCancelled = line.tripNumber in cancelledTrips,

@@ -79,56 +79,49 @@ fun StationComboBox(
                     )
                 }
         ) {
-            items
-                .sortedWith(compareByDescending<Station> { it.isFavourite }
-                    .thenByDescending { it.code == "UN" }
-                    .thenBy { it.name }
-                )
-                .forEachIndexed { index, station ->
-                    DropdownMenuItem(
-                        contentPadding = PaddingValues(0.dp),
-                        enabled = station.isEnabled,
-                        text = {
-                            ListItem(
-                                modifier = Modifier.alpha(if (station.isEnabled) 1f else 0.5f),
-                                colors = ListItemDefaults.colors(
-                                    containerColor = if (selectedItem?.code == station.code) {
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    }
-                                    else if (!station.isEnabled) {
-                                        MaterialTheme.colorScheme.surfaceContainerLow
-                                    }
-                                    else {
-                                        MaterialTheme.colorScheme.surface
-                                    }
-                                ),
-                                headlineContent = {
-                                    Text(station.name)
-                                },
-                                trailingContent = {
-                                    if (station.isFavourite) {
-                                        Icon(
-                                            Icons.Rounded.Star,
-                                            contentDescription = stringResource(Res.string.favourite)
-                                        )
-                                    }
+            items.forEachIndexed { index, station ->
+                DropdownMenuItem(
+                    contentPadding = PaddingValues(0.dp),
+                    enabled = station.isEnabled,
+                    text = {
+                        ListItem(
+                            modifier = Modifier.alpha(if (station.isEnabled) 1f else 0.5f),
+                            colors = ListItemDefaults.colors(
+                                containerColor = if (selectedItem?.code == station.code) {
+                                    MaterialTheme.colorScheme.primaryContainer
+                                } else if (!station.isEnabled) {
+                                    MaterialTheme.colorScheme.surfaceContainerLow
+                                } else {
+                                    MaterialTheme.colorScheme.surface
                                 }
-                            )
-                        },
-                        onClick = {
-                            onItemSelected(station)
-                            expanded = false
-                        },
-                        modifier = Modifier.semantics {
-                            collectionItemInfo = CollectionItemInfo(
-                                rowIndex = index,
-                                rowSpan = 1,
-                                columnIndex = 0,
-                                columnSpan = 1,
-                            )
-                        }
-                    )
-                }
+                            ),
+                            headlineContent = {
+                                Text(station.name)
+                            },
+                            trailingContent = {
+                                if (station.isFavourite) {
+                                    Icon(
+                                        Icons.Rounded.Star,
+                                        contentDescription = stringResource(Res.string.favourite)
+                                    )
+                                }
+                            }
+                        )
+                    },
+                    onClick = {
+                        onItemSelected(station)
+                        expanded = false
+                    },
+                    modifier = Modifier.semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = index,
+                            rowSpan = 1,
+                            columnIndex = 0,
+                            columnSpan = 1,
+                        )
+                    }
+                )
+            }
         }
     }
 }

@@ -20,5 +20,5 @@ data class Train(
 ) {
     val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"
-    val isExpress: Boolean = id.length > 2 && id[2] in "56789"
+    val isExpress: Boolean = 'X' in id
 }

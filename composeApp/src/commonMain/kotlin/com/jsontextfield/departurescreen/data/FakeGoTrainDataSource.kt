@@ -5,11 +5,6 @@ package com.jsontextfield.departurescreen.data
 import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
-import com.jsontextfield.departurescreen.ui.theme.barrie
-import com.jsontextfield.departurescreen.ui.theme.lakeshoreWest
-import com.jsontextfield.departurescreen.ui.theme.milton
-import com.jsontextfield.departurescreen.ui.theme.richmondHill
-import com.jsontextfield.departurescreen.ui.theme.stouffville
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -20,7 +15,6 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             code = "BR",
             destination = "Allandale Waterfront GO",
             platform = "3",
-            color = barrie,
         ),
         Train(
             id = Uuid.random().toString(),
@@ -28,7 +22,6 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             destination = "Niagara Falls Go (Via Rail Station)",
             info = "Wait / Attendez",
             platform = "-",
-            color = lakeshoreWest,
         ),
         Train(
             id = Uuid.random().toString(),
@@ -36,7 +29,6 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             destination = "Mount Joy GO",
             info = "Proceed / Attendez",
             platform = "7 & 8",
-            color = stouffville,
         ),
         Train(
             id = Uuid.random().toString(),
@@ -44,14 +36,12 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
             destination = "Bloomington GO",
             info = "Proceed / Attendez",
             platform = "11 & 12",
-            color = richmondHill,
         ),
         Train(
             id = Uuid.random().toString(),
             code = "MI",
             destination = "Milton GO",
             platform = "9",
-            color = milton,
         ),
     )
 

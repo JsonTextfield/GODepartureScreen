@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
-import com.jsontextfield.departurescreen.ui.theme.trainColours
+import com.jsontextfield.departurescreen.ui.theme.lineColours
 
 private val sampleTrains = List(11) {
     Train(
@@ -17,7 +17,7 @@ private val sampleTrains = List(11) {
         code = "${Char(65 + it)}${Char(68 + it)}",
         destination = "Station",
         platform = "${it + 1} & ${it + 2}",
-        color = trainColours.values.random(),
+        color = lineColours.values.random(),
         isCancelled = it % 3 == 0,
     )
 }

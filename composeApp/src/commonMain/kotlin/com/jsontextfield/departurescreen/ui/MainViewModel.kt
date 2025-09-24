@@ -61,11 +61,6 @@ class MainViewModel(
         viewModelScope.launch {
             runCatching {
                 val allStations = goTrainDataSource.getAllStations()
-                    .filter { stop ->
-                        "Station" in stop.type && stop.code != "PA"
-                    }.sortedWith(
-                        compareBy({ it.code != "UN" }, { it.name })
-                    )
                 val selectedStation = uiState.value.selectedStation
                     ?: allStations.firstOrNull {
                         it.code == preferencesRepository.getSelectedStationCode()
@@ -74,9 +69,16 @@ class MainViewModel(
                     } ?: allStations.firstOrNull()
                 _uiState.update { uiState ->
                     uiState.copy(
-                        allStations = allStations.map {
-                            it.copy(isFavourite = it.code in uiState.favouriteStations)
-                        },
+                        allStations = allStations
+                            .filter { "Station" in it.type }
+                            .map {
+                                it.copy(isFavourite = it.code in uiState.favouriteStations)
+                            }
+                            .sortedWith(
+                                compareByDescending<Station> { it.isFavourite }
+                                    .thenBy { it.code != "UN" }
+                                    .thenBy { it.name }
+                            ),
                         selectedStation = selectedStation,
                     )
                 }
@@ -203,7 +205,11 @@ class MainViewModel(
                 it.copy(
                     allStations = it.allStations.map { station ->
                         station.copy(isFavourite = station.code in updatedStations)
-                    },
+                    }.sortedWith(
+                        compareByDescending<Station> { it.isFavourite }
+                            .thenBy { it.code != "UN" }
+                            .thenBy { it.name }
+                    ),
                     favouriteStations = updatedStations,
                     selectedStation = selectedStation.copy(isFavourite = !selectedStation.isFavourite)
                 )
