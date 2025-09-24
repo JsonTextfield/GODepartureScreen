@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import com.jsontextfield.departurescreen.entities.CombinedStation
 import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
@@ -32,7 +33,7 @@ fun AppPreview() {
             status = Status.LOADED,
             _allTrains = sampleTrains,
             visibleTrains = emptySet(),
-            selectedStation = Station("Union GO Station", "UN", type = "Train Station"),
+            selectedStation = CombinedStation("Union GO Station", listOf("UN"), types = listOf("Train Station")),
         ),
         timeRemaining = 16000,
         actions = listOf(

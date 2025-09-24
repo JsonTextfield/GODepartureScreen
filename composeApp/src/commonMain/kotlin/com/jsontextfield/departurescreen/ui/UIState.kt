@@ -1,13 +1,14 @@
 package com.jsontextfield.departurescreen.ui
 
+import com.jsontextfield.departurescreen.entities.CombinedStation
 import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 
 data class UIState(
     val status: Status = Status.LOADING,
-    val selectedStation: Station? = null,
+    val selectedStation: CombinedStation? = null,
     private val _allTrains: List<Train> = emptyList(),
-    val allStations: List<Station> = emptyList(),
+    val allStations: List<CombinedStation> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val favouriteStations: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,

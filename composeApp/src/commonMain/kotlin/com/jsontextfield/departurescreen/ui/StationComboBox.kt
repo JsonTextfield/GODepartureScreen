@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.entities.CombinedStation
 import com.jsontextfield.departurescreen.entities.Station
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.favourite
@@ -41,9 +42,9 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StationComboBox(
-    items: List<Station> = emptyList(),
-    selectedItem: Station? = null,
-    onItemSelected: (Station) -> Unit = {},
+    items: List<CombinedStation> = emptyList(),
+    selectedItem: CombinedStation? = null,
+    onItemSelected: (CombinedStation) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -87,7 +88,7 @@ fun StationComboBox(
                         ListItem(
                             modifier = Modifier.alpha(if (station.isEnabled) 1f else 0.5f),
                             colors = ListItemDefaults.colors(
-                                containerColor = if (selectedItem?.code == station.code) {
+                                containerColor = if ((station.codes intersect selectedItem?.codes.orEmpty()).isNotEmpty()) {
                                     MaterialTheme.colorScheme.primaryContainer
                                 } else if (!station.isEnabled) {
                                     MaterialTheme.colorScheme.surfaceContainerLow

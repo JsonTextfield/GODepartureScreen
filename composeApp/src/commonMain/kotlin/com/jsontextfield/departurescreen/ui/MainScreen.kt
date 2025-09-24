@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.entities.CombinedStation
 import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
@@ -41,7 +42,7 @@ fun MainScreen(
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
-    onStationSelected: (Station) -> Unit,
+    onStationSelected: (CombinedStation) -> Unit,
 ) {
     Scaffold(
         topBar = {
