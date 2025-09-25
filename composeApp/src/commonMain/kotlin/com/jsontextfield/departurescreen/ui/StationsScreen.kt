@@ -41,8 +41,6 @@ import com.jsontextfield.departurescreen.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.ui.components.SearchBar
 import com.jsontextfield.departurescreen.ui.components.StationListItem
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
-import kotlin.math.min
 
 @Composable
 fun StationsScreen(
