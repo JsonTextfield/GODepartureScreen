@@ -7,7 +7,6 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.theme.lineColours
@@ -42,9 +41,5 @@ fun AppPreview() {
                 tooltip = "Sort",
             ),
         ),
-        onSetVisibleTrains = {},
-        onStationSelected = {},
-        onRetryClicked = {},
-        onRefresh = {}
     )
 }

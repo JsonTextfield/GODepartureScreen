@@ -26,6 +26,14 @@ data class UIState(
                 }
             )
         }
+
+    fun getFilteredStations(query: String): List<CombinedStation> {
+        if (query.isBlank()) return allStations
+        val lowerCaseQuery = query.lowercase()
+        return allStations.filter {
+            lowerCaseQuery in it.name.lowercase()
+        }
+    }
 }
 
 
