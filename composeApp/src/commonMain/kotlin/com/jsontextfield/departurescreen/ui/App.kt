@@ -34,6 +34,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
         onBackPressed = mainViewModel::onBackPressed,
         onShowStationMenu = mainViewModel::showStationMenu,
         onStationSelected = mainViewModel::setSelectedStation,
+        onFavouriteClick = mainViewModel::setFavouriteStations,
         onRefreshAlerts = mainViewModel::loadAlerts,
     )
 }
@@ -54,6 +55,7 @@ fun App(
     onSetVisibleTrains: (Set<String>) -> Unit = {},
     onShowStationMenu: () -> Unit = {},
     onStationSelected: (CombinedStation) -> Unit = {},
+    onFavouriteClick: (CombinedStation) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
     MyApplicationTheme(theme = uiState.theme) {
@@ -87,7 +89,8 @@ fun App(
             StationsScreen(
                 uiState = uiState,
                 onStationSelected = onStationSelected,
-                onBackPressed = onBackPressed
+                onFavouriteClick = onFavouriteClick,
+                onBackPressed = onBackPressed,
             )
         }
     }

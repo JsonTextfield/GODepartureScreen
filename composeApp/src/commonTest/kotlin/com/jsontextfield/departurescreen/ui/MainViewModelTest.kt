@@ -1,6 +1,6 @@
 package com.jsontextfield.departurescreen.ui
 
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 import com.jsontextfield.departurescreen.data.FakeGoTrainDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +18,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
-    private val baseTrain = Train(id = "0000")
+    private val baseTrip = Trip(id = "0000")
     private lateinit var dispatcher: TestDispatcher
 
     @BeforeTest
@@ -37,17 +37,17 @@ class MainViewModelTest {
     @Test
     fun `test sort by time`() = runTest(dispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
-        goTrainDataSource.trains = listOf(
-            baseTrain.copy(
+        goTrainDataSource.trips = listOf(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(9000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(8000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(10000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(7000),
             ),
         )
@@ -62,37 +62,37 @@ class MainViewModelTest {
         mainViewModel.stop()
 
         val expectedResult = listOf(
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(7000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(8000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(9000),
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 departureTime = Instant.fromEpochMilliseconds(10000),
             ),
         )
 
         assertEquals(SortMode.TIME, mainViewModel.uiState.value.sortMode)
-        assertEquals(expectedResult, mainViewModel.uiState.value.allTrains)
+        assertEquals(expectedResult, mainViewModel.uiState.value.allTrips)
     }
 
     @Test
     fun `test sort by line`() = runTest(dispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
-        goTrainDataSource.trains = listOf(
-            baseTrain.copy(
+        goTrainDataSource.trips = listOf(
+            baseTrip.copy(
                 code = "NY",
                 destination = "North York",
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 code = "AG",
                 destination = "Scarborough",
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 code = "NY",
                 destination = "Don Mills",
             ),
@@ -107,16 +107,16 @@ class MainViewModelTest {
         )
         mainViewModel.stop()
 
-        val result = mainViewModel.uiState.value.allTrains
+        val result = mainViewModel.uiState.value.allTrips
 
         val expectedResult = listOf(
-            baseTrain.copy(
+            baseTrip.copy(
                 code = "AG",
                 destination = "Scarborough",
-            ), baseTrain.copy(
+            ), baseTrip.copy(
                 code = "NY",
                 destination = "Don Mills",
-            ), baseTrain.copy(
+            ), baseTrip.copy(
                 code = "NY",
                 destination = "North York",
             )
@@ -129,11 +129,11 @@ class MainViewModelTest {
     @Test
     fun `test set visible trains when train departs`() = runTest(dispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
-        goTrainDataSource.trains = listOf(
-            baseTrain.copy(
+        goTrainDataSource.trips = listOf(
+            baseTrip.copy(
                 code = "LW",
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 code = "BR",
             )
         )
@@ -156,11 +156,11 @@ class MainViewModelTest {
     @Test
     fun `test set visible trains when trains have not yet departed`() = runTest(dispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
-        goTrainDataSource.trains = listOf(
-            baseTrain.copy(
+        goTrainDataSource.trips = listOf(
+            baseTrip.copy(
                 code = "LW",
             ),
-            baseTrain.copy(
+            baseTrip.copy(
                 code = "BR",
             )
         )

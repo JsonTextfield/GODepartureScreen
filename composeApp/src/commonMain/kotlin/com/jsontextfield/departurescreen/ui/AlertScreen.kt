@@ -16,11 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,6 +25,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
@@ -38,12 +36,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.entities.Alert
+import com.jsontextfield.departurescreen.ui.components.AlertItem
+import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
-import departure_screen.composeapp.generated.resources.back
 import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.ceil
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,23 +55,23 @@ fun AlertScreen(
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
 ) {
-    Back(onBackPressed)
+    val density = LocalDensity.current
+    val widthDp =
+        (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
+            .calculateLeftPadding(
+                LayoutDirection.Ltr
+            ).value - WindowInsets.safeDrawing.asPaddingValues()
+            .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
+    val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = { BackButton(onBackPressed) },
                 title = {
                     Text(
                         text = stringResource(Res.string.alerts),
                         modifier = Modifier.semantics { heading() }
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
                 },
                 modifier = Modifier.shadow(4.dp)
             )
@@ -79,9 +80,7 @@ fun AlertScreen(
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
-            modifier = Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-            )
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         ) {
             LazyVerticalGrid(
                 modifier = Modifier
@@ -92,14 +91,12 @@ fun AlertScreen(
                     ).semantics {
                         collectionInfo = CollectionInfo(
                             rowCount = informationAlerts.size + serviceAlerts.size,
-                            columnCount = 1,
+                            columnCount = columns,
                         )
                     },
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(16.dp) + PaddingValues(
-                    bottom = 100.dp,
-                ),
+                contentPadding = PaddingValues(16.dp) + PaddingValues(bottom = 100.dp),
                 columns = GridCells.Adaptive(240.dp),
             ) {
                 if (serviceAlerts.isNotEmpty()) {
@@ -117,8 +114,8 @@ fun AlertScreen(
                             alert,
                             modifier = Modifier.semantics {
                                 collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = index,
-                                    columnIndex = 0,
+                                    rowIndex = index / columns,
+                                    columnIndex = index % columns,
                                     rowSpan = 1,
                                     columnSpan = 1,
                                 )
@@ -146,8 +143,8 @@ fun AlertScreen(
                             alert,
                             modifier = Modifier.semantics {
                                 collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = serviceAlerts.size + index,
-                                    columnIndex = 0,
+                                    rowIndex = (serviceAlerts.size + index) / columns,
+                                    columnIndex = (serviceAlerts.size + index) % columns,
                                     rowSpan = 1,
                                     columnSpan = 1,
                                 )

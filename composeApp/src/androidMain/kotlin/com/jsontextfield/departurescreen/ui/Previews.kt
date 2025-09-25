@@ -7,12 +7,12 @@ import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.theme.lineColours
 
-private val sampleTrains = List(11) {
-    Train(
+private val sampleTrips = List(11) {
+    Trip(
         id = (37 * it + 1000).toString(),
         code = "${Char(65 + it)}${Char(68 + it)}",
         destination = "Station",
@@ -30,7 +30,7 @@ fun AppPreview() {
     App(
         uiState = UIState(
             status = Status.LOADED,
-            _allTrains = sampleTrains,
+            _allTrips = sampleTrips,
             visibleTrains = emptySet(),
             selectedStation = CombinedStation("Union GO Station", listOf("UN"), types = listOf("Train Station")),
         ),

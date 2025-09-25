@@ -1,12 +1,12 @@
 package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 
 data class UIState(
     val status: Status = Status.LOADING,
     val selectedStation: CombinedStation? = null,
-    private val _allTrains: List<Train> = emptyList(),
+    private val _allTrips: List<Trip> = emptyList(),
     val allStations: List<CombinedStation> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val favouriteStations: Set<String> = emptySet(),
@@ -15,9 +15,9 @@ data class UIState(
     val isRefreshing: Boolean = false,
     val isAlertsRefreshing: Boolean = false,
 ) {
-    val allTrains: List<Train>
+    val allTrips: List<Trip>
         get() {
-            return _allTrains.map { train ->
+            return _allTrips.map { train ->
                 train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
             }.sortedWith(
                 when (sortMode) {

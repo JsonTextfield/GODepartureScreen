@@ -1,6 +1,6 @@
 @file:OptIn(FormatStringsInDatetimeFormats::class)
 
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,7 @@ fun AlertItem(
         ) {
             Text(
                 text = alert.subject,
-                modifier = modifier.semantics { heading() },
+                modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.titleSmall,
             )
             Text(

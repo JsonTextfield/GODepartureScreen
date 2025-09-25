@@ -92,7 +92,7 @@ fun getActions(
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
-        isVisible = mainViewModel.uiState.value.allTrains.isNotEmpty(),
+        isVisible = mainViewModel.uiState.value.allTrips.isNotEmpty(),
         menuContent = {
             var isExpanded by remember { mutableStateOf(it) }
             DropdownMenu(

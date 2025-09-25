@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -19,7 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.ui.SquircleShape
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.cancelled
 import departure_screen.composeapp.generated.resources.express
@@ -28,10 +29,11 @@ import departure_screen.composeapp.generated.resources.minutes_content_descripti
 import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.E
 
 @Composable
-fun TrainListItem(
-    train: Train,
+fun TripListItem(
+    trip: Trip,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -41,8 +43,8 @@ fun TrainListItem(
     ) {
         val minutesContentDescription = pluralStringResource(
             Res.plurals.minutes_content_description,
-            train.departureDiffMinutes,
-            train.departureDiffMinutes,
+            trip.departureDiffMinutes,
+            trip.departureDiffMinutes,
         )
         val shouldShowTrainCode = with(LocalDensity.current) {
             fontScale <= 1.5f
@@ -57,7 +59,7 @@ fun TrainListItem(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = train.departureDiffMinutes.toString(),
+                text = trip.departureDiffMinutes.toString(),
                 modifier = Modifier.basicMarquee(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     textAlign = TextAlign.Center,
@@ -73,35 +75,39 @@ fun TrainListItem(
         }
         if (shouldShowTrainCode) {
             val fontScale = LocalDensity.current.fontScale
-            TrainCodeBox(
-                train.code,
+            TripCodeBox(
+                trip.code,
                 modifier = Modifier
                     .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
-                    .background(color = train.color, shape = SquircleShape(kotlin.math.E))
+                    .background(color = trip.color, shape = SquircleShape(E))
                     .semantics {
-                        contentDescription = train.name
+                        contentDescription = if (trip.isBus) {
+                            trip.code
+                        } else {
+                            trip.name
+                        }
                     },
             )
         }
         Column(modifier = Modifier.weight(6 / 12f)) {
             if (!shouldShowTrainCode) {
                 Text(
-                    text = train.name,
+                    text = trip.name,
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
             Text(
-                text = train.destination,
+                text = trip.destination,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (train.isCancelled) {
+            if (trip.isCancelled) {
                 Text(
                     text = stringResource(Res.string.cancelled),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelMedium,
                 )
-            } else if (train.isExpress) {
+            } else if (trip.isExpress) {
                 Text(
                     text = stringResource(Res.string.express),
                     color = MaterialTheme.colorScheme.primary,
@@ -109,19 +115,19 @@ fun TrainListItem(
                 )
             }
         }
-        val platform = stringResource(Res.string.platform, train.platform)
+        val platform = stringResource(Res.string.platform, trip.platform)
         Text(
-            text = train.platform,
+            text = trip.platform,
             maxLines = 3,
             modifier = Modifier
                 .weight(3 / 12f)
                 .clearAndSetSemantics {
-                    if (train.hasPlatform) {
+                    if (trip.hasPlatform) {
                         contentDescription = platform
                     }
                 },
             textAlign = TextAlign.Center,
-            style = if (train.hasPlatform) {
+            style = if (trip.hasPlatform) {
                 MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,

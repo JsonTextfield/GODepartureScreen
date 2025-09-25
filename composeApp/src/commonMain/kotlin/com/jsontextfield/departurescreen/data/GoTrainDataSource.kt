@@ -3,7 +3,7 @@ package com.jsontextfield.departurescreen.data
 import androidx.compose.ui.graphics.Color
 import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.Station
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.ui.theme.lineColours
@@ -19,7 +19,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
-    override suspend fun getTrains(stationCode: String): List<Train> {
+    override suspend fun getTrains(stationCode: String): List<Trip> {
         return try {
             val nextService = departureScreenAPI.getNextService(stationCode)
             val exceptions = departureScreenAPI.getExceptions()
@@ -39,7 +39,7 @@ class GoTrainDataSource(
                         ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
-                Train(
+                Trip(
                     id = line.tripNumber,
                     code = lineCode,
                     name = line.lineName,
@@ -50,6 +50,7 @@ class GoTrainDataSource(
                     isCancelled = line.tripNumber in cancelledTrips,
                     departureTime = departureTime,
                     platform = platform,
+                    isBus = line.serviceType == "B",
                 )
             }?.sortedBy { it.departureTime } ?: emptyList()
             if (stationCode == "UN") {

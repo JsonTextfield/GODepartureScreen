@@ -24,13 +24,14 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.ui.components.TripListItem
 import kotlin.math.ceil
 import kotlin.math.min
 
 @Composable
 fun TrainList(
-    trains: List<Train>,
+    trips: List<Trip>,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -41,7 +42,7 @@ fun TrainList(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {
             collectionInfo = CollectionInfo(
-                rowCount = ceil(trains.size.toDouble() / columns).toInt(),
+                rowCount = ceil(trips.size.toDouble() / columns).toInt(),
                 columnCount = columns,
             )
         },
@@ -50,7 +51,7 @@ fun TrainList(
             bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding() + 100.dp,
         )
     ) {
-        itemsIndexed(trains, key = { _, train -> train.id }) { index, train ->
+        itemsIndexed(trips, key = { _, train -> train.id }) { index, train ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven
             }
@@ -60,26 +61,24 @@ fun TrainList(
             }
             Surface(
                 tonalElevation = if (useAlternateColor) 1.dp else 0.dp,
-                modifier = Modifier.animateItem().semantics {
+                modifier = Modifier.semantics {
                     collectionItemInfo = CollectionItemInfo(
                         rowIndex = index / columns,
                         columnIndex = index % columns,
                         rowSpan = 1,
                         columnSpan = 1,
                     )
-                }
+                }.animateItem()
             ) {
-                TrainListItem(
+                TripListItem(
                     train,
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
                         .padding(8.dp)
                         .padding(
-                            start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
-                                LayoutDirection.Ltr),
-                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
-                                LayoutDirection.Ltr),
+                            start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr),
+                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
                         )
                 )
             }

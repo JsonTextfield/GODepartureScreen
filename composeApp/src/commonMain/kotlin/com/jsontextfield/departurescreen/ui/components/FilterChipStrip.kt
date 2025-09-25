@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,7 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.all
 import departure_screen.composeapp.generated.resources.filter
@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FilterChipStrip(
-    data: List<Train>,
+    data: List<Trip>,
     selectedItems: Set<String>,
     onSelectionChanged: (Set<String>) -> Unit,
     modifier: Modifier = Modifier,
@@ -92,13 +92,17 @@ fun FilterChipStrip(
                 },
                 label = {
                     Text(
-                        train.code,
+                        text = train.code,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = if (train.code in selectedItems) Color.White else Color.Unspecified
                         ),
                         modifier = Modifier.padding(8.dp).semantics {
-                            contentDescription = train.name
+                            contentDescription = if (train.isBus) {
+                                train.code
+                            } else {
+                                train.name
+                            }
                         }
                     )
                 },

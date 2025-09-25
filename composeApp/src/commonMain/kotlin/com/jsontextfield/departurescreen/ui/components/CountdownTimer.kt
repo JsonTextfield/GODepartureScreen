@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState

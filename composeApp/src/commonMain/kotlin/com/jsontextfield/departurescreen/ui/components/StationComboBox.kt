@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.components
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.PaddingValues
@@ -77,7 +77,7 @@ fun StationComboBox(
                     text = {
                         StationListItem(
                             station,
-                            isSelected = station.codes.any { it in selectedItem?.codes.orEmpty() }
+                            //isSelected = station.codes.any { it in selectedItem?.codes.orEmpty() }
                         )
                     },
                     onClick = {

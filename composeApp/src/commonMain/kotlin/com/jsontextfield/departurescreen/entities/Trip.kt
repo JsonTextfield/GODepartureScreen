@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.Instant
 import kotlin.time.DurationUnit
 
-data class Train(
+data class Trip(
     val id: String,
     val code: String = "",
     val name: String = "",
@@ -17,6 +17,7 @@ data class Train(
     val info: String = "",
     val isVisible: Boolean = true,
     val isCancelled: Boolean = false,
+    val isBus: Boolean = false,
 ) {
     val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"

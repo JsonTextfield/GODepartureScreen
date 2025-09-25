@@ -5,7 +5,10 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.ui.components.CountdownTimer
+import com.jsontextfield.departurescreen.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
 import departure_screen.composeapp.generated.resources.Res
@@ -47,8 +54,14 @@ fun MainScreen(
             if (uiState.status == Status.LOADED) {
                 TopAppBar(
                     title = {
-                        FilledTonalButton(onClick = onShowStationMenu) {
-                            Text(uiState.selectedStation?.name.orEmpty(), modifier = Modifier.basicMarquee())
+                        FilledTonalButton(
+                            onClick = onShowStationMenu,
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                        ) {
+                            Text(
+                                text = uiState.selectedStation?.name.orEmpty(),
+                                modifier = Modifier.basicMarquee(),
+                            )
                         }
                     },
                     actions = {
@@ -71,13 +84,25 @@ fun MainScreen(
         },
         floatingActionButton = {
             if (uiState.status == Status.LOADED) {
-                CountdownTimer(timeRemaining)
+                Box(
+                    modifier = Modifier.padding(
+                        end = TopAppBarDefaults
+                            .windowInsets
+                            .asPaddingValues()
+                            .calculateEndPadding(LayoutDirection.Ltr),
+                    ),
+                ) {
+                    CountdownTimer(timeRemaining)
+                }
             }
         },
     ) { innerPadding ->
         when (uiState.status) {
             Status.LOADING -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
                     CircularProgressIndicator()
                 }
             }
@@ -86,7 +111,7 @@ fun MainScreen(
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
                 ) {
                     Text(stringResource(Res.string.error))
                     Spacer(modifier = Modifier.height(8.dp))
@@ -98,12 +123,12 @@ fun MainScreen(
 
             Status.LOADED -> {
                 Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
-                    uiState.allTrains.distinctBy { it.code to it.name }.let { data ->
+                    uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
                         AnimatedVisibility(data.size > 1) {
                             FilterChipStrip(
                                 data = data.sortedBy { it.code },
                                 selectedItems = uiState.visibleTrains,
-                                onSelectionChanged = onSetVisibleTrains
+                                onSelectionChanged = onSetVisibleTrains,
                             )
                         }
                     }
@@ -112,7 +137,7 @@ fun MainScreen(
                             isRefreshing = uiState.isRefreshing,
                             onRefresh = onRefresh,
                         ) {
-                            TrainList(trains = uiState.allTrains.filter { it.isVisible })
+                            TrainList(trips = uiState.allTrips.filter { it.isVisible })
                         }
                     }
                 }

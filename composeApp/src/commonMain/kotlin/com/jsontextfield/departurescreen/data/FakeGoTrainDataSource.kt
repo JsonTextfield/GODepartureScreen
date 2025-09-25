@@ -4,40 +4,40 @@ package com.jsontextfield.departurescreen.data
 
 import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.Station
-import com.jsontextfield.departurescreen.entities.Train
+import com.jsontextfield.departurescreen.entities.Trip
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class FakeGoTrainDataSource : IGoTrainDataSource {
-    var trains: List<Train> = listOf(
-        Train(
+    var trips: List<Trip> = listOf(
+        Trip(
             id = Uuid.random().toString(),
             code = "BR",
             destination = "Allandale Waterfront GO",
             platform = "3",
         ),
-        Train(
+        Trip(
             id = Uuid.random().toString(),
             code = "LW",
             destination = "Niagara Falls Go (Via Rail Station)",
             info = "Wait / Attendez",
             platform = "-",
         ),
-        Train(
+        Trip(
             id = Uuid.random().toString(),
             code = "ST",
             destination = "Mount Joy GO",
             info = "Proceed / Attendez",
             platform = "7 & 8",
         ),
-        Train(
+        Trip(
             id = Uuid.random().toString(),
             code = "RH",
             destination = "Bloomington GO",
             info = "Proceed / Attendez",
             platform = "11 & 12",
         ),
-        Train(
+        Trip(
             id = Uuid.random().toString(),
             code = "MI",
             destination = "Milton GO",
@@ -45,8 +45,8 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         ),
     )
 
-    override suspend fun getTrains(stationCode: String): List<Train> {
-        return trains
+    override suspend fun getTrains(stationCode: String): List<Trip> {
+        return trips
     }
 
     override suspend fun getServiceAlerts(): List<Alert> {

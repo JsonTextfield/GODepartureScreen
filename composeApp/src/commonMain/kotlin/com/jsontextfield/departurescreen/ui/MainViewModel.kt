@@ -41,6 +41,10 @@ class MainViewModel(
 
     private var timerJob: Job? = null
 
+    private val stationComparator = compareByDescending<CombinedStation> { it.isFavourite }
+        .thenBy { "UN" !in it.codes && "02300" !in it.codes }
+        .thenBy { it.name }
+
     init {
         viewModelScope.launch {
             _uiState.update {
@@ -65,11 +69,7 @@ class MainViewModel(
                     .map { it.copy(isFavourite = it.code in uiState.value.favouriteStations) }
                     .groupBy { it.name }
                     .map { it.value.toCombinedStation() }
-                    .sortedWith(
-                        compareByDescending<CombinedStation> { it.isFavourite }
-                            .thenBy { "UN" !in it.codes }
-                            .thenBy { it.name }
-                    )
+                    .sortedWith(stationComparator)
                 val selectedStation = uiState.value.selectedStation
                     ?: allStations.firstOrNull {
                         preferencesRepository.getSelectedStationCode() in it.codes
@@ -126,7 +126,7 @@ class MainViewModel(
                             _uiState.update {
                                 it.copy(
                                     status = Status.LOADED,
-                                    _allTrains = trains,
+                                    _allTrips = trains,
                                     visibleTrains = trainCodes,
                                 )
                             }
@@ -149,7 +149,7 @@ class MainViewModel(
             delay(1000)
             runCatching {
                 val selectedStationCodes = uiState.value.selectedStation?.codes ?: emptySet()
-                val allTrainCodes = uiState.value.allTrains.map { it.code }.toSet()
+                val allTrainCodes = uiState.value.allTrips.map { it.code }.toSet()
                 _serviceAlerts.update {
                     goTrainDataSource.getServiceAlerts().filter {
                         (selectedStationCodes.any { code -> code in it.affectedStations } || it.affectedStations.isEmpty())
@@ -187,7 +187,7 @@ class MainViewModel(
 
     fun setVisibleTrains(selectedTrains: Set<String>) {
         // Ensure that the visible trains are a subset of all trains
-        val trainCodes = uiState.value.allTrains.map { it.code }.toSet() intersect selectedTrains
+        val trainCodes = uiState.value.allTrips.map { it.code }.toSet() intersect selectedTrains
         _uiState.update { it.copy(visibleTrains = trainCodes) }
         viewModelScope.launch {
             preferencesRepository.setVisibleTrains(trainCodes)
@@ -215,11 +215,7 @@ class MainViewModel(
                 it.copy(
                     allStations = it.allStations.map { station ->
                         station.copy(isFavourite = station.codes.any { code -> code in updatedStations })
-                    }.sortedWith(
-                        compareByDescending<CombinedStation> { it.isFavourite }
-                            .thenBy { "UN" !in it.codes }
-                            .thenBy { it.name }
-                    ),
+                    }.sortedWith(stationComparator),
                     favouriteStations = updatedStations,
                     selectedStation = selectedStation.copy(isFavourite = !selectedStation.isFavourite)
                 )
@@ -227,6 +223,26 @@ class MainViewModel(
             viewModelScope.launch {
                 preferencesRepository.setFavouriteStations(updatedStations)
             }
+        }
+    }
+
+    fun setFavouriteStations(station: CombinedStation) {
+        val stations = uiState.value.favouriteStations
+        val updatedStations = if (station.codes.any { it in stations }) {
+            stations - station.codes
+        } else {
+            stations + station.codes
+        }
+        _uiState.update {
+            it.copy(
+                allStations = it.allStations.map { station ->
+                    station.copy(isFavourite = station.codes.any { code -> code in updatedStations })
+                }.sortedWith(stationComparator),
+                favouriteStations = updatedStations,
+            )
+        }
+        viewModelScope.launch {
+            preferencesRepository.setFavouriteStations(updatedStations)
         }
     }
 
