@@ -77,7 +77,7 @@ fun StationsScreen(
         val density = LocalDensity.current
         val widthDp = (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
             LayoutDirection.Ltr).value - WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-        val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+        val columns = (widthDp / 600).coerceIn(1, 4)
         LazyVerticalGrid(
             state = gridState,
             modifier = Modifier

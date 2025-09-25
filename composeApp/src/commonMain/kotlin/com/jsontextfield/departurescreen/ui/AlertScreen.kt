@@ -62,7 +62,7 @@ fun AlertScreen(
                 LayoutDirection.Ltr
             ).value - WindowInsets.safeDrawing.asPaddingValues()
             .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+    val columns = (widthDp / 600).coerceIn(1, 4)
     Scaffold(
         topBar = {
             TopAppBar(
