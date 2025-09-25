@@ -50,7 +50,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.entities.CombinedStation
+import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.back
+import departure_screen.composeapp.generated.resources.clear
+import departure_screen.composeapp.generated.resources.scroll_to_top
+import departure_screen.composeapp.generated.resources.search
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.E
 
 @Composable
@@ -64,7 +70,10 @@ fun StationsScreen(uiState: UIState, onStationSelected: (CombinedStation) -> Uni
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(Res.string.back),
+                        )
                     }
                 },
                 title = {
@@ -95,7 +104,7 @@ fun StationsScreen(uiState: UIState, onStationSelected: (CombinedStation) -> Uni
                                 Box(modifier = Modifier.weight(1f)) {
                                     if (textFieldState.text.isEmpty()) {
                                         Text(
-                                            "Search",
+                                            stringResource(Res.string.search),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 color = MaterialTheme.colorScheme.onBackground.copy(
                                                     alpha = .8f
@@ -111,7 +120,7 @@ fun StationsScreen(uiState: UIState, onStationSelected: (CombinedStation) -> Uni
                                     }) {
                                         Icon(
                                             Icons.Rounded.Clear,
-                                            contentDescription = "clear",
+                                            contentDescription = stringResource(Res.string.clear),
                                         )
                                     }
                                 }
@@ -135,7 +144,10 @@ fun StationsScreen(uiState: UIState, onStationSelected: (CombinedStation) -> Uni
                     },
                     shape = SquircleShape(E)
                 ) {
-                    Icon(Icons.Rounded.ArrowUpward, contentDescription = "Scroll to top")
+                    Icon(
+                        Icons.Rounded.ArrowUpward,
+                        contentDescription = stringResource(Res.string.scroll_to_top),
+                    )
                 }
             }
         },
