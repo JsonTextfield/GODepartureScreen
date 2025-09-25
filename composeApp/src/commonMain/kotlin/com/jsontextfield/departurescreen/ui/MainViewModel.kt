@@ -9,7 +9,6 @@ import com.jsontextfield.departurescreen.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.toCombinedStation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,9 +37,9 @@ class MainViewModel(
     val serviceAlerts: StateFlow<List<Alert>> = _serviceAlerts.asStateFlow()
 
     var showAlerts: Boolean by mutableStateOf(false)
+    var showStationMenu: Boolean by mutableStateOf(false)
 
     private var timerJob: Job? = null
-    private var alertsJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -63,13 +62,12 @@ class MainViewModel(
         viewModelScope.launch {
             runCatching {
                 val allStations = goTrainDataSource.getAllStations()
-                    .filter { "Bus Stop" !in it.type }
                     .map { it.copy(isFavourite = it.code in uiState.value.favouriteStations) }
                     .groupBy { it.name }
                     .map { it.value.toCombinedStation() }
                     .sortedWith(
                         compareByDescending<CombinedStation> { it.isFavourite }
-                            .thenBy { "UN" !in it.codes  }
+                            .thenBy { "UN" !in it.codes }
                             .thenBy { it.name }
                     )
                 val selectedStation = uiState.value.selectedStation
@@ -90,7 +88,7 @@ class MainViewModel(
                 }
             }.onSuccess {
                 startTimerJob()
-                startAlertsJob()
+                loadAlerts()
             }
         }
     }
@@ -143,33 +141,32 @@ class MainViewModel(
         }
     }
 
-    private fun startAlertsJob() {
-        alertsJob = alertsJob ?: viewModelScope.launch {
-            while (true) {
-                runCatching {
-                    val selectedStationCodes = uiState.value.selectedStation?.codes ?: emptySet()
-                    val allTrainCodes = uiState.value.allTrains.map { it.code }.toSet()
-                    _serviceAlerts.update {
-                        goTrainDataSource.getServiceAlerts().filter {
-                            ((selectedStationCodes intersect it.affectedStations).isNotEmpty() || it.affectedStations.isEmpty())
-                                    &&
-                                    ((allTrainCodes intersect it.affectedLines).isNotEmpty() || it.affectedLines.isEmpty())
-                        }
+    fun loadAlerts() {
+        _uiState.update {
+            it.copy(isAlertsRefreshing = true)
+        }
+        viewModelScope.launch {
+            delay(1000)
+            runCatching {
+                val selectedStationCodes = uiState.value.selectedStation?.codes ?: emptySet()
+                val allTrainCodes = uiState.value.allTrains.map { it.code }.toSet()
+                _serviceAlerts.update {
+                    goTrainDataSource.getServiceAlerts().filter {
+                        (selectedStationCodes.any { code -> code in it.affectedStations } || it.affectedStations.isEmpty())
+                                &&
+                                (allTrainCodes.any { code -> code in it.affectedLines } || it.affectedLines.isEmpty())
                     }
-                    _informationAlerts.update {
-                        goTrainDataSource.getInformationAlerts().filter {
-                            ((selectedStationCodes intersect it.affectedStations).isNotEmpty() || it.affectedStations.isEmpty())
-                                    &&
-                                    ((allTrainCodes intersect it.affectedLines).isNotEmpty() || it.affectedLines.isEmpty())
-                        }
-                    }
-                }.onFailure { exception ->
-                    if (exception is IOException) {
-                        delay(1000)
-                    }
-                }.onSuccess {
-                    delay(60_000)
                 }
+                _informationAlerts.update {
+                    goTrainDataSource.getInformationAlerts().filter {
+                        (selectedStationCodes.any { code -> code in it.affectedStations } || it.affectedStations.isEmpty())
+                                &&
+                                (allTrainCodes.any { code -> code in it.affectedLines } || it.affectedLines.isEmpty())
+                    }
+                }
+            }
+            _uiState.update {
+                it.copy(isAlertsRefreshing = false)
             }
         }
     }
@@ -199,23 +196,17 @@ class MainViewModel(
 
     fun setSelectedStation(station: CombinedStation) {
         _uiState.update { it.copy(selectedStation = station) }
+        _timeRemaining.update { 0 }
+        loadAlerts()
         viewModelScope.launch {
             preferencesRepository.setSelectedStationCode(station.codes.first())
-            runCatching {
-                goTrainDataSource.getTrains(station.codes.first())
-            }.onSuccess { trains ->
-                _uiState.update { it.copy(_allTrains = trains) }
-                setVisibleTrains(uiState.value.visibleTrains)
-            }.onFailure {
-                _uiState.update { it.copy(_allTrains = emptyList()) }
-            }
         }
     }
 
     fun setFavouriteStations() {
         uiState.value.selectedStation?.let { selectedStation ->
             val stations = uiState.value.favouriteStations
-            val updatedStations = if ((selectedStation.codes intersect stations).isNotEmpty()) {
+            val updatedStations = if (selectedStation.codes.any { it in stations }) {
                 stations - selectedStation.codes
             } else {
                 stations + selectedStation.codes
@@ -223,7 +214,7 @@ class MainViewModel(
             _uiState.update {
                 it.copy(
                     allStations = it.allStations.map { station ->
-                        station.copy(isFavourite = (station.codes intersect updatedStations).isNotEmpty())
+                        station.copy(isFavourite = station.codes.any { code -> code in updatedStations })
                     }.sortedWith(
                         compareByDescending<CombinedStation> { it.isFavourite }
                             .thenBy { "UN" !in it.codes }
@@ -239,15 +230,25 @@ class MainViewModel(
         }
     }
 
+    fun onBackPressed() {
+        if (showAlerts) {
+            showAlerts = false
+        } else if (showStationMenu) {
+            showStationMenu = false
+        }
+    }
+
     fun showAlertsScreen() {
-        showAlerts = !showAlerts
+        showAlerts = true
+    }
+
+    fun showStationMenu() {
+        showStationMenu = true
     }
 
     fun stop() {
         timerJob?.cancel()
         timerJob = null
-        alertsJob?.cancel()
-        alertsJob = null
     }
 
     override fun onCleared() {

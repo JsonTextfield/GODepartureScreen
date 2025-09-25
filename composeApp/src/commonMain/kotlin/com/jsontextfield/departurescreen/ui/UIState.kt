@@ -1,7 +1,6 @@
 package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.entities.Train
 
 data class UIState(
@@ -14,6 +13,7 @@ data class UIState(
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
     val isRefreshing: Boolean = false,
+    val isAlertsRefreshing: Boolean = false,
 ) {
     val allTrains: List<Train>
         get() {

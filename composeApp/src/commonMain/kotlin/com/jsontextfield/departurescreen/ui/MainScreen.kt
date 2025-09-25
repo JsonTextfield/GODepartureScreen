@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,8 +24,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
 import departure_screen.composeapp.generated.resources.Res
@@ -42,18 +40,16 @@ fun MainScreen(
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
-    onStationSelected: (CombinedStation) -> Unit,
+    onShowStationMenu: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             if (uiState.status == Status.LOADED) {
                 TopAppBar(
                     title = {
-                        StationComboBox(
-                            items = uiState.allStations,
-                            selectedItem = uiState.selectedStation,
-                            onItemSelected = onStationSelected
-                        )
+                        FilledTonalButton(onClick = onShowStationMenu) {
+                            Text(uiState.selectedStation?.name.orEmpty(), modifier = Modifier.basicMarquee())
+                        }
                     },
                     actions = {
                         val screenWidthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density)

@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.jsontextfield.departurescreen.entities.Alert
 import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Station
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.getActions
 import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
@@ -24,6 +23,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
     App(
         uiState = uiState,
         showAlerts = mainViewModel.showAlerts,
+        showStationMenu = mainViewModel.showStationMenu,
         informationAlerts = informationAlerts,
         serviceAlerts = serviceAlerts,
         timeRemaining = timeRemaining,
@@ -31,8 +31,10 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
         onRetryClicked = mainViewModel::loadData,
         onRefresh = mainViewModel::refresh,
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
-        onBackPressed = mainViewModel::showAlertsScreen,
-        onStationSelected = mainViewModel::setSelectedStation
+        onBackPressed = mainViewModel::onBackPressed,
+        onShowStationMenu = mainViewModel::showStationMenu,
+        onStationSelected = mainViewModel::setSelectedStation,
+        onRefreshAlerts = mainViewModel::loadAlerts,
     )
 }
 
@@ -41,14 +43,17 @@ fun App(mainViewModel: MainViewModel = koinViewModel()) {
 fun App(
     uiState: UIState,
     showAlerts: Boolean = false,
+    showStationMenu: Boolean = false,
     informationAlerts: List<Alert> = emptyList(),
     serviceAlerts: List<Alert> = emptyList(),
     timeRemaining: Int,
     actions: List<Action>,
-    onRetryClicked: () -> Unit,
-    onRefresh: () -> Unit,
-    onSetVisibleTrains: (Set<String>) -> Unit,
-    onStationSelected: (CombinedStation) -> Unit,
+    onRetryClicked: () -> Unit = {},
+    onRefresh: () -> Unit = {},
+    onRefreshAlerts: () -> Unit = {},
+    onSetVisibleTrains: (Set<String>) -> Unit = {},
+    onShowStationMenu: () -> Unit = {},
+    onStationSelected: (CombinedStation) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
     MyApplicationTheme(theme = uiState.theme) {
@@ -59,7 +64,7 @@ fun App(
             onRetryClicked = onRetryClicked,
             onRefresh = onRefresh,
             onSetVisibleTrains = onSetVisibleTrains,
-            onStationSelected = onStationSelected,
+            onShowStationMenu = onShowStationMenu,
         )
         AnimatedVisibility(
             visible = showAlerts,
@@ -70,6 +75,19 @@ fun App(
                 informationAlerts = informationAlerts,
                 serviceAlerts = serviceAlerts,
                 onBackPressed = onBackPressed,
+                isRefreshing = uiState.isAlertsRefreshing,
+                onRefresh = onRefreshAlerts,
+            )
+        }
+        AnimatedVisibility(
+            visible = showStationMenu,
+            enter = slideInHorizontally { it },
+            exit = slideOutHorizontally { it },
+        ) {
+            StationsScreen(
+                uiState = uiState,
+                onStationSelected = onStationSelected,
+                onBackPressed = onBackPressed
             )
         }
     }
