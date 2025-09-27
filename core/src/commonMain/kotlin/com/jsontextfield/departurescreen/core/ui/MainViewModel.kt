@@ -10,6 +10,8 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.toCombinedStation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +65,7 @@ class MainViewModel(
         _uiState.update {
             it.copy(status = Status.LOADING)
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 val allStations = goTrainDataSource.getAllStations()
                     .map { it.copy(isFavourite = it.code in uiState.value.favouriteStations) }
@@ -109,7 +111,7 @@ class MainViewModel(
     }
 
     private fun startTimerJob() {
-        timerJob = timerJob ?: viewModelScope.launch {
+        timerJob = timerJob ?: viewModelScope.launch(Dispatchers.IO) {
             while (true) {
                 if (timeRemaining.value <= 0) {
                     uiState.value.selectedStation?.codes?.let { stationCodes ->

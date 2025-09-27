@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SearchBar(textFieldState: TextFieldState) {
     BasicTextField(
         textFieldState,
+        lineLimits = TextFieldLineLimits.SingleLine,
         modifier = Modifier
             .widthIn(max = 300.dp)
             .padding(vertical = 12.dp)

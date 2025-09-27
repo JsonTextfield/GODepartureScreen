@@ -63,6 +63,8 @@ dependencies {
 
     implementation("androidx.compose.material3:material3:1.4.0")
 
+    implementation(libs.material.icons.extended)
+
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
 

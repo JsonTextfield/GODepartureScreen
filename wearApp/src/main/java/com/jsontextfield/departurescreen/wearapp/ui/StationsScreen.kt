@@ -6,10 +6,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.ScreenScaffold
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.ui.UIState
@@ -67,7 +67,6 @@ fun StationsScreen(
                 .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
         val columns = (widthDp / 600).coerceIn(1, 4)
         Surface {
-
             TransformingLazyColumn(
                 state = gridState,
                 modifier = Modifier
@@ -78,6 +77,7 @@ fun StationsScreen(
                             columnCount = columns,
                         )
                     },
+                contentPadding = PaddingValues(bottom = 100.dp)
             ) {
                 item {
                     SearchBar(textFieldState)
@@ -85,12 +85,10 @@ fun StationsScreen(
                 itemsIndexed(
                     filteredStations,
                     key = { _, station -> station.codes }) { index, station ->
-                    StationListItem(
-                        station = station,
-                        onFavouriteClick = { onFavouriteClick(station) },
+                    ListHeader(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(min = 60.dp)
+                            .heightIn(min = 40.dp)
                             .alpha(if (station.isEnabled) 1f else 0.5f)
                             .background(
                                 color =
@@ -106,15 +104,6 @@ fun StationsScreen(
                                 onStationSelected(station)
                                 onBackPressed()
                             }
-                            .padding(8.dp)
-                            .padding(
-                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
-                                    LayoutDirection.Ltr
-                                ),
-                                end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
-                                    LayoutDirection.Ltr
-                                ),
-                            )
                             .semantics {
                                 collectionItemInfo = CollectionItemInfo(
                                     rowIndex = index / columns,
@@ -124,7 +113,12 @@ fun StationsScreen(
                                 )
                             }
                             .animateItem()
-                    )
+                    ) {
+                        StationListItem(
+                            station = station,
+                            onFavouriteClick = { onFavouriteClick(station) },
+                        )
+                    }
                 }
             }
         }

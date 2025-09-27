@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -87,7 +88,8 @@ fun StationsScreen(
                         columnCount = columns,
                     )
                 },
-            columns = GridCells.Adaptive(300.dp)
+            columns = GridCells.Adaptive(300.dp),
+            contentPadding = PaddingValues(bottom = 100.dp),
         ) {
             itemsIndexed(
                 filteredStations,
