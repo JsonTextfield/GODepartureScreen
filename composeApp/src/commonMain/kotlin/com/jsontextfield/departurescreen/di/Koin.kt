@@ -3,11 +3,11 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.data.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.data.GoTrainDataSource
-import com.jsontextfield.departurescreen.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.network.API_KEY
-import com.jsontextfield.departurescreen.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.network.API_KEY
+import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

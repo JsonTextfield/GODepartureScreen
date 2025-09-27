@@ -2,7 +2,7 @@ package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import com.jsontextfield.departurescreen.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 
 class FakePreferencesRepository : IPreferencesRepository {
     private var visibleTrains: Set<String> = emptySet()

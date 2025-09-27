@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.data
+package com.jsontextfield.departurescreen.core.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

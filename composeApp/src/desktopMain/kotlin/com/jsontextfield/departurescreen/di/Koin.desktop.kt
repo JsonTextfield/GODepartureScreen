@@ -1,8 +1,8 @@
 package com.jsontextfield.departurescreen.di
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import com.jsontextfield.departurescreen.data.DataStorePreferencesRepository
-import com.jsontextfield.departurescreen.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import okio.Path.Companion.toPath
 import org.koin.core.module.Module
 import org.koin.dsl.module

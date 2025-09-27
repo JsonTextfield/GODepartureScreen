@@ -1,10 +1,10 @@
-package com.jsontextfield.departurescreen.network
+package com.jsontextfield.departurescreen.core.network
 
-import com.jsontextfield.departurescreen.network.model.Alerts
-import com.jsontextfield.departurescreen.network.model.ExceptionsResponse
-import com.jsontextfield.departurescreen.network.model.NextServiceResponse
-import com.jsontextfield.departurescreen.network.model.StopResponse
-import com.jsontextfield.departurescreen.network.model.UnionDeparturesResponse
+import com.jsontextfield.departurescreen.core.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
+import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
+import com.jsontextfield.departurescreen.core.network.model.StopResponse
+import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

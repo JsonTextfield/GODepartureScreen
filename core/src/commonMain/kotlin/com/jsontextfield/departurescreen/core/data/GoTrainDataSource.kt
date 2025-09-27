@@ -1,11 +1,11 @@
-package com.jsontextfield.departurescreen.data
+package com.jsontextfield.departurescreen.core.data
 
 import androidx.compose.ui.graphics.Color
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.core.network.model.Alerts
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
