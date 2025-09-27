@@ -1,5 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
+import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.data.IPreferencesRepository
 
 class FakePreferencesRepository : IPreferencesRepository {

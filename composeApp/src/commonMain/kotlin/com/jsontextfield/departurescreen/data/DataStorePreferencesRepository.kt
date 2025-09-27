@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.jsontextfield.departurescreen.ui.SortMode
-import com.jsontextfield.departurescreen.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 

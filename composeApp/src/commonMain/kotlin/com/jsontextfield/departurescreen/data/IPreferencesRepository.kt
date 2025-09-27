@@ -1,7 +1,7 @@
 package com.jsontextfield.departurescreen.data
 
-import com.jsontextfield.departurescreen.ui.SortMode
-import com.jsontextfield.departurescreen.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.ThemeMode
 
 interface IPreferencesRepository {
     suspend fun getVisibleTrains(): Set<String>?
