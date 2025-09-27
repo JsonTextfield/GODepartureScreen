@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -21,12 +21,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.cancelled
-import departure_screen.composeapp.generated.resources.express
-import departure_screen.composeapp.generated.resources.min
-import departure_screen.composeapp.generated.resources.minutes_content_description
-import departure_screen.composeapp.generated.resources.platform
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.cancelled
+import departure_screen.core.generated.resources.express
+import departure_screen.core.generated.resources.min
+import departure_screen.core.generated.resources.minutes_content_description
+import departure_screen.core.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 

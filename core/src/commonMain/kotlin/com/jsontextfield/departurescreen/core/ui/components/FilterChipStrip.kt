@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,9 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.all
-import departure_screen.composeapp.generated.resources.filter
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.all
+import departure_screen.core.generated.resources.filter
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

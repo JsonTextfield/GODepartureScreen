@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.PaddingValues

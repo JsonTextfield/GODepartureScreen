@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.favourite
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.favourite
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

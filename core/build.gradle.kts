@@ -25,6 +25,7 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+        androidResources.enable = true
     }
 
     // For iOS targets, this is also where you should

@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,8 +11,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.scroll_to_top
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.scroll_to_top
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

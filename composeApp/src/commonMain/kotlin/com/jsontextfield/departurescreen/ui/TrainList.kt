@@ -25,7 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.ui.components.TripListItem
+import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 import kotlin.math.ceil
 import kotlin.math.min
 

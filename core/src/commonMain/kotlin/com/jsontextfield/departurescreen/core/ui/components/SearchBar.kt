@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.clear
-import departure_screen.composeapp.generated.resources.search
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.clear
+import departure_screen.core.generated.resources.search
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

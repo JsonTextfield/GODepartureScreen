@@ -36,7 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.ui.components.AlertItem
+import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
