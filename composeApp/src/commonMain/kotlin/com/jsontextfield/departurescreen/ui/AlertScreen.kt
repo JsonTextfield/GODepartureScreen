@@ -163,6 +163,3 @@ private operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
         bottom = this.calculateBottomPadding() + other.calculateBottomPadding()
     )
 }
-
-@Composable
-expect fun Back(onBackPressed: () -> Unit)

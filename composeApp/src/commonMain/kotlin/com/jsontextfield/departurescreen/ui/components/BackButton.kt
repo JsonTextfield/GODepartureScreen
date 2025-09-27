@@ -5,7 +5,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import com.jsontextfield.departurescreen.ui.Back
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
@@ -22,3 +21,6 @@ fun BackButton(
         )
     }
 }
+
+@Composable
+expect fun Back(onBackPressed: () -> Unit)
