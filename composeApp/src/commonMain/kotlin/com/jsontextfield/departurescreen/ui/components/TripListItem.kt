@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.ui.SquircleShape
+import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.cancelled
 import departure_screen.composeapp.generated.resources.express
@@ -29,7 +29,6 @@ import departure_screen.composeapp.generated.resources.minutes_content_descripti
 import departure_screen.composeapp.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.E
 
 @Composable
 fun TripListItem(
@@ -79,7 +78,7 @@ fun TripListItem(
                 trip.code,
                 modifier = Modifier
                     .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
-                    .background(color = trip.color, shape = SquircleShape(E))
+                    .background(color = trip.color, shape = SquircleShape)
                     .semantics {
                         contentDescription = if (trip.isBus) {
                             trip.code

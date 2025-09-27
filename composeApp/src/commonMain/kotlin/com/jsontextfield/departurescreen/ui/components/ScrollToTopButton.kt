@@ -10,11 +10,10 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import com.jsontextfield.departurescreen.ui.SquircleShape
+import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.scroll_to_top
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.E
 
 @Composable
 fun ScrollToTopButton(
@@ -28,7 +27,7 @@ fun ScrollToTopButton(
     ) {
         FloatingActionButton(
             onClick = onClick,
-            shape = SquircleShape(E)
+            shape = SquircleShape
         ) {
             Icon(
                 Icons.Rounded.ArrowUpward,
