@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.jsontextfield.departurescreen.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.favourite
 import org.jetbrains.compose.resources.stringResource

@@ -25,7 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.Trip
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.all
 import departure_screen.composeapp.generated.resources.filter

@@ -1,7 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
-import com.jsontextfield.departurescreen.entities.CombinedStation
-import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Trip
 
 data class UIState(
     val status: Status = Status.LOADING,

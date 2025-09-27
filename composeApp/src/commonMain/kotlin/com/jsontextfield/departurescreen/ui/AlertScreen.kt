@@ -35,7 +35,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.ui.components.AlertItem
 import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
@@ -43,8 +43,6 @@ import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.ceil
-import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

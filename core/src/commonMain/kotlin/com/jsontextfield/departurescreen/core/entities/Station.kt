@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.entities
+package com.jsontextfield.departurescreen.core.entities
 
 data class Station(
     val name: String,

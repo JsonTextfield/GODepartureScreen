@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.ui.SquircleShape
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.cancelled

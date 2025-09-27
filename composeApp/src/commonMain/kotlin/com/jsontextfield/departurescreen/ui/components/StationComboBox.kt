@@ -27,7 +27,7 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.CombinedStation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,9 +1,9 @@
 package com.jsontextfield.departurescreen.data
 
 import androidx.compose.ui.graphics.Color
-import com.jsontextfield.departurescreen.entities.Alert
-import com.jsontextfield.departurescreen.entities.Station
-import com.jsontextfield.departurescreen.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.network.model.Alerts
 import com.jsontextfield.departurescreen.ui.theme.lineColours

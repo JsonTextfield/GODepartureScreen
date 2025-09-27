@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.entities
+package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.Instant
