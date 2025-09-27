@@ -68,6 +68,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.datetime)
                 implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
                 implementation(compose.components.resources)
                 // Add KMP dependencies here
             }

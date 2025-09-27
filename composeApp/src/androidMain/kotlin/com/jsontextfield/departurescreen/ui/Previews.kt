@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.ui.menu.Action
-import com.jsontextfield.departurescreen.ui.theme.lineColours
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 
 private val sampleTrips = List(11) {
     Trip(

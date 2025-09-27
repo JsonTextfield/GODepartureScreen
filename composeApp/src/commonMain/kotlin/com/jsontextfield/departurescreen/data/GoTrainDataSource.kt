@@ -6,7 +6,7 @@ import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.network.model.Alerts
-import com.jsontextfield.departurescreen.ui.theme.lineColours
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat

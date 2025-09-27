@@ -11,7 +11,7 @@ import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.getActions
-import com.jsontextfield.departurescreen.ui.theme.MyApplicationTheme
+import com.jsontextfield.departurescreen.core.ui.theme.MyApplicationTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

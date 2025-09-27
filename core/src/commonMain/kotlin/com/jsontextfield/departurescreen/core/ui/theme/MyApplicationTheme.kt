@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.theme
+package com.jsontextfield.departurescreen.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
