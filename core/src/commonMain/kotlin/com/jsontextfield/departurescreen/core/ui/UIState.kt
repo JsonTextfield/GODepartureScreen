@@ -1,9 +1,7 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.core.ui
 
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.ui.SortMode
-import com.jsontextfield.departurescreen.core.ui.ThemeMode
 
 data class UIState(
     val status: Status = Status.LOADING,

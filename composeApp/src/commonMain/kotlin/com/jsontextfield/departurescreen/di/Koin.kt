@@ -8,7 +8,7 @@ import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.network.API_KEY
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.ui.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest

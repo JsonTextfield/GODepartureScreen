@@ -29,8 +29,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.UIState
 import com.jsontextfield.departurescreen.core.ui.components.CountdownTimer
 import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
+import com.jsontextfield.departurescreen.core.ui.components.TrainList
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
 import departure_screen.composeapp.generated.resources.Res

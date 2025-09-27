@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import org.koin.compose.viewmodel.koinViewModel
 

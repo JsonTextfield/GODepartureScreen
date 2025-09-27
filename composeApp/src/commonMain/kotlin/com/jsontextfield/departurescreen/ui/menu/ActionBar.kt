@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.jsontextfield.departurescreen.ui.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import departure_screen.composeapp.generated.resources.Res
