@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.wearapp.presentation.theme
+package com.jsontextfield.departurescreen.wearapp.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

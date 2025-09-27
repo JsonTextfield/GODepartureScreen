@@ -1,10 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GO Departures</string>
-    <!--
+    <string name="app_name">GO Departures</string>    <!--
     This string is used for square devices and overridden by hello_world in
     values-round/strings.xml for round devices.
     -->
-    <string name="hello_world">From the Square world,\nHello, %1$s!</string>
     <string name="tile_label">Example tile</string>
     <string name="complication_label">Example complication</string>
+    <string name="express">Express</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="platform">Platform %1$s</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="cancel">Cancel</string>
+    <string name="reset">Reset</string>
+    <string name="close">Close</string>
+    <string name="about">About</string>
+    <string name="licences">Licences</string>
+    <string name="more">More</string>
+    <string name="time">Sort by time</string>
+    <string name="line">Sort by line</string>
+    <string name="minutes">%1$s min</string>
+    <string name="min">min</string>
+    <string name="all">All</string>
+    <string name="light_mode">Light</string>
+    <string name="dark_mode">Dark</string>
+    <string name="system_default">Default</string>
+    <string name="theme">Theme</string>
+    <string name="alerts">Alerts</string>
+    <string name="back">Back</string>
+    <string name="information_alerts">Information alerts</string>
+    <string name="service_alerts">Service alerts</string>
+    <string name="error">An error occurred</string>
+    <string name="retry">Retry</string>
+    <string name="favourite">Favourite</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+    <string name="scroll_to_top">Scroll to top</string>
+    <plurals name="minutes_content_description">
+        <item quantity="one">Departing in %1$s minute</item>
+        <item quantity="other">Departing in %1$s minutes</item>
+    </plurals>
 </resources>
