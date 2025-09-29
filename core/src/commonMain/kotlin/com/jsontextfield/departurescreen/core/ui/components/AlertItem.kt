@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
 import kotlinx.datetime.format
@@ -26,7 +28,10 @@ fun AlertItem(
     alert: Alert,
     modifier: Modifier = Modifier,
 ) {
-    Card {
+    val language = Locale.current.language
+    Card(
+        shape = RoundedCornerShape(12.dp)
+    ) {
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -35,7 +40,7 @@ fun AlertItem(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                text = alert.subject,
+                text = alert.getSubject(language),
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.titleSmall,
             )
@@ -46,7 +51,7 @@ fun AlertItem(
                 style = MaterialTheme.typography.labelSmall,
             )
             Text(
-                text = alert.body,
+                text = alert.getBody(language),
                 style = MaterialTheme.typography.bodySmall
             )
         }

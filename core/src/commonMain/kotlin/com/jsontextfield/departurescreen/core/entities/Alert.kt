@@ -1,6 +1,5 @@
 package com.jsontextfield.departurescreen.core.entities
 
-import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.Instant
 
 data class Alert(
@@ -12,10 +11,13 @@ data class Alert(
     private val subjectFr: String = "",
     private val bodyEn: String = "",
     private val bodyFr: String = "",
+    val isRead: Boolean = false,
 ) {
-    val subject: String
-        get() = if ("en" in Locale.current.language) subjectEn else subjectFr
+    fun getSubject(language: String): String {
+        return if ("fr" in language) subjectFr else subjectEn
+    }
 
-    val body: String
-        get() = if ("en" in Locale.current.language) bodyEn else bodyFr
+    fun getBody(language: String): String {
+        return if ("fr" in language) bodyFr else bodyEn
+    }
 }
