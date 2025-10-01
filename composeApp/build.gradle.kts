@@ -1,7 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -38,6 +36,15 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            // For interop APIs with Material 3
+            implementation("androidx.glance:glance-material3:1.1.1")
+
+            // For Glance support
+            implementation("androidx.glance:glance:1.2.0-beta01")
+            // For AppWidgets support
+            implementation("androidx.glance:glance-appwidget:1.2.0-beta01")
+            // For Wear-Tiles support
+            implementation("androidx.glance:glance-wear-tiles:1.0.0-alpha07")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

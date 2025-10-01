@@ -1,10 +1,10 @@
 package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import com.jsontextfield.departurescreen.entities.Trip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
