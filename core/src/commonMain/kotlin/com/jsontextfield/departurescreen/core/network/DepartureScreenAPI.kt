@@ -7,15 +7,49 @@ import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.get
+import io.ktor.http.URLProtocol
+import io.ktor.http.encodedPath
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalSerializationApi::class)
-class DepartureScreenAPI(private val client: HttpClient) {
+class DepartureScreenAPI() {
+    private val client = HttpClient {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.INFO
+        }
+        defaultRequest {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "api.openmetrolinx.com"
+                encodedPath = "/OpenDataAPI/api/V1/"
+                parameters.append("key", API_KEY)
+            }
+        }
+    }
 
     suspend fun getAllStops(): StopResponse {
         return client.get("Stop/All").body()
     }
+
     suspend fun getNextService(stationCode: String): NextServiceResponse {
         return client.get("Stop/NextService/$stationCode").body()
     }
