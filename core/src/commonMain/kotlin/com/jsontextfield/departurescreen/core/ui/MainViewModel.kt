@@ -236,11 +236,13 @@ class MainViewModel(
             stations + station.codes
         }
         _uiState.update {
+            val allStations = it.allStations.map { station ->
+                station.copy(isFavourite = station.codes.any { code -> code in updatedStations })
+            }.sortedWith(stationComparator)
             it.copy(
-                allStations = it.allStations.map { station ->
-                    station.copy(isFavourite = station.codes.any { code -> code in updatedStations })
-                }.sortedWith(stationComparator),
+                allStations = allStations,
                 favouriteStations = updatedStations,
+                selectedStation = allStations.firstOrNull { station -> station.name == it.selectedStation?.name }
             )
         }
         viewModelScope.launch {
