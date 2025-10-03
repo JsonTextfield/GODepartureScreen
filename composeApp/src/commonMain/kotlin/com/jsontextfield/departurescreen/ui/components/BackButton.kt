@@ -13,7 +13,7 @@ import org.jetbrains.compose.resources.stringResource
 fun BackButton(
     onBackPressed: () -> Unit = {},
 ) {
-    Back(onBackPressed)
+    //Back(onBackPressed)
     IconButton(onBackPressed) {
         Icon(
             Icons.AutoMirrored.Rounded.ArrowBack,

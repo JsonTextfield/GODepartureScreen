@@ -9,9 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.UIState
-import com.jsontextfield.departurescreen.core.ui.theme.MyApplicationTheme
+import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -56,7 +56,7 @@ fun App(
     onFavouriteClick: (CombinedStation) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
-    MyApplicationTheme(theme = uiState.theme) {
+    AppTheme(theme = uiState.theme) {
         MainScreen(
             uiState = uiState,
             timeRemaining = timeRemaining,

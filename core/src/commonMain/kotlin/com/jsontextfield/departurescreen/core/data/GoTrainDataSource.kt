@@ -19,6 +19,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
+    private var stations = emptyList<Station>()
+
     override suspend fun getTrains(stationCode: String): List<Trip> {
         return try {
             val nextService = departureScreenAPI.getNextService(stationCode)
@@ -81,6 +83,9 @@ class GoTrainDataSource(
     override suspend fun getInformationAlerts(): List<Alert> = processAlerts(departureScreenAPI.getInfromationAlerts())
 
     override suspend fun getAllStations(): List<Station> {
+        if (stations.isNotEmpty()) {
+            return stations
+        }
         return try {
             departureScreenAPI.getAllStops().stations?.stops?.map { stop ->
                 Station(
@@ -93,6 +98,8 @@ class GoTrainDataSource(
             throw exception
         } catch (_: Exception) {
             emptyList()
+        }.also {
+            stations = it
         }
     }
 

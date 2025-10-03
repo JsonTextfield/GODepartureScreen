@@ -14,9 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.ui.navigation.NavigationActions
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.favourite
@@ -77,8 +79,9 @@ fun ActionBar(
 @Composable
 fun getActions(
     mainViewModel: MainViewModel,
+    navigationActions: NavigationActions,
 ): List<Action> {
-    val uiState by mainViewModel.uiState.collectAsState()
+    val uiState by mainViewModel.uiState.collectAsState(MainUIState())
     val favourite = Action(
         icon = if (uiState.selectedStation?.isFavourite == true) {
             Icons.Rounded.Star
@@ -87,13 +90,15 @@ fun getActions(
         },
         tooltip = stringResource(Res.string.favourite),
         isVisible = uiState.selectedStation != null,
-        onClick = mainViewModel::setFavouriteStations,
+        onClick = {
+            uiState.selectedStation?.let(mainViewModel::setFavouriteStations)
+        },
     )
 
     val sort = Action(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
-        isVisible = mainViewModel.uiState.value.allTrips.isNotEmpty(),
+        isVisible = uiState.allTrips.isNotEmpty(),
         menuContent = {
             var isExpanded by remember { mutableStateOf(it) }
             DropdownMenu(
@@ -103,7 +108,7 @@ fun getActions(
                 SortMode.entries.forEach { sortMode ->
                     RadioMenuItem(
                         title = stringResource(sortMode.key),
-                        isSelected = mainViewModel.uiState.value.sortMode == sortMode,
+                        isSelected = uiState.sortMode == sortMode,
                         onClick = {
                             isExpanded = !isExpanded
                             mainViewModel.setSortMode(sortMode)
@@ -126,7 +131,7 @@ fun getActions(
                 ThemeMode.entries.forEach { themeMode ->
                     RadioMenuItem(
                         title = stringResource(themeMode.key),
-                        isSelected = mainViewModel.uiState.value.theme == themeMode,
+                        isSelected = uiState.theme == themeMode,
                         onClick = {
                             isExpanded = !isExpanded
                             mainViewModel.setTheme(themeMode)
@@ -140,9 +145,7 @@ fun getActions(
     val alerts = Action(
         icon = Icons.Rounded.Notifications,
         tooltip = stringResource(Res.string.alerts),
-        onClick = {
-            mainViewModel.showAlertsScreen()
-        },
+        onClick = navigationActions.onShowAlerts,
     )
 
     return listOf(

@@ -11,8 +11,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.jsontextfield.departurescreen.core.ui.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val mainViewModel : MainViewModel = koinViewModel()
-            val uiState by mainViewModel.uiState.collectAsState()
+            val uiState by mainViewModel.uiState.collectAsState(MainUIState())
             val isAppearanceLightStatusBars = when(uiState.theme) {
                 ThemeMode.LIGHT -> true
                 ThemeMode.DARK -> false

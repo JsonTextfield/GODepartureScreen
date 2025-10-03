@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
@@ -44,9 +47,25 @@ import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
 import org.jetbrains.compose.resources.stringResource
 
+
+@Composable
+fun AlertsScreen(
+    alertsViewModel: AlertsViewModel,
+    onBackPressed: () -> Unit = {},
+) {
+    val uiState by alertsViewModel.uiState.collectAsState()
+    AlertsScreen(
+        isRefreshing = uiState.isRefreshing,
+        informationAlerts = uiState.informationAlerts,
+        serviceAlerts = uiState.serviceAlerts,
+        onBackPressed = onBackPressed,
+        onRefresh = alertsViewModel::loadAlerts,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertScreen(
+fun AlertsScreen(
     informationAlerts: List<Alert>,
     serviceAlerts: List<Alert>,
     onBackPressed: () -> Unit = {},

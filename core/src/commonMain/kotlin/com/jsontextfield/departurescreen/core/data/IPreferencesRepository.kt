@@ -2,16 +2,17 @@ package com.jsontextfield.departurescreen.core.data
 
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import kotlinx.coroutines.flow.Flow
 
 interface IPreferencesRepository {
-    suspend fun getVisibleTrains(): Set<String>?
+    fun getVisibleTrains(): Flow<Set<String>>
     suspend fun setVisibleTrains(visibleTrains: Set<String>)
-    suspend fun getSortMode(): SortMode?
+    fun getSortMode(): Flow<SortMode>
     suspend fun setSortMode(sortMode: SortMode)
-    suspend fun getSelectedStationCode(): String?
+    fun getSelectedStationCode(): Flow<String>
     suspend fun setSelectedStationCode(stationCode: String)
-    suspend fun getTheme(): ThemeMode?
+    fun getTheme(): Flow<ThemeMode>
     suspend fun setTheme(theme: ThemeMode)
-    suspend fun getFavouriteStations(): Set<String>?
+    fun getFavouriteStations(): Flow<Set<String>>
     suspend fun setFavouriteStations(favouriteStations: Set<String>)
 }

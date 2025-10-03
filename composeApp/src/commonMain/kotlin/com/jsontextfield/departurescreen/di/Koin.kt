@@ -6,8 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.core.ui.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -34,7 +37,10 @@ val dataModule = module {
 expect fun preferencesModule(): Module
 
 val viewModelModule = module {
+    factoryOf(::DepartureScreenUseCase)
     factoryOf(::MainViewModel)
+    factoryOf(::AlertsViewModel)
+    factoryOf(::StationsViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

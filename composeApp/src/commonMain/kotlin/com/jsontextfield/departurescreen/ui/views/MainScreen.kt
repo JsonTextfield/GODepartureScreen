@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.basicMarquee
@@ -22,6 +22,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -30,27 +32,49 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.Status
-import com.jsontextfield.departurescreen.core.ui.UIState
 import com.jsontextfield.departurescreen.core.ui.components.CountdownTimer
 import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TrainList
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
+import com.jsontextfield.departurescreen.ui.menu.getActions
+import com.jsontextfield.departurescreen.ui.navigation.NavigationActions
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.error
 import departure_screen.composeapp.generated.resources.retry
 import org.jetbrains.compose.resources.stringResource
 
+
+@Composable
+fun MainScreen(
+    mainViewModel: MainViewModel,
+    navigationActions: NavigationActions,
+) {
+    val uiState by mainViewModel.uiState.collectAsState()
+    val timeRemaining by mainViewModel.timeRemaining.collectAsState()
+    MainScreen(
+        uiState = uiState,
+        timeRemaining = timeRemaining,
+        actions = getActions(mainViewModel, navigationActions),
+        onRetryClicked = mainViewModel::loadData,
+        onRefresh = mainViewModel::refresh,
+        onSetVisibleTrains = mainViewModel::setVisibleTrains,
+        navigationActions = navigationActions,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    uiState: UIState,
+    uiState: MainUIState,
     timeRemaining: Int,
     actions: List<Action>,
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
-    onShowStationMenu: () -> Unit,
+    navigationActions: NavigationActions,
 ) {
     Scaffold(
         topBar = {
@@ -58,7 +82,7 @@ fun MainScreen(
                 TopAppBar(
                     title = {
                         FilledTonalButton(
-                            onClick = onShowStationMenu,
+                            onClick = navigationActions.onShowStations,
                             contentPadding = PaddingValues(horizontal = 8.dp),
                         ) {
                             Text(

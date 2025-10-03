@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,16 +39,35 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import com.jsontextfield.departurescreen.core.ui.UIState
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
 import com.jsontextfield.departurescreen.core.ui.components.StationListItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import com.jsontextfield.departurescreen.ui.components.BackButton
 import kotlinx.coroutines.launch
 
 @Composable
 fun StationsScreen(
-    uiState: UIState,
+    stationsViewModel: StationsViewModel,
+    onBackPressed: () -> Unit = {},
+) {
+    val uiState by stationsViewModel.uiState.collectAsState()
+    StationsScreen(
+        uiState = uiState,
+        onStationSelected = {
+            stationsViewModel.setSelectedStation(it)
+            onBackPressed()
+        },
+        onFavouriteClick = stationsViewModel::setFavouriteStations,
+        onBackPressed = onBackPressed,
+    )
+}
+
+
+@Composable
+fun StationsScreen(
+    uiState: StationsUIState,
     onStationSelected: (CombinedStation) -> Unit,
     onFavouriteClick: (CombinedStation) -> Unit,
     onBackPressed: () -> Unit
@@ -75,8 +96,12 @@ fun StationsScreen(
     ) { innerPadding ->
         val filteredStations = uiState.getFilteredStations(textFieldState.text.toString())
         val density = LocalDensity.current
-        val widthDp = (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
-            LayoutDirection.Ltr).value - WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr).value).toInt()
+        val widthDp =
+            (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
+                .calculateLeftPadding(
+                    LayoutDirection.Ltr
+                ).value - WindowInsets.safeDrawing.asPaddingValues()
+                .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
         val columns = (widthDp / 600).coerceIn(1, 4)
         LazyVerticalGrid(
             state = gridState,
@@ -113,7 +138,6 @@ fun StationsScreen(
                         )
                         .clickable {
                             onStationSelected(station)
-                            onBackPressed()
                         }
                         .padding(8.dp)
                         .padding(

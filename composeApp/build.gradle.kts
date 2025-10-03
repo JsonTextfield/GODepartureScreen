@@ -59,6 +59,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0")
+
             implementation(libs.material.icons.extended)
 
             implementation(libs.ktor.client.core)
