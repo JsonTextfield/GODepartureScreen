@@ -5,6 +5,7 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.toCombinedStation
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DepartureScreenUseCase(
@@ -15,6 +16,17 @@ class DepartureScreenUseCase(
         return goTrainDataSource.getAllStations()
             .groupBy { it.name }
             .map { it.value.toCombinedStation() }
+    }
+
+    suspend fun setFavouriteStations(station: CombinedStation) {
+        val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
+
+        val updatedStations = if (station.codes.any { it in favouriteStationCodes }) {
+            favouriteStationCodes - station.codes
+        } else {
+            favouriteStationCodes + station.codes
+        }
+        preferencesRepository.setFavouriteStations(updatedStations)
     }
 
     fun getSelectedStation(): Flow<CombinedStation?> {

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
@@ -77,7 +76,6 @@ class MainViewModel(
                     )
                 }
             }.catch { _ ->
-                // Properly handle errors here by updating the state
                 _uiState.update { it.copy(status = Status.ERROR) }
             }.collect() // Start collecting
         }
@@ -120,14 +118,12 @@ class MainViewModel(
                 }
             }
 
-            // This while loop is now only responsible for the countdown timer.
             while (true) {
                 delay(1000)
                 if (timeRemaining.value <= 1000) {
                     _timeRemaining.update { 0 }
-                    uiState.value.selectedStation?.let(::fetchDepartureData) ?: run {
-                        _timeRemaining.value = 20_000
-                    }
+                    uiState.value.selectedStation?.let(::fetchDepartureData) ?:
+                    _timeRemaining.update { 20000 }
                 } else {
                     _timeRemaining.update { it - 1000 }
                 }
@@ -135,8 +131,6 @@ class MainViewModel(
         }
     }
 
-
-    // Extracted data fetching logic into a separate, reusable function.
     private fun fetchDepartureData(station: CombinedStation) {
         viewModelScope.launch {
             val stationCodes = station.codes
@@ -153,12 +147,10 @@ class MainViewModel(
                     )
                 }
                 // Reset the countdown timer only on a successful fetch.
-                _timeRemaining.value = 20_000
+                _timeRemaining.update { 20000 }
             }.onFailure { exception ->
                 if (exception is IOException) {
-                    _uiState.update { it.copy(status = Status.ERROR) }
-                    // On failure, set a shorter timer to retry sooner.
-                    _timeRemaining.value = 5_000
+                    _timeRemaining.update { 1000 }
                 }
             }
         }
@@ -186,14 +178,7 @@ class MainViewModel(
 
     fun setFavouriteStations(station: CombinedStation) {
         viewModelScope.launch {
-            val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
-
-            val updatedStations = if (station.codes.any { it in favouriteStationCodes }) {
-                favouriteStationCodes - station.codes
-            } else {
-                favouriteStationCodes + station.codes
-            }
-            preferencesRepository.setFavouriteStations(updatedStations)
+            departureScreenUseCase.setFavouriteStations(station)
         }
     }
 

@@ -59,7 +59,7 @@ fun AlertsScreen(
         informationAlerts = uiState.informationAlerts,
         serviceAlerts = uiState.serviceAlerts,
         onBackPressed = onBackPressed,
-        onRefresh = alertsViewModel::loadAlerts,
+        onRefresh = alertsViewModel::refresh,
     )
 }
 

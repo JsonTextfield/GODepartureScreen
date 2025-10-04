@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,24 +23,26 @@ class StationsViewModel(
     private val _uiState: MutableStateFlow<StationsUIState> = MutableStateFlow(StationsUIState())
     val uiState: StateFlow<StationsUIState> = _uiState.asStateFlow()
 
-    private val stationComparator = compareByDescending<CombinedStation> { it.isFavourite }
-        .thenBy { "UN" !in it.codes && "02300" !in it.codes }
-        .thenBy { it.name }
-
     init {
-        _uiState.update { it.copy(status = Status.LOADING) }
+        loadData()
+    }
+
+    private fun loadData() {
         viewModelScope.launch {
             combine(
-                preferencesRepository.getFavouriteStations(),
                 departureScreenUseCase.getSelectedStation(),
-            ) { favouriteStationCodes, selectedStation ->
+                preferencesRepository.getFavouriteStations(),
+            ) { selectedStation, favouriteStationCodes ->
                 val allStations = departureScreenUseCase.getAllCombinedStations()
-                // Map and sort the stations with the latest favorite information
                 val updatedStations = allStations.map { station ->
                     station.copy(
                         isFavourite = station.codes.any { code -> code in favouriteStationCodes }
                     )
-                }.sortedWith(stationComparator)
+                }.sortedWith(
+                    compareByDescending<CombinedStation> { it.isFavourite }
+                        .thenByDescending { "UN" in it.codes || "02300" in it.codes }
+                        .thenBy { it.name }
+                )
 
                 _uiState.update {
                     it.copy(
@@ -57,7 +58,6 @@ class StationsViewModel(
     }
 
     fun setSelectedStation(station: CombinedStation) {
-        _uiState.update { it.copy(selectedStation = station) }
         viewModelScope.launch {
             preferencesRepository.setSelectedStationCode(station.codes.first())
         }
@@ -65,20 +65,7 @@ class StationsViewModel(
 
     fun setFavouriteStations(station: CombinedStation) {
         viewModelScope.launch {
-            val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
-
-            val updatedStations = if (station.codes.any { it in favouriteStationCodes }) {
-                favouriteStationCodes - station.codes
-            } else {
-                favouriteStationCodes + station.codes
-            }
-            preferencesRepository.setFavouriteStations(updatedStations)
-
-            _uiState.update {
-                it.copy(
-                    selectedStation = it.selectedStation?.copy(isFavourite = it.selectedStation.codes.any { it in updatedStations })
-                )
-            }
+            departureScreenUseCase.setFavouriteStations(station)
         }
     }
 

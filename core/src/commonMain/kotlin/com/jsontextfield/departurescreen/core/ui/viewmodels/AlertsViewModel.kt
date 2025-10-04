@@ -24,11 +24,14 @@ class AlertsViewModel(
         loadAlerts()
     }
 
-
-    fun loadAlerts() {
+    fun refresh() {
         _uiState.update {
             it.copy(isRefreshing = true)
         }
+        loadAlerts()
+    }
+
+    fun loadAlerts() {
         viewModelScope.launch {
             departureScreenUseCase.getSelectedStation().catch {
                 _uiState.update { it.copy(status = Status.ERROR) }
@@ -53,16 +56,13 @@ class AlertsViewModel(
                                 status = Status.LOADED,
                                 serviceAlerts = filteredServiceAlerts,
                                 informationAlerts = filteredInformationAlerts,
-                                isRefreshing = false
+                                isRefreshing = false,
                             )
                         }
                     }
                     .onFailure {
                         _uiState.update { it.copy(status = Status.ERROR) }
                     }
-                _uiState.update {
-                    it.copy(isRefreshing = false)
-                }
             }
         }
     }
