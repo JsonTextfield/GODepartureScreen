@@ -16,9 +16,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
@@ -38,23 +39,53 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            combine(
-                preferencesRepository.getVisibleTrains(),
-                preferencesRepository.getSortMode(),
-                preferencesRepository.getTheme()
-            ) { visibleTrains, sortMode, theme ->
-                _uiState.update {
-                    it.copy(
-                        visibleTrains = visibleTrains,
-                        sortMode = sortMode,
-                        theme = theme
-                    )
-                }
-            }.collect {
-                loadData()
+        combine(
+            preferencesRepository.getVisibleTrains(),
+            preferencesRepository.getSortMode(),
+            preferencesRepository.getTheme(),
+        ) { visibleTrains, sortMode, theme ->
+            _uiState.update {
+                it.copy(
+                    visibleTrains = visibleTrains,
+                    sortMode = sortMode,
+                    theme = theme,
+                )
             }
-        }
+        }.launchIn(viewModelScope)
+
+        combine(
+            departureScreenUseCase.getSelectedStation(),
+            preferencesRepository.getFavouriteStations(),
+        ) { selectedStation, favouriteStations ->
+            _uiState.update {
+                it.copy(
+                    selectedStation = selectedStation?.copy(
+                        isFavourite = selectedStation.codes.any { code -> code in favouriteStations }
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+
+        departureScreenUseCase.getSelectedStation()
+            .distinctUntilChanged()
+            .onEach { selectedStation ->
+                if (selectedStation != null) {
+                    fetchDepartureData(selectedStation)
+                } else {
+                    // Handle case where no station is selected
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADED,
+                            _allTrips = emptyList(),
+                        )
+                    }
+                }
+            }
+            .catch { _ ->
+                _uiState.update { it.copy(status = Status.ERROR) }
+            }.launchIn(viewModelScope)
+
+        startTimerJob()
     }
 
     fun loadData() {
@@ -63,23 +94,7 @@ class MainViewModel(
                 it.copy(status = Status.LOADING)
             }
         }
-        viewModelScope.launch {
-            combine(
-                departureScreenUseCase.getSelectedStation(),
-                preferencesRepository.getFavouriteStations()
-            ) { selectedStation, favouriteStationCodes ->
-                _uiState.update {
-                    it.copy(
-                        selectedStation = selectedStation?.copy(
-                            isFavourite = selectedStation.codes.any { code -> code in favouriteStationCodes }
-                        )
-                    )
-                }
-            }.catch { _ ->
-                _uiState.update { it.copy(status = Status.ERROR) }
-            }.collect() // Start collecting
-        }
-        startTimerJob()
+        uiState.value.selectedStation?.let(::fetchDepartureData)
     }
 
     fun refresh() {
@@ -88,7 +103,7 @@ class MainViewModel(
         }
         viewModelScope.launch {
             delay(1000)
-            if (timeRemaining.value < 16000) {
+            if (timeRemaining.value < 12000) {
                 _timeRemaining.update { 1000 }
             }
             _uiState.update {
@@ -99,31 +114,11 @@ class MainViewModel(
 
     private fun startTimerJob() {
         timerJob = timerJob ?: viewModelScope.launch {
-            // This inner launch handles reacting to station changes and fetching data.
-            // Using collectLatest is crucial: if the station changes, it cancels the
-            // old data fetch and starts a new one.
-            launch {
-                departureScreenUseCase.getSelectedStation().collectLatest { selectedStation ->
-                    if (selectedStation != null) {
-                        fetchDepartureData(selectedStation)
-                    } else {
-                        // Handle case where no station is selected
-                        _uiState.update {
-                            it.copy(
-                                status = Status.LOADED,
-                                _allTrips = emptyList(),
-                            )
-                        }
-                    }
-                }
-            }
-
             while (true) {
                 delay(1000)
                 if (timeRemaining.value <= 1000) {
                     _timeRemaining.update { 0 }
-                    uiState.value.selectedStation?.let(::fetchDepartureData) ?:
-                    _timeRemaining.update { 20000 }
+                    uiState.value.selectedStation?.let(::fetchDepartureData) ?: _timeRemaining.update { 20000 }
                 } else {
                     _timeRemaining.update { it - 1000 }
                 }
@@ -133,10 +128,9 @@ class MainViewModel(
 
     private fun fetchDepartureData(station: CombinedStation) {
         viewModelScope.launch {
-            val stationCodes = station.codes
             runCatching {
-                // Fetch data for all station codes in parallel
-                stationCodes.map { goTrainDataSource.getTrains(it) }.flatten()
+                val stationCodes = station.codes
+                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {

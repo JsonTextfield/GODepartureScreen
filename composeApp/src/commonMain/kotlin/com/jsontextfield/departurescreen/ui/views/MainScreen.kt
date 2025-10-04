@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -87,20 +89,28 @@ fun MainScreen(
                         ) {
                             Text(
                                 text = uiState.selectedStation?.name.orEmpty(),
-                                modifier = Modifier.basicMarquee(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(11 / 12f).basicMarquee(),
                             )
                         }
                     },
                     actions = {
-                        val screenWidthDp = (LocalWindowInfo.current.containerSize.width / LocalDensity.current.density)
-                        val maxActions = when {
-                            screenWidthDp < 400 -> screenWidthDp / 4 / 48
-                            screenWidthDp < 600 -> screenWidthDp / 3 / 48
-                            screenWidthDp < 800 -> screenWidthDp / 2 / 48
-                            else -> screenWidthDp * 2 / 3 / 48
+                        val maxActions = with(LocalDensity.current) {
+                            val screenWidthDp = LocalWindowInfo.current.containerSize.width.toDp()
+                            val fraction = when {
+                                screenWidthDp.value < 400 -> 1 / 4f
+                                screenWidthDp.value < 600 -> 1 / 3f
+                                screenWidthDp.value < 800 -> 1 / 2f
+                                else -> 2 / 3f
+                            }
+                            (screenWidthDp.value * fraction / 48f).toInt()
                         }
                         ActionBar(
-                            maxActions = maxActions.toInt() + 1,
+                            maxActions = if (actions.size - maxActions == 1) {
+                                maxActions + 1
+                            } else {
+                                maxActions
+                            },
                             actions = actions,
                         )
                     },
