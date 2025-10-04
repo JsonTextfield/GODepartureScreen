@@ -91,7 +91,11 @@ fun TripListItem(
         Column(modifier = Modifier.weight(6 / 12f)) {
             if (!shouldShowTrainCode) {
                 Text(
-                    text = trip.name,
+                    text = if (trip.isBus) {
+                        "${trip.code} ${trip.name}"
+                    } else {
+                        trip.name
+                    },
                     style = MaterialTheme.typography.labelSmall,
                 )
             }

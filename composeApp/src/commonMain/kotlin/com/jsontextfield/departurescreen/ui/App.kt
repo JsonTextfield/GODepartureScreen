@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import com.jsontextfield.departurescreen.ui.navigation.AlertsRoute
@@ -25,7 +24,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
-    val uiState by mainViewModel.uiState.collectAsState(MainUIState())
+    val uiState by mainViewModel.uiState.collectAsState()
     val navController = rememberNavController()
     AppTheme(uiState.theme) {
         Surface {
@@ -38,10 +37,14 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                         mainViewModel = mainViewModel,
                         navigationActions = NavigationActions(
                             onShowAlerts = {
-                                navController.navigate(AlertsRoute)
+                                navController.navigate(AlertsRoute) {
+                                    launchSingleTop = true
+                                }
                             },
                             onShowStations = {
-                                navController.navigate(StationsRoute)
+                                navController.navigate(StationsRoute) {
+                                    launchSingleTop = true
+                                }
                             },
                         )
                     )
@@ -55,7 +58,9 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     AlertsScreen(
                         alertsViewModel = alertsViewModel,
                         onBackPressed = {
-                            navController.popBackStack()
+                            navController.navigate(HomeRoute) {
+                                launchSingleTop = true
+                            }
                         },
                     )
                 }
@@ -68,7 +73,9 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     StationsScreen(
                         stationsViewModel = stationsViewModel,
                         onBackPressed = {
-                            navController.popBackStack()
+                            navController.navigate(HomeRoute) {
+                                launchSingleTop = true
+                            }
                         },
                     )
                 }

@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.ui.menu
 
+import OverflowMenu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
@@ -7,7 +8,6 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,45 +32,51 @@ fun ActionBar(
     maxActions: Int,
     actions: List<Action>,
 ) {
+    var openMenuIndex by remember { mutableStateOf(-1) }
+
     val displayActions = actions.take(maxActions)
-    displayActions.forEach { action ->
-        var showMenu by remember { mutableStateOf(false) }
-        action.menuContent?.let {
-            PopupMenu(
-                showMenu = showMenu,
-                menuContent = it,
-            )
-        }
-        MenuItem(
-            icon = action.icon,
-            tooltip = action.tooltip,
-            onClick = {
-                if (action.menuContent != null) {
-                    showMenu = !showMenu
-                } else {
-                    action.onClick()
+    val overflowActions = actions.drop(maxActions)
+
+    displayActions.forEachIndexed { index, action ->
+        Box {
+            MenuItem(
+                icon = action.icon,
+                tooltip = action.tooltip,
+                onClick = {
+                    if (action.menuContent != null) {
+                        openMenuIndex = index
+                    } else {
+                        action.onClick?.invoke()
+                    }
                 }
+            )
+
+            if (action.menuContent != null && openMenuIndex == index) {
+                PopupMenu(
+                    showMenu = true,
+                    onDismissRequest = { openMenuIndex = -1 },
+                    menuContent = {
+                        action.menuContent { openMenuIndex = -1 }
+                    },
+                )
             }
-        )
+        }
     }
 
-    val overflowActions = actions.drop(maxActions)
     if (overflowActions.isNotEmpty()) {
         Box {
             var showOverflowMenu by remember { mutableStateOf(false) }
-            OverflowMenu(
-                isExpanded = showOverflowMenu,
-                actions = overflowActions,
-                onItemSelected = {
-                    showOverflowMenu = false
-                },
-            )
+
             MenuItem(
                 icon = Icons.Rounded.MoreVert,
                 tooltip = stringResource(Res.string.more),
-                onClick = {
-                    showOverflowMenu = true
-                }
+                onClick = { showOverflowMenu = true }
+            )
+
+            OverflowMenu(
+                isExpanded = showOverflowMenu,
+                actions = overflowActions,
+                onDismissRequest = { showOverflowMenu = false },
             )
         }
     }
@@ -99,22 +105,16 @@ fun getActions(
         icon = Icons.AutoMirrored.Rounded.Sort,
         tooltip = stringResource(Res.string.sort),
         isVisible = uiState.allTrips.isNotEmpty(),
-        menuContent = {
-            var isExpanded by remember { mutableStateOf(it) }
-            DropdownMenu(
-                expanded = isExpanded xor it,
-                onDismissRequest = { isExpanded = !isExpanded },
-            ) {
-                SortMode.entries.forEach { sortMode ->
-                    RadioMenuItem(
-                        title = stringResource(sortMode.key),
-                        isSelected = uiState.sortMode == sortMode,
-                        onClick = {
-                            isExpanded = !isExpanded
-                            mainViewModel.setSortMode(sortMode)
-                        },
-                    )
-                }
+        menuContent = { onDismiss ->
+            SortMode.entries.forEach { sortMode ->
+                RadioMenuItem(
+                    title = stringResource(sortMode.key),
+                    isSelected = uiState.sortMode == sortMode,
+                    onClick = {
+                        mainViewModel.setSortMode(sortMode)
+                        onDismiss()
+                    },
+                )
             }
         },
     )
@@ -122,22 +122,16 @@ fun getActions(
     val theme = Action(
         icon = Icons.Rounded.BrightnessMedium,
         tooltip = stringResource(Res.string.theme),
-        menuContent = {
-            var isExpanded by remember { mutableStateOf(it) }
-            DropdownMenu(
-                expanded = isExpanded xor it,
-                onDismissRequest = { isExpanded = !isExpanded },
-            ) {
-                ThemeMode.entries.forEach { themeMode ->
-                    RadioMenuItem(
-                        title = stringResource(themeMode.key),
-                        isSelected = uiState.theme == themeMode,
-                        onClick = {
-                            isExpanded = !isExpanded
-                            mainViewModel.setTheme(themeMode)
-                        },
-                    )
-                }
+        menuContent = { onDismiss ->
+            ThemeMode.entries.forEach { themeMode ->
+                RadioMenuItem(
+                    title = stringResource(themeMode.key),
+                    isSelected = uiState.theme == themeMode,
+                    onClick = {
+                        mainViewModel.setTheme(themeMode)
+                        onDismiss()
+                    },
+                )
             }
         },
     )
