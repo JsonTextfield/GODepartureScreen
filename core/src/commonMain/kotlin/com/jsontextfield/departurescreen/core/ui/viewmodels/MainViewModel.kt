@@ -70,6 +70,11 @@ class MainViewModel(
             .distinctUntilChanged()
             .onEach { selectedStation ->
                 if (selectedStation != null) {
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADING,
+                        )
+                    }
                     fetchDepartureData(selectedStation)
                 } else {
                     // Handle case where no station is selected
