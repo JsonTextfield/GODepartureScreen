@@ -28,7 +28,9 @@ class DataStorePreferencesRepository(
 
     override fun getSortMode(): Flow<SortMode> {
         return dataStore.data.map { preferences ->
-            SortMode.entries[preferences[intPreferencesKey("sortMode")] ?: 0]
+            SortMode.entries.firstOrNull {
+                it.ordinal == preferences[intPreferencesKey("sortMode")]
+            } ?: SortMode.TIME
         }
     }
 
@@ -59,7 +61,9 @@ class DataStorePreferencesRepository(
 
     override fun getTheme(): Flow<ThemeMode> {
         return dataStore.data.map { preferences ->
-            ThemeMode.entries[preferences[intPreferencesKey("theme")] ?: 0]
+            ThemeMode.entries.firstOrNull {
+                it.ordinal == preferences[intPreferencesKey("theme")]
+            } ?: ThemeMode.DEFAULT
         }
     }
 
