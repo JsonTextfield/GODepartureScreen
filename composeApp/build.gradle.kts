@@ -36,15 +36,15 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
-            // For interop APIs with Material 3
-            implementation("androidx.glance:glance-material3:1.1.1")
 
+            // For interop APIs with Material 3
+            implementation(libs.androidx.glance.material3)
             // For Glance support
-            implementation("androidx.glance:glance:1.2.0-beta01")
+            implementation(libs.androidx.glance)
             // For AppWidgets support
-            implementation("androidx.glance:glance-appwidget:1.2.0-beta01")
+            implementation(libs.androidx.glance.appwidget)
             // For Wear-Tiles support
-            implementation("androidx.glance:glance-wear-tiles:1.0.0-alpha07")
+            implementation(libs.androidx.glance.wear.tiles)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -59,7 +59,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.0")
+            implementation(libs.navigation.compose)
 
             implementation(libs.material.icons.extended)
 
@@ -96,8 +96,8 @@ android {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
         targetSdk = 36
-        versionCode = 31
-        versionName = "1.9.0"
+        versionCode = 32
+        versionName = "1.9.1"
     }
     packaging {
         resources {
