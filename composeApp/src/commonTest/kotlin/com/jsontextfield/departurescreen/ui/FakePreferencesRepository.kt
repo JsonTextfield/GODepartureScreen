@@ -1,8 +1,10 @@
 package com.jsontextfield.departurescreen.ui
 
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class FakePreferencesRepository : IPreferencesRepository {
     private var visibleTrains: Set<String> = emptySet()
@@ -12,40 +14,40 @@ class FakePreferencesRepository : IPreferencesRepository {
 
     private var theme: ThemeMode? = ThemeMode.DEFAULT
 
-    override suspend fun getVisibleTrains(): Set<String>? {
-        return visibleTrains
+    override fun getVisibleTrains(): Flow<Set<String>> {
+        return flowOf(visibleTrains)
     }
 
     override suspend fun setVisibleTrains(visibleTrains: Set<String>) {
         this.visibleTrains = visibleTrains
     }
 
-    override suspend fun getSortMode(): SortMode? {
-        return sortMode
+    override fun getSortMode(): Flow<SortMode> {
+        return flowOf(sortMode ?: SortMode.TIME)
     }
 
     override suspend fun setSortMode(sortMode: SortMode) {
         this.sortMode = sortMode
     }
 
-    override suspend fun getSelectedStationCode(): String? {
-        return selectedStationCode
+    override fun getSelectedStationCode(): Flow<String> {
+        return flowOf(selectedStationCode ?: "UN")
     }
 
     override suspend fun setSelectedStationCode(stationCode: String) {
         this.selectedStationCode = stationCode
     }
 
-    override suspend fun getTheme(): ThemeMode? {
-        return theme
+    override fun getTheme(): Flow<ThemeMode> {
+        return flowOf(theme ?: ThemeMode.DEFAULT)
     }
 
     override suspend fun setTheme(theme: ThemeMode) {
         this.theme = theme
     }
 
-    override suspend fun getFavouriteStations(): Set<String>? {
-        return favouriteStations
+    override fun getFavouriteStations(): Flow<Set<String>> {
+        return flowOf(favouriteStations)
     }
 
     override suspend fun setFavouriteStations(favouriteStations: Set<String>) {

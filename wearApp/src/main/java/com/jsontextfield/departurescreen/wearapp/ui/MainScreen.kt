@@ -19,6 +19,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -41,20 +43,36 @@ import androidx.wear.compose.material3.TimeText
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import com.jsontextfield.departurescreen.core.ui.Status
-import com.jsontextfield.departurescreen.core.ui.UIState
 import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
+import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.wearapp.R
+
+@Composable
+fun MainScreen(
+    mainViewModel: MainViewModel,
+    navigationActions: NavigationActions,
+) {
+    val uiState by mainViewModel.uiState.collectAsState()
+    MainScreen(
+        uiState = uiState,
+        onRetryClicked = mainViewModel::loadData,
+        onRefresh = mainViewModel::refresh,
+        onSetVisibleTrains = mainViewModel::setVisibleTrains,
+        navigationActions = navigationActions,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    uiState: UIState,
-    timeRemaining: Int,
+    uiState: MainUIState,
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
-    onShowStationMenu: () -> Unit,
+    navigationActions: NavigationActions,
 ) {
     AppScaffold(timeText = {
         TimeText(backgroundColor = MaterialTheme.colorScheme.surface)
@@ -103,7 +121,7 @@ fun MainScreen(
                                 item {
                                     if (uiState.status == Status.LOADED) {
                                         FilledTonalButton(
-                                            onClick = onShowStationMenu,
+                                            onClick = navigationActions.onShowStations,
                                             contentPadding = PaddingValues(horizontal = 8.dp),
                                         ) {
                                             Text(

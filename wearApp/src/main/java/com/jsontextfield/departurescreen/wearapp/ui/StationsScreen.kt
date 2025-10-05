@@ -20,6 +20,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,15 +41,33 @@ import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.ScreenScaffold
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import com.jsontextfield.departurescreen.core.ui.UIState
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
 import com.jsontextfield.departurescreen.core.ui.components.StationListItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun StationsScreen(
-    uiState: UIState,
+    stationsViewModel: StationsViewModel,
+    onBackPressed: () -> Unit = {},
+) {
+    val uiState by stationsViewModel.uiState.collectAsState()
+    StationsScreen(
+        uiState = uiState,
+        onStationSelected = {
+            stationsViewModel.setSelectedStation(it)
+            onBackPressed()
+        },
+        onFavouriteClick = stationsViewModel::setFavouriteStations,
+        onBackPressed = onBackPressed,
+    )
+}
+
+@Composable
+fun StationsScreen(
+    uiState: StationsUIState,
     onStationSelected: (CombinedStation) -> Unit,
     onFavouriteClick: (CombinedStation) -> Unit,
     onBackPressed: () -> Unit

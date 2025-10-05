@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.navigation
+package com.jsontextfield.departurescreen.core.ui.navigation
 
 import kotlinx.serialization.Serializable
 

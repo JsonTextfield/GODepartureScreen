@@ -1,94 +1,98 @@
 package com.jsontextfield.departurescreen.wearapp.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import com.jsontextfield.departurescreen.core.ui.UIState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
+import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App(mainViewModel: MainViewModel = koinViewModel()) {
+fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
     val uiState by mainViewModel.uiState.collectAsState()
-    val timeRemaining by mainViewModel.timeRemaining.collectAsState()
-    val informationAlerts by mainViewModel.informationAlerts.collectAsState()
-    val serviceAlerts by mainViewModel.serviceAlerts.collectAsState()
-    App(
-        uiState = uiState,
-        showAlerts = mainViewModel.showAlerts,
-        showStationMenu = mainViewModel.showStationMenu,
-        informationAlerts = informationAlerts,
-        serviceAlerts = serviceAlerts,
-        timeRemaining = timeRemaining,
-        onRetryClicked = mainViewModel::loadData,
-        onRefresh = mainViewModel::refresh,
-        onSetVisibleTrains = mainViewModel::setVisibleTrains,
-        onBackPressed = mainViewModel::onBackPressed,
-        onShowStationMenu = mainViewModel::showStationMenu,
-        onStationSelected = mainViewModel::setSelectedStation,
-        onFavouriteClick = mainViewModel::setFavouriteStations,
-        onRefreshAlerts = mainViewModel::loadAlerts,
-    )
-}
+    val navController = rememberNavController()
+    var isNavigating by remember { mutableStateOf(false) }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun App(
-    uiState: UIState,
-    showAlerts: Boolean = false,
-    showStationMenu: Boolean = false,
-    informationAlerts: List<Alert> = emptyList(),
-    serviceAlerts: List<Alert> = emptyList(),
-    timeRemaining: Int,
-    onRetryClicked: () -> Unit = {},
-    onRefresh: () -> Unit = {},
-    onRefreshAlerts: () -> Unit = {},
-    onSetVisibleTrains: (Set<String>) -> Unit = {},
-    onShowStationMenu: () -> Unit = {},
-    onStationSelected: (CombinedStation) -> Unit = {},
-    onFavouriteClick: (CombinedStation) -> Unit = {},
-    onBackPressed: () -> Unit = {},
-) {
-    AppTheme(theme = uiState.theme) {
-        MainScreen(
-            uiState = uiState,
-            timeRemaining = timeRemaining,
-            onRetryClicked = onRetryClicked,
-            onRefresh = onRefresh,
-            onSetVisibleTrains = onSetVisibleTrains,
-            onShowStationMenu = onShowStationMenu,
-        )
-        AnimatedVisibility(
-            visible = showAlerts,
-            enter = slideInHorizontally { it },
-            exit = slideOutHorizontally { it },
-        ) {
-            AlertScreen(
-                informationAlerts = informationAlerts,
-                serviceAlerts = serviceAlerts,
-                onBackPressed = onBackPressed,
-                isRefreshing = uiState.isAlertsRefreshing,
-                onRefresh = onRefreshAlerts,
-            )
+    fun safeNavigation(navigation: () -> Unit) {
+        if (!isNavigating) {
+            isNavigating = true
+            navigation()
         }
-        AnimatedVisibility(
-            visible = showStationMenu,
-            enter = slideInHorizontally { it },
-            exit = slideOutHorizontally { it },
-        ) {
-            StationsScreen(
-                uiState = uiState,
-                onStationSelected = onStationSelected,
-                onFavouriteClick = onFavouriteClick,
-                onBackPressed = onBackPressed,
-            )
+    }
+    LaunchedEffect(isNavigating) {
+        if (isNavigating) {
+            delay(500)
+            isNavigating = false
+        }
+    }
+    AppTheme(uiState.theme) {
+        Surface {
+            NavHost(
+                navController = navController,
+                startDestination = HomeRoute,
+            ) {
+                composable<HomeRoute> {
+                    MainScreen(
+                        mainViewModel = mainViewModel,
+                        navigationActions = NavigationActions(
+                            onShowAlerts = {
+                                navController.navigate(AlertsRoute) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onShowStations = {
+                                navController.navigate(StationsRoute) {
+                                    launchSingleTop = true
+                                }
+                            },
+                        )
+                    )
+                }
+
+                composable<AlertsRoute>(
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    val alertsViewModel = koinViewModel<AlertsViewModel>()
+                    AlertsScreen(
+                        alertsViewModel = alertsViewModel,
+                        onBackPressed = {
+                            safeNavigation { navController.popBackStack() }
+                        },
+                    )
+                }
+
+                composable<StationsRoute>(
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    val stationsViewModel = koinViewModel<StationsViewModel>()
+                    StationsScreen(
+                        stationsViewModel = stationsViewModel,
+                        onBackPressed = {
+                            safeNavigation { navController.popBackStack() }
+                        },
+                    )
+                }
+
+            }
         }
     }
 }

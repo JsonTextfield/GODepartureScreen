@@ -23,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
@@ -38,7 +40,23 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.wearapp.R
+
+@Composable
+fun AlertsScreen(
+    alertsViewModel: AlertsViewModel,
+    onBackPressed: () -> Unit = {},
+) {
+    val uiState by alertsViewModel.uiState.collectAsState()
+    AlertScreen(
+        isRefreshing = uiState.isRefreshing,
+        informationAlerts = uiState.informationAlerts,
+        serviceAlerts = uiState.serviceAlerts,
+        onBackPressed = onBackPressed,
+        onRefresh = alertsViewModel::refresh,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

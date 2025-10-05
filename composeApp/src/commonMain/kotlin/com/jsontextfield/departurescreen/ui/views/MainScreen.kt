@@ -37,12 +37,12 @@ import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.components.CountdownTimer
 import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TrainList
+import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.ui.menu.Action
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
 import com.jsontextfield.departurescreen.ui.menu.getActions
-import com.jsontextfield.departurescreen.ui.navigation.NavigationActions
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.error
 import departure_screen.composeapp.generated.resources.retry

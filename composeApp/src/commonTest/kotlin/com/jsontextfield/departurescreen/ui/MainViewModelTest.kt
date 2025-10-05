@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
@@ -61,6 +62,10 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            departureScreenUseCase = DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            )
         )
         mainViewModel.stop()
 
@@ -107,6 +112,10 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            departureScreenUseCase = DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            )
         )
         mainViewModel.stop()
 
@@ -147,6 +156,10 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            departureScreenUseCase = DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            )
         )
         mainViewModel.stop()
 
@@ -174,6 +187,10 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            departureScreenUseCase = DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            )
         )
         mainViewModel.stop()
 
@@ -191,6 +208,10 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            departureScreenUseCase = DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            )
         )
         mainViewModel.stop()
 
