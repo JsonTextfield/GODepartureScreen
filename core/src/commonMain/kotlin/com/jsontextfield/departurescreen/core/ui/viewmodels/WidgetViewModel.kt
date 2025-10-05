@@ -10,13 +10,14 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -28,14 +29,20 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
 class WidgetViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    departureScreenUseCase: DepartureScreenUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
-    private val preferencesRepository: IPreferencesRepository,
+    preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
-    private var _uiState = MutableStateFlow(WidgetUIState())
-    val uiState = _uiState.asStateFlow()
+    private var _uiState: MutableStateFlow<WidgetUIState> = MutableStateFlow(WidgetUIState())
+    val uiState: StateFlow<WidgetUIState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                isRefreshing = false,
+            )
+        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -63,17 +70,38 @@ class WidgetViewModel(
             }
         }.launchIn(viewModelScope)
 
-        departureScreenUseCase.getSelectedStation()
-            .distinctUntilChanged()
-            .onEach { selectedStation ->
-                fetchDepartureData()
-            }
-            .catch { _ ->
-                _uiState.update { it.copy(status = Status.ERROR) }
-            }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            departureScreenUseCase.getSelectedStation()
+                .distinctUntilChanged()
+                .catch { _ ->
+                    _uiState.update {
+                        it.copy(
+                            status = Status.ERROR,
+                            isRefreshing = false,
+                        )
+                    }
+                }.collect {
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADING,
+                        )
+                    }
+                    fetchDepartureData()
+                }
+        }
     }
 
-    fun fetchDepartureData() {
+    fun refresh() {
+        _uiState.update {
+            it.copy(isRefreshing = true)
+        }
+        viewModelScope.launch {
+            delay(1000)
+            fetchDepartureData()
+        }
+    }
+
+    private fun fetchDepartureData() {
         val station = uiState.value.selectedStation ?: return
 
         viewModelScope.launch {
@@ -81,16 +109,23 @@ class WidgetViewModel(
                 val stationCodes = station.codes
                 stationCodes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
-                val trainCodes =
-                    trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
+                val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
+                        isRefreshing = false,
                         _allTrips = trains,
                         visibleTrains = trainCodes,
                         _lastUpdated = Clock.System.now()
                             .toLocalDateTime(TimeZone.currentSystemDefault())
                             .time
+                    )
+                }
+            }.onFailure {
+                _uiState.update {
+                    it.copy(
+                        status = Status.ERROR,
+                        isRefreshing = false,
                     )
                 }
             }

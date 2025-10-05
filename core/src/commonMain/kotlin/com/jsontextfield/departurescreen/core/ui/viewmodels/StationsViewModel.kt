@@ -19,11 +19,15 @@ class StationsViewModel(
     private val departureScreenUseCase: DepartureScreenUseCase,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
-
     private val _uiState: MutableStateFlow<StationsUIState> = MutableStateFlow(StationsUIState())
     val uiState: StateFlow<StationsUIState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+            )
+        }
         loadData()
     }
 

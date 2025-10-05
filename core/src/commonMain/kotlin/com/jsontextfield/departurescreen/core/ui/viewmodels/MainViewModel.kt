@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
@@ -29,7 +28,6 @@ class MainViewModel(
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
-
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
 
@@ -39,6 +37,12 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                isRefreshing = false,
+            )
+        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -66,29 +70,25 @@ class MainViewModel(
             }
         }.launchIn(viewModelScope)
 
-        departureScreenUseCase.getSelectedStation()
-            .distinctUntilChanged()
-            .onEach { selectedStation ->
-                if (selectedStation != null) {
+        viewModelScope.launch {
+            departureScreenUseCase.getSelectedStation()
+                .distinctUntilChanged()
+                .catch { _ ->
+                    _uiState.update {
+                        it.copy(
+                            status = Status.ERROR,
+                            isRefreshing = false,
+                        )
+                    }
+                }.collect {
                     _uiState.update {
                         it.copy(
                             status = Status.LOADING,
                         )
                     }
-                    fetchDepartureData(selectedStation)
-                } else {
-                    // Handle case where no station is selected
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADED,
-                            _allTrips = emptyList(),
-                        )
-                    }
+                    fetchDepartureData()
                 }
-            }
-            .catch { _ ->
-                _uiState.update { it.copy(status = Status.ERROR) }
-            }.launchIn(viewModelScope)
+        }
 
         startTimerJob()
     }
@@ -99,7 +99,7 @@ class MainViewModel(
                 it.copy(status = Status.LOADING)
             }
         }
-        uiState.value.selectedStation?.let(::fetchDepartureData)
+        fetchDepartureData()
     }
 
     fun refresh() {
@@ -123,7 +123,7 @@ class MainViewModel(
                 delay(1000)
                 if (timeRemaining.value <= 1000) {
                     _timeRemaining.update { 0 }
-                    uiState.value.selectedStation?.let(::fetchDepartureData) ?: _timeRemaining.update { 20000 }
+                    fetchDepartureData()
                 } else {
                     _timeRemaining.update { it - 1000 }
                 }
@@ -131,7 +131,9 @@ class MainViewModel(
         }
     }
 
-    private fun fetchDepartureData(station: CombinedStation) {
+    private fun fetchDepartureData() {
+        val station = uiState.value.selectedStation ?: return
+
         viewModelScope.launch {
             runCatching {
                 val stationCodes = station.codes

@@ -7,6 +7,7 @@ import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -18,9 +19,15 @@ class AlertsViewModel(
     private val goTrainDataSource: IGoTrainDataSource,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<AlertsUIState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                isRefreshing = false,
+            )
+        }
         loadAlerts()
     }
 
@@ -31,10 +38,15 @@ class AlertsViewModel(
         loadAlerts()
     }
 
-    fun loadAlerts() {
+    private fun loadAlerts() {
         viewModelScope.launch {
             departureScreenUseCase.getSelectedStation().catch {
-                _uiState.update { it.copy(status = Status.ERROR) }
+                _uiState.update {
+                    it.copy(
+                        status = Status.ERROR,
+                        isRefreshing = false,
+                    )
+                }
             }.collectLatest { selectedStation ->
                 runCatching {
                     val selectedStationCodes = selectedStation?.codes ?: emptySet()
@@ -49,20 +61,23 @@ class AlertsViewModel(
                     val serviceAlerts = goTrainDataSource.getServiceAlerts()
                     val informationAlerts = goTrainDataSource.getInformationAlerts()
                     serviceAlerts.filter(predicate) to informationAlerts.filter(predicate)
+                }.onSuccess { (filteredInformationAlerts, filteredServiceAlerts) ->
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADED,
+                            isRefreshing = false,
+                            serviceAlerts = filteredServiceAlerts,
+                            informationAlerts = filteredInformationAlerts,
+                        )
+                    }
+                }.onFailure {
+                    _uiState.update {
+                        it.copy(
+                            status = Status.ERROR,
+                            isRefreshing = false,
+                        )
+                    }
                 }
-                    .onSuccess { (filteredInformationAlerts, filteredServiceAlerts) ->
-                        _uiState.update {
-                            it.copy(
-                                status = Status.LOADED,
-                                serviceAlerts = filteredServiceAlerts,
-                                informationAlerts = filteredInformationAlerts,
-                                isRefreshing = false,
-                            )
-                        }
-                    }
-                    .onFailure {
-                        _uiState.update { it.copy(status = Status.ERROR) }
-                    }
             }
         }
     }

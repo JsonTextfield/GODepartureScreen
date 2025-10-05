@@ -82,7 +82,7 @@ class DeparturesWidget : GlanceAppWidget() {
                 viewModelStoreOwner = viewModelStoreOwner
             )
             val uiState by viewModel.uiState.collectAsState()
-            MyContent(uiState, viewModel::fetchDepartureData)
+            MyContent(uiState, viewModel::refresh)
         }
     }
 
