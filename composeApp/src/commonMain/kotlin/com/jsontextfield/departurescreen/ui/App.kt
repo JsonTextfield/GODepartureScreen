@@ -4,8 +4,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,12 +24,27 @@ import com.jsontextfield.departurescreen.ui.navigation.StationsRoute
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.StationsScreen
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
     val uiState by mainViewModel.uiState.collectAsState()
     val navController = rememberNavController()
+    var isNavigating by remember { mutableStateOf(false) }
+
+    fun safeNavigation(navigation: () -> Unit) {
+        if (!isNavigating) {
+            isNavigating = true
+            navigation()
+        }
+    }
+    LaunchedEffect(isNavigating) {
+        if (isNavigating) {
+            delay(500)
+            isNavigating = false
+        }
+    }
     AppTheme(uiState.theme) {
         Surface {
             NavHost(
@@ -58,9 +77,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     AlertsScreen(
                         alertsViewModel = alertsViewModel,
                         onBackPressed = {
-                            navController.navigate(HomeRoute) {
-                                launchSingleTop = true
-                            }
+                            safeNavigation { navController.popBackStack() }
                         },
                     )
                 }
@@ -73,9 +90,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     StationsScreen(
                         stationsViewModel = stationsViewModel,
                         onBackPressed = {
-                            navController.navigate(HomeRoute) {
-                                launchSingleTop = true
-                            }
+                            safeNavigation { navController.popBackStack() }
                         },
                     )
                 }
