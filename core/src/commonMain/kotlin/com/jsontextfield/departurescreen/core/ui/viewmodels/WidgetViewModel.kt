@@ -57,19 +57,6 @@ class WidgetViewModel(
             }
         }.launchIn(viewModelScope)
 
-        combine(
-            departureScreenUseCase.getSelectedStation(),
-            preferencesRepository.getFavouriteStations(),
-        ) { selectedStation, favouriteStations ->
-            _uiState.update {
-                it.copy(
-                    selectedStation = selectedStation?.copy(
-                        isFavourite = selectedStation.codes.any { code -> code in favouriteStations }
-                    )
-                )
-            }
-        }.launchIn(viewModelScope)
-
         viewModelScope.launch {
             departureScreenUseCase.getSelectedStation()
                 .distinctUntilChanged()
@@ -80,10 +67,12 @@ class WidgetViewModel(
                             isRefreshing = false,
                         )
                     }
-                }.collect {
+                }.collect { selectedStation ->
                     _uiState.update {
                         it.copy(
                             status = Status.LOADING,
+                            isRefreshing = false,
+                            selectedStation = selectedStation,
                         )
                     }
                     fetchDepartureData()

@@ -80,10 +80,12 @@ class MainViewModel(
                             isRefreshing = false,
                         )
                     }
-                }.collect {
+                }.collect { selectedStation ->
                     _uiState.update {
                         it.copy(
                             status = Status.LOADING,
+                            isRefreshing = false,
+                            selectedStation = selectedStation,
                         )
                     }
                     fetchDepartureData()
