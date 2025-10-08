@@ -16,45 +16,45 @@ class DataStorePreferencesRepository(
 ) : IPreferencesRepository {
     override fun getVisibleTrains(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey("hiddenTrains")] ?: emptySet()
+            preferences[stringSetPreferencesKey(HIDDEN_TRAINS_KEY)] ?: emptySet()
         }
     }
 
     override suspend fun setVisibleTrains(visibleTrains: Set<String>) {
         dataStore.edit { preferences ->
-            preferences[stringSetPreferencesKey("hiddenTrains")] = visibleTrains
+            preferences[stringSetPreferencesKey(HIDDEN_TRAINS_KEY)] = visibleTrains
         }
     }
 
     override fun getSortMode(): Flow<SortMode> {
         return dataStore.data.map { preferences ->
             SortMode.entries.firstOrNull {
-                it.ordinal == preferences[intPreferencesKey("sortMode")]
+                it.ordinal == preferences[intPreferencesKey(SORT_MODE_KEY)]
             } ?: SortMode.TIME
         }
     }
 
     override suspend fun setSortMode(sortMode: SortMode) {
         dataStore.edit { preferences ->
-            preferences[intPreferencesKey("sortMode")] = sortMode.ordinal
+            preferences[intPreferencesKey(SORT_MODE_KEY)] = sortMode.ordinal
         }
     }
 
     override fun getSelectedStationCode(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey("selectedStationCode")] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] ?: "UN"
         }
     }
 
     override suspend fun setSelectedStationCode(stationCode: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey("selectedStationCode")] = stationCode
+            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] = stationCode
         }
     }
 
     override suspend fun setTheme(theme: ThemeMode) {
         dataStore.edit { preferences ->
-            val key = intPreferencesKey("theme")
+            val key = intPreferencesKey(THEME_KEY)
             preferences[key] = theme.ordinal
         }
     }
@@ -62,20 +62,28 @@ class DataStorePreferencesRepository(
     override fun getTheme(): Flow<ThemeMode> {
         return dataStore.data.map { preferences ->
             ThemeMode.entries.firstOrNull {
-                it.ordinal == preferences[intPreferencesKey("theme")]
+                it.ordinal == preferences[intPreferencesKey(THEME_KEY)]
             } ?: ThemeMode.DEFAULT
         }
     }
 
     override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
         dataStore.edit { preferences ->
-            preferences[stringSetPreferencesKey("favouriteStations")] = favouriteStations
+            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] = favouriteStations
         }
     }
 
     override fun getFavouriteStations(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey("favouriteStations")] ?: emptySet()
+            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] ?: emptySet()
         }
+    }
+
+    private companion object {
+        const val SORT_MODE_KEY = "sortMode"
+        const val THEME_KEY = "theme"
+        const val SELECTED_STATION_CODE_KEY = "selectedStationCode"
+        const val FAVOURITE_STATIONS_KEY = "favouriteStations"
+        const val HIDDEN_TRAINS_KEY = "hiddenTrains"
     }
 }

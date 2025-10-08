@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -49,6 +49,7 @@ import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
 
 
 @Composable
@@ -65,7 +66,7 @@ fun AlertsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
 @Composable
 fun AlertsScreen(
     uiState: AlertsUIState,
@@ -110,7 +111,7 @@ fun AlertsScreen(
                     onRefresh = onRefresh,
                     modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
                 ) {
-                    LazyVerticalGrid(
+                    LazyVerticalStaggeredGrid(
                         modifier = Modifier
                             .fillMaxSize()
                             .semantics {
@@ -119,7 +120,7 @@ fun AlertsScreen(
                                     columnCount = columns,
                                 )
                             },
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalItemSpacing = 16.dp,
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(
                             top = 16.dp,
@@ -129,10 +130,10 @@ fun AlertsScreen(
                                 .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
                             bottom = 100.dp
                         ),
-                        columns = GridCells.Adaptive(240.dp),
+                        columns = StaggeredGridCells.Adaptive(240.dp),
                     ) {
                         if (uiState.serviceAlerts.isNotEmpty()) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 Text(
                                     stringResource(Res.string.service_alerts),
                                     style = MaterialTheme.typography.headlineMedium,
@@ -156,7 +157,7 @@ fun AlertsScreen(
                             }
                         }
                         if (uiState.informationAlerts.isNotEmpty()) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
+                            item(span = StaggeredGridItemSpan.FullLine) {
                                 Column {
                                     if (uiState.serviceAlerts.isNotEmpty()) {
                                         Spacer(modifier = Modifier.height(24.dp))

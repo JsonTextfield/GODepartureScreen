@@ -62,16 +62,16 @@ class AlertsViewModel(
                                 &&
                                 (allTrainCodes.any { code -> code in it.affectedLines } || it.affectedLines.isEmpty())
                     }
-                    val serviceAlerts = goTrainDataSource.getServiceAlerts()
-                    val informationAlerts = goTrainDataSource.getInformationAlerts()
-                    serviceAlerts.filter(predicate) to informationAlerts.filter(predicate)
-                }.onSuccess { (filteredInformationAlerts, filteredServiceAlerts) ->
+                    val serviceAlerts = goTrainDataSource.getServiceAlerts().filter(predicate)
+                    val informationAlerts = goTrainDataSource.getInformationAlerts().filter(predicate)
+                    serviceAlerts to informationAlerts
+                }.onSuccess { (serviceAlerts, informationAlerts) ->
                     _uiState.update {
                         it.copy(
                             status = Status.LOADED,
                             isRefreshing = false,
-                            serviceAlerts = filteredServiceAlerts,
-                            informationAlerts = filteredInformationAlerts,
+                            serviceAlerts = serviceAlerts,
+                            informationAlerts = informationAlerts,
                         )
                     }
                 }.onFailure {
