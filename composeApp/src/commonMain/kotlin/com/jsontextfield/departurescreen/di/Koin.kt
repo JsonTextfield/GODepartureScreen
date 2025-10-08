@@ -3,68 +3,47 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.data.DataStorePreferencesRepository
-import com.jsontextfield.departurescreen.data.GoTrainDataSource
-import com.jsontextfield.departurescreen.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.ui.AlertViewModel
-import com.jsontextfield.departurescreen.ui.MainViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
+import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val networkModule = module {
-    single<HttpClient> {
-        HttpClient {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }
-                )
-            }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.HEADERS
-            }
-            defaultRequest {
-                url("https://api.openmetrolinx.com/OpenDataAPI/api/V1/")
-            }
+    singleOf(::DepartureScreenAPI)
+}
+
+val dataModule = module {
+    single<IGoTrainDataSource> {
+        val useFake = false
+        if (useFake) {
+            FakeGoTrainDataSource()
+        } else {
+            GoTrainDataSource(get<DepartureScreenAPI>())
         }
     }
 }
 
-val dataModule = module {
-    single<DepartureScreenAPI> { DepartureScreenAPI(get<HttpClient>()) }
-    single<IGoTrainDataSource> {
-//        FakeGoTrainDataSource()
-        GoTrainDataSource(get<DepartureScreenAPI>())
-    }
-    single<IPreferencesRepository> {
-        DataStorePreferencesRepository(get())
-    }
-}
-
-expect fun dataStoreModule(): Module
+expect fun preferencesModule(): Module
 
 val viewModelModule = module {
-    factoryOf(::MainViewModel)
-    factoryOf(::AlertViewModel)
+    factoryOf(::DepartureScreenUseCase)
+    viewModelOf(::MainViewModel)
+    viewModelOf(::AlertsViewModel)
+    viewModelOf(::StationsViewModel)
+    viewModelOf(::WidgetViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
@@ -74,7 +53,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             networkModule,
             dataModule,
             viewModelModule,
-            dataStoreModule(),
+            preferencesModule(),
         )
     }
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tile_label">Example tile</string>
+    <string name="complication_label">Example complication</string>
+    <string name="app_name">Départs GO</string>
+    <string name="express">Express</string>
+    <string name="cancelled">Annullée</string>
+    <string name="platform">Quai %1$s</string>
+    <string name="filter">Filtrer</string>
+    <string name="sort">Trier</string>
+    <string name="cancel">Annuler</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="close">Fermer</string>
+    <string name="about">À propos de</string>
+    <string name="licences">Licences</string>
+    <string name="more">Plus</string>
+    <string name="time">Trier par l\'heure</string>
+    <string name="line">Trier par la ligne</string>
+    <string name="minutes">%1$s min</string>
+    <string name="min">min</string>
+    <string name="all">Tous</string>
+    <string name="light_mode">Lumière</string>
+    <string name="dark_mode">Sombre</string>
+    <string name="system_default">Défaut</string>
+    <string name="theme">Thème</string>
+    <string name="alerts">Alertes</string>
+    <string name="back">Retourner</string>
+    <string name="information_alerts">Alertes d\'information</string>
+    <string name="service_alerts">Alertes de service</string>
+    <string name="error">Une erreur s\'est produite</string>
+    <string name="retry">Réessayer</string>
+    <string name="favourite">Préférée</string>
+    <string name="clear">Effacer</string>
+    <string name="search">Chercher</string>
+    <string name="scroll_to_top">Faire défiler vers le haut</string>
+    <plurals name="minutes_content_description">
+        <item quantity="one">Partira dans %1$s minute</item>
+        <item quantity="other">Partira dans %1$s minutes</item>
+    </plurals>
+</resources>

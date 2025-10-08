@@ -6,8 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 data class Action(
     val icon: ImageVector,
     val tooltip: String,
+    val onClick: (() -> Unit)? = null,
+    val menuContent: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     val isVisible: Boolean = true,
-    val isChecked: Boolean = false,
-    val onClick: () -> Unit = {},
-    val menuContent: (@Composable (expanded: Boolean) -> Unit)? = null,
 )

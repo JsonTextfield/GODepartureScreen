@@ -1,22 +1,20 @@
 package com.jsontextfield.departurescreen.ui
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.jsontextfield.departurescreen.Train
-import com.jsontextfield.departurescreen.ui.menu.Action
-import com.jsontextfield.departurescreen.ui.theme.trainColours
+import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 
-private val sampleTrains = List(11) {
-    Train(
+private val sampleTrips = List(11) {
+    Trip(
         id = (37 * it + 1000).toString(),
         code = "${Char(65 + it)}${Char(68 + it)}",
         destination = "Station",
         platform = "${it + 1} & ${it + 2}",
-        color = trainColours.values.random(),
+        color = lineColours.values.random(),
+        isCancelled = it % 3 == 0,
     )
 }
 
@@ -25,16 +23,19 @@ private val sampleTrains = List(11) {
 @PreviewScreenSizes
 @Composable
 fun AppPreview() {
-    App(
-        allTrains = sampleTrains,
-        visibleTrains = emptySet(),
-        timeRemaining = 16000,
-        actions = listOf(
-            Action(
-                icon = Icons.AutoMirrored.Rounded.Sort,
-                tooltip = "Sort",
-            ),
-        ),
-        onSetVisibleTrains = {},
-    )
+//    App(
+//        uiState = UIState(
+//            status = Status.LOADED,
+//            _allTrips = sampleTrips,
+//            visibleTrains = emptySet(),
+//            selectedStation = CombinedStation("Union GO Station", listOf("UN"), types = listOf("Train Station")),
+//        ),
+//        timeRemaining = 16000,
+//        actions = listOf(
+//            Action(
+//                icon = Icons.AutoMirrored.Rounded.Sort,
+//                tooltip = "Sort",
+//            ),
+//        ),
+//    )
 }

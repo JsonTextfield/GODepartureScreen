@@ -2,6 +2,8 @@ package com.jsontextfield.departurescreen.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -10,10 +12,11 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-actual fun dataStoreModule(): Module {
+@OptIn(ExperimentalForeignApi::class)
+actual fun preferencesModule(): Module {
     return module {
-        single<DataStore<Preferences>?> {
-            createDataStore()
+        single<IPreferencesRepository> {
+            DataStorePreferencesRepository(createDataStore())
         }
     }
 }

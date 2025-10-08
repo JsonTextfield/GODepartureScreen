@@ -1,13 +1,18 @@
 package com.jsontextfield.departurescreen.ui.menu
 
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 
 @Composable
 fun PopupMenu(
-    showMenu: Boolean = false,
-    menuContent: @Composable (Boolean) -> Unit = {},
-    content: @Composable () -> Unit = {},
+    showMenu: Boolean,
+    onDismissRequest: () -> Unit,
+    menuContent: @Composable () -> Unit,
 ) {
-    menuContent(showMenu)
-    content()
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = onDismissRequest
+    ) {
+        menuContent()
+    }
 }

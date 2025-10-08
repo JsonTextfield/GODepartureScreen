@@ -1,7 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -31,26 +29,6 @@ kotlin {
 
     jvm("desktop")
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        outputModuleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
-
     sourceSets {
         val desktopMain by getting
 
@@ -59,22 +37,29 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
 
-            // For AppWidgets support
-            implementation(libs.androidx.glance.appwidget)
-
             // For interop APIs with Material 3
             implementation(libs.androidx.glance.material3)
+            // For Glance support
+            implementation(libs.androidx.glance)
+            // For AppWidgets support
+            implementation(libs.androidx.glance.appwidget)
+            // For Wear-Tiles support
+            implementation(libs.androidx.glance.wear.tiles)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
+            implementation(project(":core"))
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.navigation.compose)
 
             implementation(libs.material.icons.extended)
 
@@ -105,14 +90,14 @@ kotlin {
 
 android {
     namespace = "com.jsontextfield.departurescreen"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
-        targetSdk = 35
-        versionCode = 22
-        versionName = "1.5.2"
+        targetSdk = 36
+        versionCode = 34
+        versionName = "1.9.3"
     }
     packaging {
         resources {

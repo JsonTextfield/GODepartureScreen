@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Départs GO</string>
+    <string name="express">Express</string>
+    <string name="cancelled">Annullée</string>
+    <string name="updated">Mis à jour à %s</string>
+</resources>

@@ -1,48 +1,40 @@
-package com.jsontextfield.departurescreen.ui.menu
-
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import com.jsontextfield.departurescreen.ui.menu.Action
+import com.jsontextfield.departurescreen.ui.menu.NestedOverflowMenuItem
+import com.jsontextfield.departurescreen.ui.menu.OverflowMenuItem
 
 @Composable
 fun OverflowMenu(
-    isExpanded: Boolean = false,
+    isExpanded: Boolean,
+    onDismissRequest: () -> Unit,
     actions: List<Action>,
-    onItemSelected: () -> Unit = {},
 ) {
     DropdownMenu(
         expanded = isExpanded,
-        onDismissRequest = { onItemSelected() },
+        onDismissRequest = onDismissRequest
     ) {
-        for (action in actions) {
-            if (action.menuContent != null) {
-                var showMenu by remember { mutableStateOf(false) }
-                PopupMenu(
-                    showMenu = showMenu,
-                    menuContent = action.menuContent,
-                    content = {
-                        OverflowMenuItem(
-                            icon = action.icon,
-                            tooltip = action.tooltip,
-                        ) {
-                            showMenu = !showMenu
-                        }
-                    },
-                )
-            }
-            else {
+        actions.forEach { action ->
+            // DECIDE WHICH MENU ITEM TO USE
+            if (action.menuContent == null) {
+                // This is a simple action with an onClick
                 OverflowMenuItem(
                     icon = action.icon,
                     tooltip = action.tooltip,
-                    isVisible = action.isVisible,
-                    isChecked = action.isChecked,
-                ) {
-                    action.onClick()
-                    onItemSelected()
-                }
+                    onClick = {
+                        action.onClick?.invoke()
+                        onDismissRequest() // Close the overflow menu
+                    }
+                )
+            } else {
+                // This is a complex action that has a nested menu
+                NestedOverflowMenuItem(
+                    icon = action.icon,
+                    tooltip = action.tooltip,
+                    // Pass the main dismiss function to the nested menu
+                    onDismissRequest = onDismissRequest,
+                    menuContent = action.menuContent
+                )
             }
         }
     }
