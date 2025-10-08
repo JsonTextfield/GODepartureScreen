@@ -37,8 +37,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
+import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
+import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
@@ -55,21 +58,19 @@ fun AlertsScreen(
 ) {
     val uiState by alertsViewModel.uiState.collectAsState()
     AlertsScreen(
-        isRefreshing = uiState.isRefreshing,
-        informationAlerts = uiState.informationAlerts,
-        serviceAlerts = uiState.serviceAlerts,
+        uiState = uiState,
         onBackPressed = onBackPressed,
         onRefresh = alertsViewModel::refresh,
+        onRetryClicked = alertsViewModel::loadData,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertsScreen(
-    informationAlerts: List<Alert>,
-    serviceAlerts: List<Alert>,
+    uiState: AlertsUIState,
+    onRetryClicked: () -> Unit = {},
     onBackPressed: () -> Unit = {},
-    isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
 ) {
     val density = LocalDensity.current
@@ -94,91 +95,98 @@ fun AlertsScreen(
             )
         },
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
-        ) {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(LayoutDirection.Ltr),
-                        end = WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr),
-                    ).semantics {
-                        collectionInfo = CollectionInfo(
-                            rowCount = informationAlerts.size + serviceAlerts.size,
-                            columnCount = columns,
-                        )
-                    },
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(16.dp) + PaddingValues(bottom = 100.dp),
-                columns = GridCells.Adaptive(240.dp),
-            ) {
-                if (serviceAlerts.isNotEmpty()) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            stringResource(Res.string.service_alerts),
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.semantics {
-                                heading()
+        when (uiState.status) {
+            Status.LOADING -> {
+                LoadingScreen()
+            }
+
+            Status.ERROR -> {
+                ErrorScreen(onRetry = onRetryClicked)
+            }
+
+            Status.LOADED -> {
+                PullToRefreshBox(
+                    isRefreshing = uiState.isRefreshing,
+                    onRefresh = onRefresh,
+                    modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
+                ) {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .semantics {
+                                collectionInfo = CollectionInfo(
+                                    rowCount = uiState.informationAlerts.size + uiState.serviceAlerts.size,
+                                    columnCount = columns,
+                                )
                             },
-                        )
-                    }
-                    itemsIndexed(serviceAlerts, key = { _, item -> item.id }) { index, alert ->
-                        AlertItem(
-                            alert,
-                            modifier = Modifier.semantics {
-                                collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = index / columns,
-                                    columnIndex = index % columns,
-                                    rowSpan = 1,
-                                    columnSpan = 1,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(
+                            top = 16.dp,
+                            start = WindowInsets.safeDrawing.asPaddingValues()
+                                .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                            end = WindowInsets.safeDrawing.asPaddingValues()
+                                .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
+                            bottom = 100.dp
+                        ),
+                        columns = GridCells.Adaptive(240.dp),
+                    ) {
+                        if (uiState.serviceAlerts.isNotEmpty()) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Text(
+                                    stringResource(Res.string.service_alerts),
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier.semantics {
+                                        heading()
+                                    },
                                 )
-                            }.animateItem()
-                        )
-                    }
-                }
-                if (informationAlerts.isNotEmpty()) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Column {
-                            if (serviceAlerts.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(24.dp))
                             }
-                            Text(
-                                stringResource(Res.string.information_alerts),
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier.semantics {
-                                    heading()
-                                },
-                            )
-                        }
-                    }
-                    itemsIndexed(informationAlerts, key = { _, item -> item.id }) { index, alert ->
-                        AlertItem(
-                            alert,
-                            modifier = Modifier.semantics {
-                                collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = (serviceAlerts.size + index) / columns,
-                                    columnIndex = (serviceAlerts.size + index) % columns,
-                                    rowSpan = 1,
-                                    columnSpan = 1,
+                            itemsIndexed(uiState.serviceAlerts, key = { _, item -> item.id }) { index, alert ->
+                                AlertItem(
+                                    alert,
+                                    modifier = Modifier.semantics {
+                                        collectionItemInfo = CollectionItemInfo(
+                                            rowIndex = index / columns,
+                                            columnIndex = index % columns,
+                                            rowSpan = 1,
+                                            columnSpan = 1,
+                                        )
+                                    }.animateItem()
                                 )
-                            }.animateItem()
-                        )
+                            }
+                        }
+                        if (uiState.informationAlerts.isNotEmpty()) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Column {
+                                    if (uiState.serviceAlerts.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                    }
+                                    Text(
+                                        stringResource(Res.string.information_alerts),
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        modifier = Modifier.semantics {
+                                            heading()
+                                        },
+                                    )
+                                }
+                            }
+                            itemsIndexed(uiState.informationAlerts, key = { _, item -> item.id }) { index, alert ->
+                                AlertItem(
+                                    alert,
+                                    modifier = Modifier.semantics {
+                                        collectionItemInfo = CollectionItemInfo(
+                                            rowIndex = (uiState.serviceAlerts.size + index) / columns,
+                                            columnIndex = (uiState.serviceAlerts.size + index) % columns,
+                                            rowSpan = 1,
+                                            columnSpan = 1,
+                                        )
+                                    }.animateItem()
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
-}
-
-private operator fun PaddingValues.plus(other: PaddingValues): PaddingValues {
-    return PaddingValues(
-        start = this.calculateStartPadding(LayoutDirection.Ltr) + other.calculateStartPadding(LayoutDirection.Ltr),
-        top = this.calculateTopPadding() + other.calculateTopPadding(),
-        end = this.calculateEndPadding(LayoutDirection.Ltr) + other.calculateEndPadding(LayoutDirection.Ltr),
-        bottom = this.calculateBottomPadding() + other.calculateBottomPadding()
-    )
 }

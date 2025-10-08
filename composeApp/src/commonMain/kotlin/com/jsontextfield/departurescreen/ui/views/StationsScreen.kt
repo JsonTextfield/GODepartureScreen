@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -84,14 +86,23 @@ fun StationsScreen(
             )
         },
         floatingActionButton = {
-            ScrollToTopButton(
-                isVisible = gridState.firstVisibleItemIndex > 10,
-                onClick = {
-                    scope.launch {
-                        gridState.animateScrollToItem(0)
+            Box(
+                modifier = Modifier.padding(
+                    end = TopAppBarDefaults
+                        .windowInsets
+                        .asPaddingValues()
+                        .calculateEndPadding(LayoutDirection.Ltr),
+                ),
+            ) {
+                ScrollToTopButton(
+                    isVisible = gridState.firstVisibleItemIndex > 10,
+                    onClick = {
+                        scope.launch {
+                            gridState.animateScrollToItem(0)
+                        }
                     }
-                }
-            )
+                )
+            }
         },
     ) { innerPadding ->
         val filteredStations = uiState.getFilteredStations(textFieldState.text.toString())
@@ -102,7 +113,7 @@ fun StationsScreen(
                     LayoutDirection.Ltr
                 ).value - WindowInsets.safeDrawing.asPaddingValues()
                 .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-        val columns = (widthDp / 600).coerceIn(1, 4)
+        val columns = (widthDp / 300).coerceIn(1, 4)
         LazyVerticalGrid(
             state = gridState,
             modifier = Modifier
@@ -113,7 +124,7 @@ fun StationsScreen(
                         columnCount = columns,
                     )
                 },
-            columns = GridCells.Adaptive(300.dp),
+            columns = GridCells.Fixed(columns),
             contentPadding = PaddingValues(bottom = 100.dp),
         ) {
             itemsIndexed(
@@ -140,13 +151,24 @@ fun StationsScreen(
                             onStationSelected(station)
                         }
                         .padding(8.dp)
-                        .padding(
-                            start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
-                                LayoutDirection.Ltr
-                            ),
-                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
-                                LayoutDirection.Ltr
-                            ),
+                        .then(
+                            if (index % columns == columns - 1) {
+                                Modifier
+                                    .padding(
+                                        end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
+                                            LayoutDirection.Ltr
+                                        )
+                                    )
+                            } else if (index % columns == 0) {
+                                Modifier
+                                    .padding(
+                                        start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                            LayoutDirection.Ltr
+                                        )
+                                    )
+                            } else {
+                                Modifier
+                            }
                         ).semantics {
                             collectionItemInfo = CollectionItemInfo(
                                 rowIndex = index / columns,

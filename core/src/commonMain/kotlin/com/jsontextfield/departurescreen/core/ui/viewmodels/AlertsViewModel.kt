@@ -22,6 +22,10 @@ class AlertsViewModel(
     val uiState: StateFlow<AlertsUIState> = _uiState.asStateFlow()
 
     init {
+        loadData()
+    }
+
+    fun loadData() {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
