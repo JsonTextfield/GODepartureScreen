@@ -11,16 +11,16 @@ data class Station(
 fun List<Station>.toCombinedStation(): CombinedStation {
     return CombinedStation(
         name = first().name,
-        codes = map { it.code },
-        types = map { it.type },
+        codes = map { it.code }.toSet(),
+        types = map { it.type }.toSet(),
         isFavourite = any { it.isFavourite },
     )
 }
 
 data class CombinedStation(
     val name: String,
-    val codes: List<String>,
-    val types: List<String>,
+    val codes: Set<String>,
+    val types: Set<String>,
     val isEnabled: Boolean = true,
     val isFavourite: Boolean = false,
 )
