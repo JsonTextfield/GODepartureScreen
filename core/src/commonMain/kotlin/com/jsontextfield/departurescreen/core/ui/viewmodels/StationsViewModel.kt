@@ -23,15 +23,15 @@ class StationsViewModel(
     val uiState: StateFlow<StationsUIState> = _uiState.asStateFlow()
 
     init {
+        loadData()
+    }
+
+    private fun loadData() {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
             )
         }
-        loadData()
-    }
-
-    private fun loadData() {
         viewModelScope.launch {
             combine(
                 departureScreenUseCase.getSelectedStation(),

@@ -37,12 +37,6 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
-        _uiState.update {
-            it.copy(
-                status = Status.LOADING,
-                isRefreshing = false,
-            )
-        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -68,12 +62,29 @@ class MainViewModel(
                     )
                 )
             }
+        }.catch {
+            _uiState.update {
+                it.copy(
+                    status = Status.ERROR,
+                    isRefreshing = false,
+                )
+            }
         }.launchIn(viewModelScope)
+        loadData()
+        startTimerJob()
+    }
 
+    fun loadData() {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                isRefreshing = false,
+            )
+        }
         viewModelScope.launch {
             departureScreenUseCase.getSelectedStation()
                 .distinctUntilChanged()
-                .catch { _ ->
+                .catch {
                     _uiState.update {
                         it.copy(
                             status = Status.ERROR,
@@ -91,17 +102,6 @@ class MainViewModel(
                     fetchDepartureData()
                 }
         }
-
-        startTimerJob()
-    }
-
-    fun loadData() {
-        if (uiState.value.status == Status.ERROR) {
-            _uiState.update {
-                it.copy(status = Status.LOADING)
-            }
-        }
-        fetchDepartureData()
     }
 
     fun refresh() {
@@ -138,13 +138,13 @@ class MainViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val stationCodes = station.codes
-                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
+                station.codes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
+                        isRefreshing = false,
                         _allTrips = trains,
                         visibleTrains = trainCodes,
                     )

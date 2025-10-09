@@ -10,6 +10,7 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -86,7 +87,10 @@ class WidgetViewModel(
                 status = Status.LOADING,
             )
         }
-        fetchDepartureData()
+        viewModelScope.launch {
+            delay(1000)
+            fetchDepartureData()
+        }
     }
 
     private fun fetchDepartureData() {
@@ -94,8 +98,7 @@ class WidgetViewModel(
 
         viewModelScope.launch {
             runCatching {
-                val stationCodes = station.codes
-                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
+                station.codes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {
