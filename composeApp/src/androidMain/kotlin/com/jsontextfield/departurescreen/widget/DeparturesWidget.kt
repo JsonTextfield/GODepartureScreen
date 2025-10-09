@@ -49,8 +49,8 @@ class DeparturesWidget : GlanceAppWidget() {
             status = Status.LOADED,
             selectedStation = CombinedStation(
                 name = "Union Station GO",
-                codes = listOf("UN"),
-                types = listOf("Train Station"),
+                codes = setOf("UN"),
+                types = setOf("Train Station"),
             ),
             _allTrips = listOf(
                 Trip(

@@ -1,7 +1,6 @@
 package com.jsontextfield.departurescreen.widget
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.glance.Button
 import androidx.glance.ColorFilter
@@ -52,9 +51,21 @@ fun MyContent(
     ) {
         when (uiState.status) {
             Status.ERROR -> {
-                Text(stringResource(R.string.error))
-                Spacer(modifier = GlanceModifier.height(8.dp))
-                Button(stringResource(R.string.retry), onClick = onRefresh)
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        context.getString(R.string.error),
+                        style = TextDefaults.defaultTextStyle.copy(
+                            textAlign = TextAlign.Center,
+                            color = GlanceTheme.colors.onBackground,
+                        )
+                    )
+                    Spacer(modifier = GlanceModifier.height(8.dp))
+                    Button(context.getString(R.string.retry), onClick = onRefresh)
+                }
             }
 
             Status.LOADING -> {
