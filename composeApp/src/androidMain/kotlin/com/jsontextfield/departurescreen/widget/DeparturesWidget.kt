@@ -5,13 +5,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.glance.GlanceId
+import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
+import androidx.glance.material3.ColorProviders
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
+import com.jsontextfield.departurescreen.core.ui.theme.lightScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
@@ -82,7 +86,14 @@ class DeparturesWidget : GlanceAppWidget() {
                 viewModelStoreOwner = viewModelStoreOwner
             )
             val uiState by viewModel.uiState.collectAsState()
-            MyContent(uiState, viewModel::refresh)
+            GlanceTheme(
+                colors = ColorProviders(
+                    light = lightScheme,
+                    dark = darkScheme,
+                )
+            ) {
+                MyContent(uiState, viewModel::refresh)
+            }
         }
     }
 

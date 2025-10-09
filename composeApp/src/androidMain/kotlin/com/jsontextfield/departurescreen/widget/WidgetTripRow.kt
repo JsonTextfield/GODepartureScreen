@@ -3,8 +3,10 @@ package com.jsontextfield.departurescreen.widget
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
@@ -46,7 +48,10 @@ fun WidgetTripRow(trip: Trip, modifier: GlanceModifier = GlanceModifier) {
         Box(
             modifier = GlanceModifier
                 .size(32.dp)
-                .background(trip.color)
+                .background(
+                    imageProvider = ImageProvider(R.drawable.squircle),
+                    colorFilter = ColorFilter.tint(ColorProvider(trip.color))
+                )
                 .cornerRadius(12.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -103,7 +108,7 @@ fun WidgetTripRow(trip: Trip, modifier: GlanceModifier = GlanceModifier) {
                     GlanceTheme.colors.onBackground
                 }
             ),
-            modifier = GlanceModifier.defaultWeight(),
+            modifier = GlanceModifier.width(60.dp),
         )
     }
 }
