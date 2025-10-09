@@ -4,4 +4,6 @@
     <string name="express">Express</string>
     <string name="cancelled">Annullée</string>
     <string name="updated">Mis à jour à %s</string>
+    <string name="error">Une erreur s\'est produite</string>
+    <string name="retry">Réessayer</string>
 </resources>

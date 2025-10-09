@@ -10,7 +10,6 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,12 +81,12 @@ class WidgetViewModel(
 
     fun refresh() {
         _uiState.update {
-            it.copy(isRefreshing = true)
+            it.copy(
+                isRefreshing = true,
+                status = Status.LOADING,
+            )
         }
-        viewModelScope.launch {
-            delay(1000)
-            fetchDepartureData()
-        }
+        fetchDepartureData()
     }
 
     private fun fetchDepartureData() {

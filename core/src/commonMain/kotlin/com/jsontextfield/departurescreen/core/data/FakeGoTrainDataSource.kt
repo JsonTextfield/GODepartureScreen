@@ -58,6 +58,12 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
     }
 
     override suspend fun getAllStations(): List<Station> {
-        return emptyList()
+        return listOf(
+            Station(
+                code = "UN",
+                name = "Union Station",
+                type = "Train Station",
+            )
+        )
     }
 }
