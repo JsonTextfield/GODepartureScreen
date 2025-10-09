@@ -8,8 +8,8 @@ import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -23,23 +23,20 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
     private val baseTrip = Trip(id = "0000")
-    private lateinit var dispatcher: TestDispatcher
+    private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
     fun setup() {
-        // Reset the base train before each test
-        dispatcher = UnconfinedTestDispatcher()
-        Dispatchers.setMain(dispatcher)
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest
     fun tearDown() {
-        // Reset the main dispatcher after each test
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `test sort by time`() = runTest(dispatcher) {
+    fun `test sort by time`() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -67,6 +64,7 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
+        advanceTimeBy(20000)
         mainViewModel.stop()
 
         val expectedResult = listOf(
@@ -89,7 +87,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test sort by line`() = runTest(dispatcher) {
+    fun `test sort by line`() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -117,6 +115,7 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
+        advanceTimeBy(20000)
         mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.allTrips
@@ -139,7 +138,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test set visible trains when train departs`() = runTest(dispatcher) {
+    fun `test set visible trains when train departs`() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -170,7 +169,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test set visible trains when trains have not yet departed`() = runTest(dispatcher) {
+    fun `test set visible trains when trains have not yet departed`() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -192,6 +191,7 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
+        advanceTimeBy(20000)
         mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.visibleTrains
@@ -203,7 +203,7 @@ class MainViewModelTest {
     fun `test setTheme`() = runTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
-        preferencesRepository.setTheme(ThemeMode.DARK)
+        preferencesRepository.setTheme(ThemeMode.DEFAULT)
 
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
@@ -213,13 +213,17 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
+        advanceTimeBy(20000)
         mainViewModel.stop()
 
-        val result = mainViewModel.uiState.value.theme
-        assertEquals(ThemeMode.DARK, result)
+        assertEquals(ThemeMode.DEFAULT, mainViewModel.uiState.value.theme)
 
         mainViewModel.setTheme(ThemeMode.LIGHT)
         advanceUntilIdle()
         assertEquals(ThemeMode.LIGHT, mainViewModel.uiState.value.theme)
+
+        mainViewModel.setTheme(ThemeMode.DARK)
+        advanceUntilIdle()
+        assertEquals(ThemeMode.DARK, mainViewModel.uiState.value.theme)
     }
 }

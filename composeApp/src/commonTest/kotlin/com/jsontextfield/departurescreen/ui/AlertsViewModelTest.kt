@@ -1,0 +1,83 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
+package com.jsontextfield.departurescreen.ui
+
+import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class AlertsViewModelTest {
+
+    private val testDispatcher = StandardTestDispatcher()
+
+
+    @BeforeTest
+    fun setup() {
+        // Reset the base train before each test
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        // Reset the main dispatcher after each test
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `test refresh`() = runTest(testDispatcher) {
+        val goTrainDataSource = FakeGoTrainDataSource()
+        val preferencesRepository = FakePreferencesRepository()
+        val alertsViewModel = AlertsViewModel(
+            DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            ),
+            goTrainDataSource,
+        )
+
+        advanceUntilIdle()
+        assertEquals(Status.LOADED, alertsViewModel.uiState.value.status)
+
+        alertsViewModel.refresh()
+        assertEquals(Status.LOADED, alertsViewModel.uiState.value.status)
+        assertEquals(true, alertsViewModel.uiState.value.isRefreshing)
+
+        advanceUntilIdle()
+        assertEquals(false, alertsViewModel.uiState.value.isRefreshing)
+    }
+
+    @Test
+    fun `test loadData`() = runTest(testDispatcher) {
+        val goTrainDataSource = FakeGoTrainDataSource()
+        val preferencesRepository = FakePreferencesRepository()
+        val alertsViewModel = AlertsViewModel(
+            DepartureScreenUseCase(
+                goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            ),
+            goTrainDataSource,
+        )
+
+        advanceUntilIdle()
+        assertEquals(Status.LOADED, alertsViewModel.uiState.value.status)
+
+        alertsViewModel.loadData()
+        assertEquals(Status.LOADING, alertsViewModel.uiState.value.status)
+
+        advanceUntilIdle()
+        assertEquals(Status.LOADED, alertsViewModel.uiState.value.status)
+
+    }
+}
