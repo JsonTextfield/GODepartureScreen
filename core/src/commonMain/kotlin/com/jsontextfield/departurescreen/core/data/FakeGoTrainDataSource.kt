@@ -9,6 +9,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class FakeGoTrainDataSource : IGoTrainDataSource {
+
+    var stations: List<Station> = listOf(
+        Station(
+            code = "UN",
+            name = "Union Station",
+            type = "Train Station",
+        )
+    )
     var trips: List<Trip> = listOf(
         Trip(
             id = Uuid.random().toString(),
@@ -45,25 +53,24 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         ),
     )
 
+    var serviceAlerts: List<Alert> = emptyList()
+
+    var informationAlerts: List<Alert> = emptyList()
+
+
     override suspend fun getTrains(stationCode: String): List<Trip> {
         return trips
     }
 
     override suspend fun getServiceAlerts(): List<Alert> {
-        return emptyList()
+        return serviceAlerts
     }
 
     override suspend fun getInformationAlerts(): List<Alert> {
-        return emptyList()
+        return informationAlerts
     }
 
     override suspend fun getAllStations(): List<Station> {
-        return listOf(
-            Station(
-                code = "UN",
-                name = "Union Station",
-                type = "Train Station",
-            )
-        )
+        return stations
     }
 }

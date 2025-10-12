@@ -94,11 +94,9 @@ class WidgetViewModel(
     }
 
     private fun fetchDepartureData() {
-        val station = uiState.value.selectedStation ?: return
-
         viewModelScope.launch {
             runCatching {
-                station.codes.flatMap { goTrainDataSource.getTrains(it) }
+                uiState.value.selectedStation?.codes?.flatMap { goTrainDataSource.getTrains(it) } ?: emptyList()
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {

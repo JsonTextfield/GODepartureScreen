@@ -2,9 +2,8 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:widgetCategory="home_screen"
-    android:widgetFeatures="reconfigurable"
     android:minWidth="210dp"
     android:minHeight="120dp"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="6000"
+    android:updatePeriodMillis="1800000"
     />

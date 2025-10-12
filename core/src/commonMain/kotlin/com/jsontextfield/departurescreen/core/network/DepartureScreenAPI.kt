@@ -7,6 +7,7 @@ import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -35,6 +36,11 @@ class DepartureScreenAPI() {
         install(Logging) {
             logger = Logger.SIMPLE
             level = LogLevel.INFO
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 6000
+            connectTimeoutMillis = 6000
+            socketTimeoutMillis = 6000
         }
         defaultRequest {
             url {
