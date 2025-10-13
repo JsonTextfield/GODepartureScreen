@@ -50,7 +50,7 @@ fun TrainList(
             bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding() + 100.dp,
         )
     ) {
-        itemsIndexed(trips, key = { _, train -> train.id }) { index, train ->
+        itemsIndexed(trips, key = { _, train -> train.id }) { index, trip ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven
             }
@@ -70,7 +70,7 @@ fun TrainList(
                 }.animateItem()
             ) {
                 TripListItem(
-                    train,
+                    trip,
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()

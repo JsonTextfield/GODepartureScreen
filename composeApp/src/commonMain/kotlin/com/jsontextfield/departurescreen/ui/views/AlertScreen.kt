@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
+import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
-import com.jsontextfield.departurescreen.ui.components.BackButton
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.information_alerts

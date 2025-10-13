@@ -1,12 +1,12 @@
-package com.jsontextfield.departurescreen.ui.components
+package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.back
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
