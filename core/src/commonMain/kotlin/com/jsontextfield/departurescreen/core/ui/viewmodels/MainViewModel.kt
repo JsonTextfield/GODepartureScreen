@@ -140,7 +140,7 @@ class MainViewModel(
             runCatching {
                 station.codes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
-                val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
+                val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
@@ -173,7 +173,7 @@ class MainViewModel(
 
     fun setVisibleTrains(selectedTrains: Set<String>) {
         // Ensure that the visible trains are a subset of all trains
-        val trainCodes = _uiState.value.allTrips.map { it.code }.toSet() intersect selectedTrains
+        val trainCodes = uiState.value.allTrips.map { it.code }.toSet() intersect selectedTrains
         viewModelScope.launch {
             preferencesRepository.setVisibleTrains(trainCodes)
         }
@@ -205,15 +205,12 @@ data class MainUIState(
     val theme: ThemeMode = ThemeMode.DEFAULT,
     val isRefreshing: Boolean = false,
 ) {
-    val allTrips: List<Trip>
-        get() {
-            return _allTrips.map { train ->
-                train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
-            }.sortedWith(
-                when (sortMode) {
-                    SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.LINE -> compareBy({ it.code }, { it.destination })
-                }
-            )
+    val allTrips: List<Trip> = _allTrips.map { train ->
+        train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
+    }.sortedWith(
+        when (sortMode) {
+            SortMode.TIME -> compareBy { it.departureTime }
+            SortMode.LINE -> compareBy({ it.code }, { it.destination })
         }
+    )
 }

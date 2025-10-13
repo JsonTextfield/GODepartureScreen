@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
-import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
@@ -88,7 +87,7 @@ fun getActions(
     mainViewModel: MainViewModel,
     navigationActions: NavigationActions,
 ): List<Action> {
-    val uiState by mainViewModel.uiState.collectAsState(MainUIState())
+    val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
         icon = if (uiState.selectedStation?.isFavourite == true) {
             Icons.Rounded.Star

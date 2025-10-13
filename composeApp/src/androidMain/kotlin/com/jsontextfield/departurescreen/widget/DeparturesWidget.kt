@@ -9,8 +9,9 @@ import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
 import androidx.glance.material3.ColorProviders
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
+import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -20,27 +21,8 @@ import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import kotlinx.datetime.Instant
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes
-
-private class AppWidgetViewModelStoreOwner : ViewModelStoreOwner {
-    override val viewModelStore = ViewModelStore()
-}
-
-object WidgetViewModelStore {
-    private val owners = mutableMapOf<GlanceId, ViewModelStoreOwner>()
-
-    fun get(glanceId: GlanceId): ViewModelStoreOwner {
-        return owners.getOrPut(glanceId) {
-            AppWidgetViewModelStoreOwner()
-        }
-    }
-
-    // Optional: Clean up the store when a widget is deleted
-    fun remove(glanceId: GlanceId) {
-        owners.remove(glanceId)?.viewModelStore?.clear()
-    }
-}
 
 class DeparturesWidget : GlanceAppWidget() {
 
@@ -61,7 +43,7 @@ class DeparturesWidget : GlanceAppWidget() {
                     color = lineColours["LW"] ?: Color.Gray,
                     isBus = false,
                     isCancelled = false,
-                    platform = "9 & 10",
+                    platform = "7 & 8",
                     departureTime = Instant.fromEpochMilliseconds(16.minutes.inWholeMilliseconds),
                     lastUpdated = Instant.fromEpochMilliseconds(0),
                 )
@@ -69,11 +51,29 @@ class DeparturesWidget : GlanceAppWidget() {
         )
 
         provideContent {
-            MyContent(uiState)
+            GlanceTheme(
+                colors = ColorProviders(
+                    light = lightScheme,
+                    dark = darkScheme,
+                )
+            ) {
+                MainContent(uiState)
+            }
         }
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
+        val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
+        val departureScreenUseCase = DepartureScreenUseCase(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+        val viewModel = WidgetViewModel(
+            departureScreenUseCase = departureScreenUseCase,
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
 
         // In this method, load data needed to render the AppWidget.
         // Use `withContext` to switch to another thread for long running
@@ -81,10 +81,6 @@ class DeparturesWidget : GlanceAppWidget() {
 
         provideContent {
             // create your AppWidget here
-            val viewModelStoreOwner = WidgetViewModelStore.get(id)
-            val viewModel: WidgetViewModel = koinViewModel(
-                viewModelStoreOwner = viewModelStoreOwner
-            )
             val uiState by viewModel.uiState.collectAsState()
             GlanceTheme(
                 colors = ColorProviders(
@@ -92,14 +88,8 @@ class DeparturesWidget : GlanceAppWidget() {
                     dark = darkScheme,
                 )
             ) {
-                MyContent(uiState, viewModel::refresh)
+                MainContent(uiState, viewModel::refresh)
             }
         }
-    }
-
-    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
-        super.onDelete(context, glanceId)
-        // Clean up the ViewModelStoreOwner when the widget is deleted
-        WidgetViewModelStore.remove(glanceId)
     }
 }

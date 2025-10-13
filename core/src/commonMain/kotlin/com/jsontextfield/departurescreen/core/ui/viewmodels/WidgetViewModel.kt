@@ -133,22 +133,21 @@ data class WidgetUIState(
     private val _lastUpdated: LocalTime = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()).time,
 ) {
-    val allTrips: List<Trip>
-        get() {
-            return _allTrips.filter { train ->
-                train.code in visibleTrains || visibleTrains.isEmpty()
-            }.sortedWith(
-                when (sortMode) {
-                    SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.LINE -> compareBy({ it.code }, { it.destination })
-                }
-            )
+    val allTrips: List<Trip> = _allTrips.filter { train ->
+        train.code in visibleTrains || visibleTrains.isEmpty()
+    }.sortedWith(
+        when (sortMode) {
+            SortMode.TIME -> compareBy { it.departureTime }
+            SortMode.LINE -> compareBy({ it.code }, { it.destination })
         }
+    )
 
     val lastUpdated: String = _lastUpdated
         .format(LocalTime.Format {
             hour(padding = Padding.ZERO)
             char(':')
             minute(padding = Padding.ZERO)
+            char(':')
+            second(padding = Padding.ZERO)
         })
 }
