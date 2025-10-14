@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.menu
+package com.jsontextfield.departurescreen.core.ui.menu
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row

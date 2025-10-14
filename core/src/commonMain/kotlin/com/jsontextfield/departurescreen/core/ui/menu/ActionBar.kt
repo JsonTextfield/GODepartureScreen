@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.menu
+package com.jsontextfield.departurescreen.core.ui.menu
 
 import OverflowMenu
 import androidx.compose.foundation.layout.Box
@@ -19,12 +19,12 @@ import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import departure_screen.composeapp.generated.resources.Res
-import departure_screen.composeapp.generated.resources.alerts
-import departure_screen.composeapp.generated.resources.favourite
-import departure_screen.composeapp.generated.resources.more
-import departure_screen.composeapp.generated.resources.sort
-import departure_screen.composeapp.generated.resources.theme
+import departure_screen.core.generated.resources.Res
+import departure_screen.core.generated.resources.alerts
+import departure_screen.core.generated.resources.favourite
+import departure_screen.core.generated.resources.more
+import departure_screen.core.generated.resources.sort
+import departure_screen.core.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -1,6 +1,6 @@
 // You can create a new file, e.g., NestedOverflowMenuItem.kt
 
-package com.jsontextfield.departurescreen.ui.menu
+package com.jsontextfield.departurescreen.core.ui.menu
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
