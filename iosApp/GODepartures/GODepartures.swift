@@ -6,6 +6,7 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 
+import ComposeApp
 import SwiftUI
 import WidgetKit
 import coreKit
@@ -13,38 +14,62 @@ import coreKit
 struct Provider: AppIntentTimelineProvider {
 
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
+        SimpleEntry(
+            date: Date(),
+            trip: CoreTrip(
+                id: "X1234",
+                code: "LE",
+                name: "Lakeshore East",
+                destination: "Durham College Oshawa GO",
+                platform: "5 & 6",
+                departureTime: .companion.fromEpochMilliseconds(
+                    epochMilliseconds: 1_234_567
+                ),
+                lastUpdated: .companion.fromEpochMilliseconds(
+                    epochMilliseconds: 0
+                ),
+                color: 0xFFDF_1256,
+                tripOrder: 1,
+                info: "",
+                isVisible: true,
+                isCancelled: false,
+                isBus: false
+            ),
+            stationName: "Union GO Station"
+        )
     }
 
     func snapshot(
         for configuration: ConfigurationAppIntent,
         in context: Context
     ) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
+        KoinKt.doInitKoin()
+        let widgetHelper = WidgetHelper()
+        let widgetViewModel = widgetHelper.widgetViewModel
+        let goTrainDataSource = widgetHelper.goTrainDataSource
+        let trips: [CoreTrip]
+        do {
+            trips = try await goTrainDataSource.getTrains(stationCode: "UN")
+        } catch {
+            trips = []
+        }
+        print("widget UIState: \(widgetViewModel.uiState.value.unsafelyUnwrapped as! WidgetUIState)")
+        let trip = trips[0]
+        return SimpleEntry(
+            date: Date(),
+            trip: trip,
+            stationName: "stationName"
+        )
     }
 
     func timeline(
         for configuration: ConfigurationAppIntent,
         in context: Context
     ) async -> Timeline<SimpleEntry> {
-        var entries: [SimpleEntry] = []
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0..<5 {
-            let entryDate = Calendar.current.date(
-                byAdding: .hour,
-                value: hourOffset,
-                to: currentDate
-            )!
-            let entry = SimpleEntry(
-                date: entryDate,
-                configuration: configuration
-            )
-            entries.append(entry)
-        }
-
-        return Timeline(entries: entries, policy: .atEnd)
+        let entries: [SimpleEntry] = [
+            await snapshot(for: configuration, in: context)
+        ]
+        return Timeline(entries: entries, policy: .never)
     }
 
     //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
@@ -54,44 +79,26 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let configuration: ConfigurationAppIntent
+    let trip: CoreTrip
+    let stationName: String
 }
 
 struct GODeparturesEntryView: View {
-    var entry: Provider.Entry
+    var entry: SimpleEntry
 
     var body: some View {
         VStack {
-            Text("Union GO Station").bold()
-            TripListItemView(
-                trip: Trip(
-                    id: "X1234",
-                    code: "LE",
-                    name: "Lakeshore East",
-                    destination: "Durham College Oshawa GO",
-                    platform: "5 & 6",
-                    departureTime: .companion.fromEpochMilliseconds(
-                        epochMilliseconds: 1234567
-                    ),
-                    lastUpdated: .companion.fromEpochMilliseconds(
-                        epochMilliseconds: 0
-                    ),
-                    color: 0xFFDF1256,
-                    tripOrder: 1,
-                    info: "",
-                    isVisible: true,
-                    isCancelled: false,
-                    isBus: false
-                )
-            )
+            Text(entry.stationName).bold()
+            TripListItemView(trip: entry.trip)
+
             Text("Last updated: \(entry.date, style: .time)").font(.caption)
         }
     }
 }
 
 struct TripListItemView: View {
-    var trip: coreKit.Trip
-    init(trip: coreKit.Trip) {
+    var trip: CoreTrip
+    init(trip: CoreTrip) {
         self.trip = trip
     }
 
@@ -101,15 +108,17 @@ struct TripListItemView: View {
                 .center
             ).bold()
             ZStack {
-                SquircleShape().frame(width: 30, height: 30).foregroundColor(Color(argb: trip.color))
+                SquircleShape().frame(width: 30, height: 30).foregroundColor(
+                    Color(argb: trip.color >> 32)
+                )
                 Text(trip.code).foregroundColor(.white).bold()
             }
-            VStack(alignment: .leading) {
+            VStack(alignment: .trailing) {
                 Text(trip.destination)
                 if trip.isCancelled {
-                    Text("Cancelled").foregroundColor(.red).bold()
+                    Text("cancelled").foregroundColor(.red).bold()
                 } else if trip.isExpress {
-                    Text("Express").foregroundColor(.green).bold()
+                    Text("express").foregroundColor(.green).bold()
                 }
             }.frame(
                 minWidth: 0,
@@ -131,33 +140,42 @@ struct GODepartures: Widget {
             intent: ConfigurationAppIntent.self,
             provider: Provider()
         ) { entry in
-            GODeparturesEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+            GODeparturesEntryView(entry: entry).containerBackground(
+                .fill.tertiary,
+                for: .widget
+            )
         }
         // Limit to medium and large families only
-        .supportedFamilies([.systemMedium, .systemLarge])
-    }
-}
-
-extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
-    }
-    
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
+        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
 #Preview(as: .systemSmall) {
     GODepartures()
 } timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+    SimpleEntry(
+        date: .now,
+        trip: CoreTrip(
+            id: "X1234",
+            code: "LE",
+            name: "Lakeshore East",
+            destination: "Durham College Oshawa GO",
+            platform: "5 & 6",
+            departureTime: .companion.fromEpochMilliseconds(
+                epochMilliseconds: 1_234_567
+            ),
+            lastUpdated: .companion.fromEpochMilliseconds(
+                epochMilliseconds: 0
+            ),
+            color: 0xFFDF_1256,
+            tripOrder: 1,
+            info: "",
+            isVisible: true,
+            isCancelled: false,
+            isBus: false
+        ),
+        stationName: "Union GO Station"
+    )
 }
 
 // MARK: - Color helpers for ARGB/RGB integers

@@ -11,6 +11,7 @@ import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -42,6 +43,7 @@ val viewModelModule = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StationsViewModel)
+    viewModelOf(::WidgetViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

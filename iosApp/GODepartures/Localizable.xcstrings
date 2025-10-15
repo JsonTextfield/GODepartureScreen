@@ -1,0 +1,116 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%d\nmin" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d\nmin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d\nmin"
+          }
+        }
+      }
+    },
+    "A an example control that runs a timer." : {
+
+    },
+    "Bottom %@" : {
+
+    },
+    "cancelled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annulé"
+          }
+        }
+      }
+    },
+    "Configuration" : {
+
+    },
+    "express" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Express"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Express"
+          }
+        }
+      }
+    },
+    "Favorite Emoji" : {
+
+    },
+    "Hello %@" : {
+
+    },
+    "L" : {
+
+    },
+    "Last updated: %@" : {
+
+    },
+    "Leading" : {
+
+    },
+    "Off" : {
+
+    },
+    "On" : {
+
+    },
+    "Start a timer" : {
+
+    },
+    "Start Timer" : {
+
+    },
+    "T %@" : {
+
+    },
+    "This is an example widget." : {
+
+    },
+    "Timer" : {
+
+    },
+    "Timer is running" : {
+
+    },
+    "Timer Name" : {
+
+    },
+    "Timer Name Configuration" : {
+
+    },
+    "Trailing" : {
+
+    },
+    "True" : {
+
+    }
+  },
+  "version" : "1.1"
+}
