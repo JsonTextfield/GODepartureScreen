@@ -6,70 +6,69 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 
-import ComposeApp
 import SwiftUI
 import WidgetKit
 import coreKit
 
-struct Provider: AppIntentTimelineProvider {
+struct Provider: TimelineProvider {
+    func getSnapshot(
+        in context: Context,
+        completion: @escaping @Sendable (SimpleEntry) -> Void
+    ) {
+        let goTrainDataSource: IGoTrainDataSource = GoTrainDataSource(
+            departureScreenAPI: DepartureScreenAPI()
+        )
+
+        Task {
+            let trips: [Trip]
+            do {
+                trips = try await goTrainDataSource.getTrains(stationCode: "UN")
+            } catch {
+                trips = []
+            }
+            completion(
+                SimpleEntry(
+                    date: Date(),
+                    stationName: "Union GO Station",
+                    trips: trips,
+                )
+            )
+        }
+    }
+
+    func getTimeline(
+        in context: Context,
+        completion: @escaping @Sendable (Timeline<SimpleEntry>) -> Void
+    ) {
+        getSnapshot(in: context) { entry in
+            completion(Timeline(entries: [entry], policy: .never))
+        }
+    }
 
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            trip: CoreTrip(
-                id: "X1234",
-                code: "LE",
-                name: "Lakeshore East",
-                destination: "Durham College Oshawa GO",
-                platform: "5 & 6",
-                departureTime: .companion.fromEpochMilliseconds(
-                    epochMilliseconds: 1_234_567
-                ),
-                lastUpdated: .companion.fromEpochMilliseconds(
-                    epochMilliseconds: 0
-                ),
-                color: 0xFFDF_1256,
-                tripOrder: 1,
-                info: "",
-                isVisible: true,
-                isCancelled: false,
-                isBus: false
-            ),
-            stationName: "Union GO Station"
+            stationName: "Union GO Station",
+            trips: [
+                Trip(
+                    id: "X1234",
+                    code: "LW",
+                    name: "Lakeshore East",
+                    destination: "Durham College Oshawa GO",
+                    platform: "9 & 10",
+                    departureTime: Kotlinx_datetimeInstant.companion
+                        .fromEpochMilliseconds(epochMilliseconds: 180_000),
+                    lastUpdated: Kotlinx_datetimeInstant.companion
+                        .fromEpochMilliseconds(epochMilliseconds: 0),
+                    color: 0xFF56_789F_0000_0000,
+                    tripOrder: 1,
+                    info: "Wait",
+                    isVisible: true,
+                    isCancelled: false,
+                    isBus: true,
+                )
+            ]
         )
-    }
-
-    func snapshot(
-        for configuration: ConfigurationAppIntent,
-        in context: Context
-    ) async -> SimpleEntry {
-        KoinKt.doInitKoin()
-        let widgetHelper = WidgetHelper()
-        let widgetViewModel = widgetHelper.widgetViewModel
-        let goTrainDataSource = widgetHelper.goTrainDataSource
-        let trips: [CoreTrip]
-        do {
-            trips = try await goTrainDataSource.getTrains(stationCode: "UN")
-        } catch {
-            trips = []
-        }
-        print("widget UIState: \(widgetViewModel.uiState.value.unsafelyUnwrapped as! WidgetUIState)")
-        let trip = trips[0]
-        return SimpleEntry(
-            date: Date(),
-            trip: trip,
-            stationName: "stationName"
-        )
-    }
-
-    func timeline(
-        for configuration: ConfigurationAppIntent,
-        in context: Context
-    ) async -> Timeline<SimpleEntry> {
-        let entries: [SimpleEntry] = [
-            await snapshot(for: configuration, in: context)
-        ]
-        return Timeline(entries: entries, policy: .never)
     }
 
     //    func relevances() async -> WidgetRelevances<ConfigurationAppIntent> {
@@ -79,65 +78,62 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let trip: CoreTrip
     let stationName: String
+    let trips: [Trip]
 }
 
 struct GODeparturesEntryView: View {
     var entry: SimpleEntry
+    @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
+
+    init(entry: SimpleEntry) {
+        self.entry = entry
+    }
 
     var body: some View {
         VStack {
-            Text(entry.stationName).bold()
-            TripListItemView(trip: entry.trip)
-
+            Text(entry.stationName).font(.footnote).bold()
+            switch widgetFamily {
+            case .systemMedium:
+                if !entry.trips.isEmpty {
+                    TripListItemView(
+                        trip: entry.trips.first!
+                    )
+                }
+            case .systemLarge:
+                ForEach(entry.trips.prefix(4), id: \.self) { trip in
+                    TripListItemView(
+                        trip: trip
+                    )
+                }
+            case .systemExtraLarge:
+                Grid {
+                    ForEach(entry.trips.chunked(into: 2).prefix(4), id: \.self)
+                    { trips in
+                        GridRow {
+                            ForEach(trips, id: \.self) { trip in
+                                TripListItemView(
+                                    trip: trip
+                                )
+                            }
+                        }
+                    }
+                }
+            default:
+                Spacer()
+            }
             Text("Last updated: \(entry.date, style: .time)").font(.caption)
         }
     }
 }
 
-struct TripListItemView: View {
-    var trip: CoreTrip
-    init(trip: CoreTrip) {
-        self.trip = trip
-    }
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Text("\(trip.departureDiffMinutes)\nmin").multilineTextAlignment(
-                .center
-            ).bold()
-            ZStack {
-                SquircleShape().frame(width: 30, height: 30).foregroundColor(
-                    Color(argb: trip.color >> 32)
-                )
-                Text(trip.code).foregroundColor(.white).bold()
-            }
-            VStack(alignment: .trailing) {
-                Text(trip.destination)
-                if trip.isCancelled {
-                    Text("cancelled").foregroundColor(.red).bold()
-                } else if trip.isExpress {
-                    Text("express").foregroundColor(.green).bold()
-                }
-            }.frame(
-                minWidth: 0,
-                maxWidth: .infinity,
-                minHeight: 0,
-                maxHeight: .infinity
-            )
-            Text(trip.platform).foregroundColor(.green).bold()
-        }
-    }
-}
-
+@main
 struct GODepartures: Widget {
-    let kind: String = "GODepartures"
+    let kind: String = "com.jsontextfield.godepartures.GODepartures"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(
+        StaticConfiguration(
             kind: kind,
-            intent: ConfigurationAppIntent.self,
             provider: Provider()
         ) { entry in
             GODeparturesEntryView(entry: entry).containerBackground(
@@ -145,66 +141,42 @@ struct GODepartures: Widget {
                 for: .widget
             )
         }
-        // Limit to medium and large families only
+        .description("Shows departure information for a station")
         .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
-#Preview(as: .systemSmall) {
+#Preview(as: .systemMedium) {
     GODepartures()
 } timeline: {
     SimpleEntry(
         date: .now,
-        trip: CoreTrip(
-            id: "X1234",
-            code: "LE",
-            name: "Lakeshore East",
-            destination: "Durham College Oshawa GO",
-            platform: "5 & 6",
-            departureTime: .companion.fromEpochMilliseconds(
-                epochMilliseconds: 1_234_567
-            ),
-            lastUpdated: .companion.fromEpochMilliseconds(
-                epochMilliseconds: 0
-            ),
-            color: 0xFFDF_1256,
-            tripOrder: 1,
-            info: "",
-            isVisible: true,
-            isCancelled: false,
-            isBus: false
-        ),
-        stationName: "Union GO Station"
+        stationName: "Union GO Station",
+        trips: [
+            Trip(
+                id: "X1234",
+                code: "LW",
+                name: "Lakeshore East",
+                destination: "Durham College Oshawa GO",
+                platform: "9 & 10",
+                departureTime: Kotlinx_datetimeInstant.companion
+                    .fromEpochMilliseconds(epochMilliseconds: 180_000),
+                lastUpdated: Kotlinx_datetimeInstant.companion
+                    .fromEpochMilliseconds(epochMilliseconds: 0),
+                color: 0xFF56_789F_0000_0000,
+                tripOrder: 1,
+                info: "Wait",
+                isVisible: true,
+                isCancelled: false,
+                isBus: true,
+            )
+        ]
     )
 }
-
-// MARK: - Color helpers for ARGB/RGB integers
-
-extension Color {
-    /// Initialize from ARGB 0xAARRGGBB
-    init(argb: UInt64) {
-        let a = Double((argb >> 24) & 0xFF) / 255.0
-        let r = Double((argb >> 16) & 0xFF) / 255.0
-        let g = Double((argb >> 8) & 0xFF) / 255.0
-        let b = Double(argb & 0xFF) / 255.0
-        self = Color(.sRGB, red: r, green: g, blue: b, opacity: a)
-    }
-
-    /// Initialize from RGB 0xRRGGBB (assumes full opacity)
-    init(rgb: UInt64) {
-        let r = Double((rgb >> 16) & 0xFF) / 255.0
-        let g = Double((rgb >> 8) & 0xFF) / 255.0
-        let b = Double(rgb & 0xFF) / 255.0
-        self = Color(.sRGB, red: r, green: g, blue: b, opacity: 1.0)
-    }
-
-    /// Convenience that accepts either 0xAARRGGBB or 0xRRGGBB.
-    /// If the value is greater than 0xFFFFFF, it's treated as ARGB; otherwise as RGB with full alpha.
-    init(hex: UInt64) {
-        if hex > 0xFFFFFF {
-            self.init(argb: hex)
-        } else {
-            self.init(rgb: hex)
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
         }
     }
 }

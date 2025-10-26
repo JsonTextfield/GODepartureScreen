@@ -17,12 +17,6 @@
         }
       }
     },
-    "A an example control that runs a timer." : {
-
-    },
-    "Bottom %@" : {
-
-    },
     "cancelled" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -39,9 +33,6 @@
           }
         }
       }
-    },
-    "Configuration" : {
-
     },
     "express" : {
       "extractionState" : "manual",
@@ -60,55 +51,10 @@
         }
       }
     },
-    "Favorite Emoji" : {
-
-    },
-    "Hello %@" : {
-
-    },
-    "L" : {
-
-    },
     "Last updated: %@" : {
 
     },
-    "Leading" : {
-
-    },
-    "Off" : {
-
-    },
-    "On" : {
-
-    },
-    "Start a timer" : {
-
-    },
-    "Start Timer" : {
-
-    },
-    "T %@" : {
-
-    },
-    "This is an example widget." : {
-
-    },
-    "Timer" : {
-
-    },
-    "Timer is running" : {
-
-    },
-    "Timer Name" : {
-
-    },
-    "Timer Name Configuration" : {
-
-    },
-    "Trailing" : {
-
-    },
-    "True" : {
+    "Shows departure information for a station" : {
 
     }
   },
