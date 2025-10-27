@@ -15,13 +15,32 @@ import org.koin.dsl.module
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
+import platform.Foundation.NSUserDefaults
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
 actual fun preferencesModule(): Module {
     return module {
         single<IPreferencesRepository> {
-            DataStorePreferencesRepository(createDataStore())
+            val appGroupId = "group.com.jsontextfield.godepartures"
+            DataStorePreferencesRepository(
+                dataStore = createDataStore(),
+                onSetStation = { stationCode: String ->
+                    val selectedStationCodeKey = "selectedStationCode"
+                    val userDefaults = NSUserDefaults(suiteName = appGroupId)
+                    userDefaults.setObject(stationCode, forKey = selectedStationCodeKey)
+                },
+                onSetSortMode = { sortMode ->
+                    val sortModeKey = "sortMode"
+                    val userDefaults = NSUserDefaults(suiteName = appGroupId)
+                    userDefaults.setInteger(sortMode.ordinal.toLong(), forKey = sortModeKey)
+                },
+                onSetVisibleTrains = { visibleTrains ->
+                    val hiddenTrainsKey = "hiddenTrains"
+                    val userDefaults = NSUserDefaults(suiteName = appGroupId)
+                    userDefaults.setObject(visibleTrains.joinToString(","), forKey = hiddenTrainsKey)
+                },
+            )
         }
     }
 }
@@ -29,14 +48,19 @@ actual fun preferencesModule(): Module {
 @OptIn(ExperimentalForeignApi::class)
 fun createDataStore(): DataStore<Preferences> = createDataStore(
     producePath = {
-        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
+        val appGroupId = "group.com.jsontextfield.godepartures"
+
+        val sharedContainer: NSURL? =
+            NSFileManager.defaultManager.containerURLForSecurityApplicationGroupIdentifier(appGroupId)
+
+        val baseURL = sharedContainer ?: NSFileManager.defaultManager.URLForDirectory(
             directory = NSDocumentDirectory,
             inDomain = NSUserDomainMask,
             appropriateForURL = null,
             create = false,
             error = null,
         )
-        requireNotNull(documentDirectory).path + "/$dataStoreFileName"
+        requireNotNull(baseURL).path + "/$dataStoreFileName"
     }
 )
 

@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DataStorePreferencesRepository(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val onSetStation: (String) -> Unit = {},
+    private val onSetSortMode: (SortMode) -> Unit = {},
+    private val onSetVisibleTrains: (Set<String>) -> Unit = {},
 ) : IPreferencesRepository {
     override fun getVisibleTrains(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
@@ -24,6 +27,7 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             preferences[stringSetPreferencesKey(HIDDEN_TRAINS_KEY)] = visibleTrains
         }
+        onSetVisibleTrains(visibleTrains)
     }
 
     override fun getSortMode(): Flow<SortMode> {
@@ -38,6 +42,7 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             preferences[intPreferencesKey(SORT_MODE_KEY)] = sortMode.ordinal
         }
+        onSetSortMode(sortMode)
     }
 
     override fun getSelectedStationCode(): Flow<String> {
@@ -50,6 +55,7 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] = stationCode
         }
+        onSetStation(stationCode)
     }
 
     override suspend fun setTheme(theme: ThemeMode) {

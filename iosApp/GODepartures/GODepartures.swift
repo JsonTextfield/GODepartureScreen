@@ -6,33 +6,101 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 
+import AppIntents
+import ComposeApp
 import SwiftUI
 import WidgetKit
-import coreKit
 
 struct Provider: TimelineProvider {
+    let widgetHelper = WidgetHelper()
+    let goTrainDataSource: CoreIGoTrainDataSource
+    let departureScreenUseCase: CoreDepartureScreenUseCase
+
+    init() {
+        goTrainDataSource = widgetHelper.goTrainDataSource
+        departureScreenUseCase = widgetHelper.departureScreenUseCase
+    }
+
     func getSnapshot(
         in context: Context,
         completion: @escaping @Sendable (SimpleEntry) -> Void
     ) {
-        let goTrainDataSource: IGoTrainDataSource = GoTrainDataSource(
-            departureScreenAPI: DepartureScreenAPI()
-        )
-
-        Task {
-            let trips: [Trip]
-            do {
-                trips = try await goTrainDataSource.getTrains(stationCode: "UN")
-            } catch {
-                trips = []
-            }
-            completion(
-                SimpleEntry(
-                    date: Date(),
-                    stationName: "Union GO Station",
-                    trips: trips,
-                )
+        Task { @MainActor in
+            let userDefaults = UserDefaults(
+                suiteName: "group.com.jsontextfield.godepartures"
             )
+            if let selectedStationCode = userDefaults?.object(
+                forKey: "selectedStationCode"
+            ) as? String {
+                let allStations = try await goTrainDataSource.getAllStations()
+                if let station =
+                    allStations
+                    .first(where: {
+                        $0.code.contains(selectedStationCode)
+                    })
+                    ?? allStations
+                    .first(where: {
+                        $0.code.contains("UN")
+                    })
+                    ?? allStations.first
+                {
+                    let trips: [CoreTrip]
+                    do {
+                        let sortMode = CoreSortMode.allCases[
+                            userDefaults?.integer(forKey: "sortMode") ?? 0
+                        ]
+                        let visibleTrains: String =
+                            userDefaults?.object(forKey: "hiddenTrains")
+                            as? String ?? ""
+
+                        // Parse comma-separated station codes
+                        let codes: [String] = station.code
+                            .split(separator: ",")
+                            .map { String($0) }
+
+                        // Fetch trips per code (sequentially; safe for widgets)
+                        var fetchedTrips: [CoreTrip] = []
+                        for code in codes {
+                            do {
+                                let result =
+                                    try await goTrainDataSource.getTrains(
+                                        stationCode: code
+                                    )
+                                fetchedTrips.append(contentsOf: result)
+                            } catch {
+                                // Ignore individual code failures
+                            }
+                        }
+                        // Sort according to mode
+                        trips = fetchedTrips.filter { trip in
+                            visibleTrains.isEmpty
+                                || visibleTrains.contains(trip.code)
+                        }.sorted(by: {
+                            switch sortMode {
+                            case .time:
+                                return $0.departureTime.toEpochMilliseconds()
+                                    < $1.departureTime.toEpochMilliseconds()
+                            case .line:
+                                fallthrough
+                            default:
+                                if $0.code == $1.code {
+                                    return $0.destination < $1.destination
+                                }
+                                return $0.code < $1.code
+                            }
+                        })
+                    } catch {
+                        trips = []
+                    }
+                    completion(
+                        SimpleEntry(
+                            date: Date(),
+                            stationName: station.name,
+                            trips: trips
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -41,7 +109,7 @@ struct Provider: TimelineProvider {
         completion: @escaping @Sendable (Timeline<SimpleEntry>) -> Void
     ) {
         getSnapshot(in: context) { entry in
-            completion(Timeline(entries: [entry], policy: .never))
+            completion(Timeline(entries: [entry], policy: .atEnd))
         }
     }
 
@@ -50,7 +118,7 @@ struct Provider: TimelineProvider {
             date: Date(),
             stationName: "Union GO Station",
             trips: [
-                Trip(
+                CoreTrip(
                     id: "X1234",
                     code: "LW",
                     name: "Lakeshore East",
@@ -65,7 +133,7 @@ struct Provider: TimelineProvider {
                     info: "Wait",
                     isVisible: true,
                     isCancelled: false,
-                    isBus: true,
+                    isBus: true
                 )
             ]
         )
@@ -79,7 +147,7 @@ struct Provider: TimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let stationName: String
-    let trips: [Trip]
+    let trips: [CoreTrip]
 }
 
 struct GODeparturesEntryView: View {
@@ -92,38 +160,51 @@ struct GODeparturesEntryView: View {
 
     var body: some View {
         VStack {
-            Text(entry.stationName).font(.footnote).bold()
-            switch widgetFamily {
-            case .systemMedium:
-                if !entry.trips.isEmpty {
-                    TripListItemView(
-                        trip: entry.trips.first!
-                    )
-                }
-            case .systemLarge:
-                ForEach(entry.trips.prefix(4), id: \.self) { trip in
-                    TripListItemView(
-                        trip: trip
-                    )
-                }
-            case .systemExtraLarge:
-                Grid {
-                    ForEach(entry.trips.chunked(into: 2).prefix(4), id: \.self)
-                    { trips in
-                        GridRow {
-                            ForEach(trips, id: \.self) { trip in
-                                TripListItemView(
-                                    trip: trip
-                                )
+            Text(entry.stationName)
+                .font(.footnote)
+                .bold()
+            if !entry.trips.isEmpty {
+                switch widgetFamily {
+                case .systemMedium:
+                    ForEach(entry.trips.prefix(1), id: \.self.id) { trip in
+                        TripListItemView(
+                            trip: trip
+                        )
+                    }
+                case .systemLarge:
+                    ForEach(entry.trips.prefix(4), id: \.self.id) { trip in
+                        TripListItemView(
+                            trip: trip
+                        )
+                    }
+                case .systemExtraLarge:
+                    Grid {
+                        ForEach(
+                            entry.trips.chunked(into: 2).prefix(4),
+                            id: \.self.first?.id
+                        ) { trips in
+                            GridRow {
+                                ForEach(trips, id: \.self.id) { trip in
+                                    TripListItemView(
+                                        trip: trip
+                                    )
+                                }
                             }
                         }
                     }
+                default:
+                    Spacer()
                 }
-            default:
-                Spacer()
             }
-            Text("Last updated: \(entry.date, style: .time)").font(.caption)
-        }
+            Spacer()
+            Button(intent: RefreshIntent()) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("Last updated: \(entry.date, style: .time)")
+                }
+            }
+
+        }.frame(maxHeight: .infinity)
     }
 }
 
@@ -141,38 +222,25 @@ struct GODepartures: Widget {
                 for: .widget
             )
         }
+        .configurationDisplayName("GO Departures")
         .description("Shows departure information for a station")
         .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
     }
+
+    init() {
+        KoinKt.doInitKoin()
+    }
 }
 
-#Preview(as: .systemMedium) {
-    GODepartures()
-} timeline: {
-    SimpleEntry(
-        date: .now,
-        stationName: "Union GO Station",
-        trips: [
-            Trip(
-                id: "X1234",
-                code: "LW",
-                name: "Lakeshore East",
-                destination: "Durham College Oshawa GO",
-                platform: "9 & 10",
-                departureTime: Kotlinx_datetimeInstant.companion
-                    .fromEpochMilliseconds(epochMilliseconds: 180_000),
-                lastUpdated: Kotlinx_datetimeInstant.companion
-                    .fromEpochMilliseconds(epochMilliseconds: 0),
-                color: 0xFF56_789F_0000_0000,
-                tripOrder: 1,
-                info: "Wait",
-                isVisible: true,
-                isCancelled: false,
-                isBus: true,
-            )
-        ]
-    )
+struct RefreshIntent: AppIntent {
+    static var title: LocalizedStringResource = "Update"
+    static var description = IntentDescription("Update the departure screen.")
+    func perform() async throws -> some IntentResult {
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
 }
+
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {

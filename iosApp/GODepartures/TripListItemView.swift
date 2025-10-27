@@ -6,71 +6,54 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 
+import ComposeApp
 import SwiftUI
 import coreKit
 
 struct TripListItemView: View {
-    var trip: Trip
+    @Environment(\.colorScheme) var colorScheme
+    var trip: CoreTrip
 
     var body: some View {
+        let colour = Color(
+            argb: (colorScheme == .dark
+                ? coreKit.ColourKt.primaryDark : coreKit.ColourKt.primaryLight)
+        )
+        let errorColour = Color(
+            argb: (colorScheme == .dark
+                ? coreKit.ColourKt.errorDark : coreKit.ColourKt.errorLight)
+        )
         HStack(alignment: .center, spacing: 12) {
             Text("\(trip.departureDiffMinutes)\nmin")
                 .multilineTextAlignment(.center)
-                .minimumScaleFactor(0.5)
                 .bold()
             ZStack(alignment: .center) {
                 SquircleShape()
                     .frame(width: 32, height: 32)
-                    .foregroundColor(Color(argb: trip.color >> 32))
+                    .foregroundColor(Color(argb: trip.color))
                 Text(trip.code)
                     .foregroundColor(.white)
                     .bold()
             }
             VStack(alignment: .leading) {
                 Text(trip.destination)
-                    .minimumScaleFactor(0.9)
+                    .lineLimit(2)
                 if trip.isCancelled {
                     Text("cancelled")
-                        .foregroundColor(.red)
+                        .foregroundColor(errorColour)
                         .bold()
                         .font(.footnote)
-                        .minimumScaleFactor(0.9)
                 } else if trip.isExpress {
                     Text("express")
-                        .foregroundColor(.green)
+                        .foregroundColor(colour)
                         .bold()
                         .font(.footnote)
-                        .minimumScaleFactor(0.9)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
             Text(trip.platform)
-                .foregroundColor(trip.platform == "-" ? nil : .green)
+                .foregroundColor(trip.platform == "-" ? nil : colour)
                 .bold()
                 .frame(maxWidth: .infinity)
-        }.padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
+        }
     }
-}
-
-#Preview {
-    TripListItemView(
-        trip: Trip(
-            id: "X1234",
-            code: "LE",
-            name: "Lakeshore East",
-            destination: "Durham College Oshawa GO",
-            platform: "5 & 6",
-            departureTime: .companion.fromEpochMilliseconds(
-                epochMilliseconds: 1_234_567
-            ),
-            lastUpdated: .companion.fromEpochMilliseconds(
-                epochMilliseconds: 0
-            ),
-            color: 0xFFDF_1256,
-            tripOrder: 1,
-            info: "",
-            isVisible: true,
-            isCancelled: false,
-            isBus: false
-        )
-    )
 }
