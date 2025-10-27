@@ -27,14 +27,14 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StationComboBox(
-    items: List<CombinedStation> = emptyList(),
-    selectedItem: CombinedStation? = null,
-    onItemSelected: (CombinedStation) -> Unit = {},
+    items: List<Station> = emptyList(),
+    selectedItem: Station? = null,
+    onItemSelected: (Station) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
 

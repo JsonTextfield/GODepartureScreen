@@ -41,10 +41,9 @@ class GoTrainDataSource(
                 val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
                     Instant.parseOrNull(it, inFormatter)
                 } ?: Instant.fromEpochMilliseconds(0)
-                val platform = trip?.platform ?:
-                    line.actualPlatform.takeIf { !it.isNullOrBlank() }
-                        ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
-                        ?: "-"
+                val platform = trip?.platform ?: line.actualPlatform.takeIf { !it.isNullOrBlank() }
+                ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
+                ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
                 Trip(
@@ -84,7 +83,15 @@ class GoTrainDataSource(
                     code = stop.locationCode,
                     type = stop.locationType,
                 )
-            } ?: emptyList()
+            }?.groupBy { it.name }
+                ?.map { (stationName: String, stations: List<Station>) ->
+                    Station(
+                        name = stationName,
+                        code = stations.map { it.code }.toSet().joinToString(","),
+                        type = stations.map { it.type }.toSet().joinToString(","),
+                        isFavourite = stations.any { it.isFavourite },
+                    )
+                } ?: emptyList()
         } catch (exception: IOException) {
             throw exception
         } catch (_: Exception) {

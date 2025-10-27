@@ -2,8 +2,7 @@ package com.jsontextfield.departurescreen.core.domain
 
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
-import com.jsontextfield.departurescreen.core.entities.toCombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -12,30 +11,24 @@ class DepartureScreenUseCase(
     private val preferencesRepository: IPreferencesRepository,
     private val goTrainDataSource: IGoTrainDataSource
 ) {
-    suspend fun getAllCombinedStations(): List<CombinedStation> {
-        return goTrainDataSource.getAllStations()
-            .groupBy { it.name }
-            .map { it.value.toCombinedStation() }
-    }
-
-    suspend fun setFavouriteStations(station: CombinedStation) {
+    suspend fun setFavouriteStations(station: Station) {
         val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
-
-        val updatedStations = if (station.codes.any { it in favouriteStationCodes }) {
-            favouriteStationCodes - station.codes
+        val stationCodes = station.code.split(",")
+        val updatedStations = if (stationCodes.any { it in favouriteStationCodes }) {
+            favouriteStationCodes - stationCodes
         } else {
-            favouriteStationCodes + station.codes
+            favouriteStationCodes + stationCodes
         }
         preferencesRepository.setFavouriteStations(updatedStations)
     }
 
-    fun getSelectedStation(): Flow<CombinedStation?> {
+    fun getSelectedStation(): Flow<Station?> {
         return preferencesRepository.getSelectedStationCode().map { selectedStation ->
-            val allStations = getAllCombinedStations()
+            val allStations = goTrainDataSource.getAllStations()
              allStations.firstOrNull {
-                selectedStation in it.codes
+                selectedStation in it.code
             } ?: allStations.firstOrNull {
-                "UN" in it.codes
+                "UN" in it.code
             } ?: allStations.firstOrNull()
         }
     }

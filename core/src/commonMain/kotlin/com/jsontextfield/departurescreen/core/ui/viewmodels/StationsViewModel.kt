@@ -2,9 +2,10 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class StationsViewModel(
     private val departureScreenUseCase: DepartureScreenUseCase,
+    private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<StationsUIState> = MutableStateFlow(StationsUIState())
@@ -37,14 +39,14 @@ class StationsViewModel(
                 departureScreenUseCase.getSelectedStation(),
                 preferencesRepository.getFavouriteStations(),
             ) { selectedStation, favouriteStationCodes ->
-                val allStations = departureScreenUseCase.getAllCombinedStations()
+                val allStations = goTrainDataSource.getAllStations()
                 val updatedStations = allStations.map { station ->
                     station.copy(
-                        isFavourite = station.codes.any { code -> code in favouriteStationCodes }
+                        isFavourite = station.code.split(",").any { code -> code in favouriteStationCodes }
                     )
                 }.sortedWith(
-                    compareByDescending<CombinedStation> { it.isFavourite }
-                        .thenByDescending { "UN" in it.codes || "02300" in it.codes }
+                    compareByDescending<Station> { it.isFavourite }
+                        .thenByDescending { "UN" in it.code || "02300" in it.code }
                         .thenBy { it.name }
                 )
 
@@ -61,13 +63,13 @@ class StationsViewModel(
         }
     }
 
-    fun setSelectedStation(station: CombinedStation) {
+    fun setSelectedStation(station: Station) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStationCode(station.codes.first())
+            preferencesRepository.setSelectedStationCode(station.code.split(",").first())
         }
     }
 
-    fun setFavouriteStations(station: CombinedStation) {
+    fun setFavouriteStations(station: Station) {
         viewModelScope.launch {
             departureScreenUseCase.setFavouriteStations(station)
         }
@@ -77,10 +79,10 @@ class StationsViewModel(
 
 data class StationsUIState(
     val status: Status = Status.LOADING,
-    val allStations: List<CombinedStation> = emptyList(),
-    val selectedStation: CombinedStation? = null,
+    val allStations: List<Station> = emptyList(),
+    val selectedStation: Station? = null,
 ) {
-    fun getFilteredStations(query: String): List<CombinedStation> {
+    fun getFilteredStations(query: String): List<Station> {
         if (query.isBlank()) return allStations
         val lowerCaseQuery = query.lowercase()
         return allStations.filter {

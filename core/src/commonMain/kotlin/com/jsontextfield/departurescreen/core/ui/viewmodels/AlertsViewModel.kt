@@ -53,7 +53,7 @@ class AlertsViewModel(
                 }
             }.collectLatest { selectedStation ->
                 runCatching {
-                    val selectedStationCodes = selectedStation?.codes ?: emptySet()
+                    val selectedStationCodes = selectedStation?.code?.split(",") ?: emptySet()
                     val allTrainCodes =
                         selectedStationCodes.flatMap { goTrainDataSource.getTrains(it).map { it.code } }.toSet()
 

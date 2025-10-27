@@ -40,7 +40,7 @@ import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.ScreenScaffold
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
 import com.jsontextfield.departurescreen.core.ui.components.StationListItem
@@ -68,8 +68,8 @@ fun StationsScreen(
 @Composable
 fun StationsScreen(
     uiState: StationsUIState,
-    onStationSelected: (CombinedStation) -> Unit,
-    onFavouriteClick: (CombinedStation) -> Unit,
+    onStationSelected: (Station) -> Unit,
+    onFavouriteClick: (Station) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -104,7 +104,7 @@ fun StationsScreen(
                 }
                 itemsIndexed(
                     filteredStations,
-                    key = { _, station -> station.codes }) { index, station ->
+                    key = { _, station -> station.code }) { index, station ->
                     ListHeader(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -112,7 +112,7 @@ fun StationsScreen(
                             .alpha(if (station.isEnabled) 1f else 0.5f)
                             .background(
                                 color =
-                                    if (station.codes.any { it in uiState.selectedStation?.codes.orEmpty() }) {
+                                    if (station.code.split(",").any { it in uiState.selectedStation?.code.orEmpty() }) {
                                         MaterialTheme.colorScheme.primaryContainer
                                     } else if (!station.isEnabled) {
                                         MaterialTheme.colorScheme.surfaceContainerLow

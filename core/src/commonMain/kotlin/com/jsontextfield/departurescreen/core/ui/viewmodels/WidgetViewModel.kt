@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -96,7 +96,7 @@ class WidgetViewModel(
     private fun fetchDepartureData() {
         viewModelScope.launch {
             runCatching {
-                uiState.value.selectedStation?.codes?.flatMap { goTrainDataSource.getTrains(it) } ?: emptyList()
+                uiState.value.selectedStation?.code?.split(",")?.flatMap { goTrainDataSource.getTrains(it) } ?: emptyList()
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {
@@ -124,7 +124,7 @@ class WidgetViewModel(
 
 data class WidgetUIState(
     val status: Status = Status.LOADING,
-    val selectedStation: CombinedStation? = null,
+    val selectedStation: Station? = null,
     private val _allTrips: List<Trip> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,

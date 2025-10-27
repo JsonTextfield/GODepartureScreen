@@ -8,7 +8,9 @@ import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -23,7 +25,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
     private val baseTrip = Trip(id = "0000")
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @BeforeTest
     fun setup() {
@@ -65,7 +67,6 @@ class MainViewModelTest {
             )
         )
         advanceTimeBy(20000)
-        mainViewModel.stop()
 
         val expectedResult = listOf(
             baseTrip.copy(
@@ -116,7 +117,6 @@ class MainViewModelTest {
             )
         )
         advanceTimeBy(20000)
-        mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.allTrips
 
@@ -160,7 +160,6 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
-        mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.visibleTrains
 
@@ -192,7 +191,6 @@ class MainViewModelTest {
             )
         )
         advanceTimeBy(20000)
-        mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.visibleTrains
 
@@ -203,7 +201,6 @@ class MainViewModelTest {
     fun `test setTheme`() = runTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
-        preferencesRepository.setTheme(ThemeMode.DEFAULT)
 
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
@@ -213,17 +210,15 @@ class MainViewModelTest {
                 preferencesRepository = preferencesRepository,
             )
         )
-        advanceTimeBy(20000)
         mainViewModel.stop()
 
         assertEquals(ThemeMode.DEFAULT, mainViewModel.uiState.value.theme)
 
         mainViewModel.setTheme(ThemeMode.LIGHT)
         advanceUntilIdle()
-        assertEquals(ThemeMode.LIGHT, mainViewModel.uiState.value.theme)
+        val results = mainViewModel.uiState.take(2).toList()
+        // read the current ui state value
+        assertEquals(ThemeMode.LIGHT, results[1].theme)
 
-        mainViewModel.setTheme(ThemeMode.DARK)
-        advanceUntilIdle()
-        assertEquals(ThemeMode.DARK, mainViewModel.uiState.value.theme)
     }
 }

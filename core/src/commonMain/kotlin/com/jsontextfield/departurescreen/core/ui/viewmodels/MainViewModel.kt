@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -55,10 +55,11 @@ class MainViewModel(
             departureScreenUseCase.getSelectedStation(),
             preferencesRepository.getFavouriteStations(),
         ) { selectedStation, favouriteStations ->
+            val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(
                     selectedStation = selectedStation?.copy(
-                        isFavourite = selectedStation.codes.any { code -> code in favouriteStations }
+                        isFavourite = stationCodes.any { code -> code in favouriteStations }
                     )
                 )
             }
@@ -110,8 +111,8 @@ class MainViewModel(
         }
         viewModelScope.launch {
             delay(1000)
-            if (timeRemaining.value < 12000) {
-                _timeRemaining.update { 1000 }
+            if (timeRemaining.value < 12000 && timeRemaining.value > 1000) {
+                _timeRemaining.value = 1000
             }
             _uiState.update {
                 it.copy(isRefreshing = false)
@@ -122,13 +123,13 @@ class MainViewModel(
     private fun startTimerJob() {
         timerJob = timerJob ?: viewModelScope.launch {
             while (true) {
-                delay(1000)
                 if (timeRemaining.value <= 1000) {
-                    _timeRemaining.update { 0 }
+                    _timeRemaining.value = 0
                     fetchDepartureData()
                 } else {
-                    _timeRemaining.update { it - 1000 }
+                    _timeRemaining.value -= 1000
                 }
+                delay(1000)
             }
         }
     }
@@ -136,9 +137,10 @@ class MainViewModel(
     private fun fetchDepartureData() {
         val station = uiState.value.selectedStation ?: return
 
+        val stationCodes = station.code.split(",")
         viewModelScope.launch {
             runCatching {
-                station.codes.flatMap { goTrainDataSource.getTrains(it) }
+                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
@@ -150,10 +152,10 @@ class MainViewModel(
                     )
                 }
                 // Reset the countdown timer only on a successful fetch.
-                _timeRemaining.update { 20000 }
+                _timeRemaining.value = 20000
             }.onFailure { exception ->
                 if (exception is IOException) {
-                    _timeRemaining.update { 1000 }
+                    _timeRemaining.value = 1000
                 }
             }
         }
@@ -179,7 +181,7 @@ class MainViewModel(
         }
     }
 
-    fun setFavouriteStations(station: CombinedStation) {
+    fun setFavouriteStations(station: Station) {
         viewModelScope.launch {
             departureScreenUseCase.setFavouriteStations(station)
         }
@@ -198,7 +200,7 @@ class MainViewModel(
 
 data class MainUIState(
     val status: Status = Status.LOADING,
-    val selectedStation: CombinedStation? = null,
+    val selectedStation: Station? = null,
     private val _allTrips: List<Trip> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,

@@ -12,7 +12,7 @@ import androidx.glance.material3.ColorProviders
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
@@ -29,10 +29,10 @@ class DeparturesWidget : GlanceAppWidget() {
     override suspend fun providePreview(context: Context, widgetCategory: Int) {
         val uiState = WidgetUIState(
             status = Status.LOADED,
-            selectedStation = CombinedStation(
+            selectedStation = Station(
                 name = "Union Station GO",
-                codes = setOf("UN"),
-                types = setOf("Train Station"),
+                code = "UN",
+                type = "Train Station",
             ),
             _allTrips = listOf(
                 Trip(

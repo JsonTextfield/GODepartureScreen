@@ -40,7 +40,7 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
@@ -70,8 +70,8 @@ fun StationsScreen(
 @Composable
 fun StationsScreen(
     uiState: StationsUIState,
-    onStationSelected: (CombinedStation) -> Unit,
-    onFavouriteClick: (CombinedStation) -> Unit,
+    onStationSelected: (Station) -> Unit,
+    onFavouriteClick: (Station) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -129,7 +129,7 @@ fun StationsScreen(
         ) {
             itemsIndexed(
                 filteredStations,
-                key = { _, station -> station.codes }) { index, station ->
+                key = { _, station -> station.code.split(",") }) { index, station ->
                 StationListItem(
                     station = station,
                     onFavouriteClick = { onFavouriteClick(station) },
@@ -139,7 +139,7 @@ fun StationsScreen(
                         .alpha(if (station.isEnabled) 1f else 0.5f)
                         .background(
                             color =
-                                if (station.codes.any { it in uiState.selectedStation?.codes.orEmpty() }) {
+                                if (station.code.split(",").any { it in uiState.selectedStation?.code?.split(",").orEmpty() }) {
                                     MaterialTheme.colorScheme.primaryContainer
                                 } else if (!station.isEnabled) {
                                     MaterialTheme.colorScheme.surfaceContainerLow

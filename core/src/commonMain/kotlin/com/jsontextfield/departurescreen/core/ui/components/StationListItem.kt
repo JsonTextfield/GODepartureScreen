@@ -12,14 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.entities.Station
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.favourite
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StationListItem(
-    station: CombinedStation,
+    station: Station,
     modifier: Modifier = Modifier,
     onFavouriteClick: () -> Unit = {},
 ) {

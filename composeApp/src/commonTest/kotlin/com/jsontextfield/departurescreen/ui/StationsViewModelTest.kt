@@ -4,7 +4,6 @@ package com.jsontextfield.departurescreen.ui
 
 import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +39,7 @@ class StationsViewModelTest {
         )
         stationsViewModel = StationsViewModel(
             departureScreenUseCase = departureScreenUseCase,
+            goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )
     }
@@ -51,10 +51,10 @@ class StationsViewModelTest {
 
     @Test
     fun `test setSelectedStation`() = runTest(testDispatcher) {
-        val station = CombinedStation(
+        val station = Station(
             name = "Test",
-            codes = setOf("TST"),
-            types = setOf("Bus Stop"),
+            code = "TST",
+            type = "Bus Stop",
         )
         goTrainDataSource.stations = listOf(
             Station(
@@ -70,13 +70,14 @@ class StationsViewModelTest {
         )
         advanceUntilIdle()
         assertEquals(true, goTrainDataSource.stations.isNotEmpty())
-        assertEquals(true, "UN" in (stationsViewModel.uiState.value.selectedStation?.codes ?: emptySet()))
+        assertEquals(true, "UN" in (stationsViewModel.uiState.value.selectedStation?.code ?: ""))
         stationsViewModel.setSelectedStation(station)
         advanceUntilIdle()
-        assertEquals(station.codes.first(), preferencesRepository.getSelectedStationCode().first())
+        assertEquals(station.code.split(",").first(), preferencesRepository.getSelectedStationCode().first())
         assertEquals(station, departureScreenUseCase.getSelectedStation().first())
         stationsViewModel = StationsViewModel(
             departureScreenUseCase = departureScreenUseCase,
+            goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )
         advanceUntilIdle()
