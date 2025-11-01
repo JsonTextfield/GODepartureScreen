@@ -15,8 +15,6 @@ import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.layout.wrapContentWidth
@@ -29,12 +27,13 @@ import com.jsontextfield.departurescreen.R
 import com.jsontextfield.departurescreen.core.entities.Trip
 
 @Composable
-fun WidgetTripRow(trip: Trip, modifier: GlanceModifier = GlanceModifier) {
+fun WidgetTripRow(
+    trip: Trip,
+    modifier: GlanceModifier = GlanceModifier,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp)
     ) {
         Text(
             text = "${trip.departureDiffMinutes}\nmin",
@@ -68,7 +67,9 @@ fun WidgetTripRow(trip: Trip, modifier: GlanceModifier = GlanceModifier) {
             modifier = GlanceModifier.wrapContentWidth().defaultWeight(),
         ) {
             Text(
-                trip.destination, style = TextDefaults.defaultTextStyle.copy(
+                text = trip.destination,
+                maxLines = 2,
+                style = TextDefaults.defaultTextStyle.copy(
                     color = GlanceTheme.colors.onBackground,
                 )
             )
@@ -77,7 +78,7 @@ fun WidgetTripRow(trip: Trip, modifier: GlanceModifier = GlanceModifier) {
                 Text(
                     text = context.getString(R.string.cancelled),
                     style = TextDefaults.defaultTextStyle.copy(
-                        color = GlanceTheme.colors.onError,
+                        color = GlanceTheme.colors.error,
                     ),
                 )
             }

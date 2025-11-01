@@ -6,4 +6,5 @@
     <string name="updated">Updated %s</string>
     <string name="error">An error occurred</string>
     <string name="retry">Retry</string>
+    <string name="widget_description">Shows the departure information for the stop currently selected in the app</string>
 </resources>
