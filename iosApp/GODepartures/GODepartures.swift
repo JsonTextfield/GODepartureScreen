@@ -45,53 +45,49 @@ struct Provider: TimelineProvider {
                     ?? allStations.first
                 {
                     let trips: [CoreTrip]
-                    do {
-                        let sortMode = CoreSortMode.allCases[
-                            userDefaults?.integer(forKey: "sortMode") ?? 0
-                        ]
-                        let visibleTrains: String =
-                            userDefaults?.object(forKey: "hiddenTrains")
-                            as? String ?? ""
+                    let sortMode = CoreSortMode.allCases[
+                        userDefaults?.integer(forKey: "sortMode") ?? 0
+                    ]
+                    let visibleTrains: String =
+                        userDefaults?.object(forKey: "hiddenTrains")
+                        as? String ?? ""
 
-                        // Parse comma-separated station codes
-                        let codes: [String] = station.code
-                            .split(separator: ",")
-                            .map { String($0) }
+                    // Parse comma-separated station codes
+                    let codes: [String] = station.code
+                        .split(separator: ",")
+                        .map { String($0) }
 
-                        // Fetch trips per code (sequentially; safe for widgets)
-                        var fetchedTrips: [CoreTrip] = []
-                        for code in codes {
-                            do {
-                                let result =
-                                    try await goTrainDataSource.getTrains(
-                                        stationCode: code
-                                    )
-                                fetchedTrips.append(contentsOf: result)
-                            } catch {
-                                // Ignore individual code failures
-                            }
+                    // Fetch trips per code (sequentially; safe for widgets)
+                    var fetchedTrips: [CoreTrip] = []
+                    for code in codes {
+                        do {
+                            let result =
+                                try await goTrainDataSource.getTrains(
+                                    stationCode: code
+                                )
+                            fetchedTrips.append(contentsOf: result)
+                        } catch {
+                            // Ignore individual code failures
                         }
-                        // Sort according to mode
-                        trips = fetchedTrips.filter { trip in
-                            visibleTrains.isEmpty
-                                || visibleTrains.contains(trip.code)
-                        }.sorted(by: {
-                            switch sortMode {
-                            case .time:
-                                return $0.departureTime.toEpochMilliseconds()
-                                    < $1.departureTime.toEpochMilliseconds()
-                            case .line:
-                                fallthrough
-                            default:
-                                if $0.code == $1.code {
-                                    return $0.destination < $1.destination
-                                }
-                                return $0.code < $1.code
-                            }
-                        })
-                    } catch {
-                        trips = []
                     }
+                    // Sort according to mode
+                    trips = fetchedTrips.filter { trip in
+                        visibleTrains.isEmpty
+                            || visibleTrains.contains(trip.code)
+                    }.sorted(by: {
+                        switch sortMode {
+                        case .time:
+                            return $0.departureTime.toEpochMilliseconds()
+                                < $1.departureTime.toEpochMilliseconds()
+                        case .line:
+                            fallthrough
+                        default:
+                            if $0.code == $1.code {
+                                return $0.destination < $1.destination
+                            }
+                            return $0.code < $1.code
+                        }
+                    })
                     completion(
                         SimpleEntry(
                             date: Date(),
