@@ -80,7 +80,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCWidgetKind"
-            value = ""
+            value = "com.jsontextfield.godepartures.GODepartures"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -93,12 +93,11 @@
             value = "systemMedium"
             isEnabled = "YES">
          </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "_XCWidgetKind"
-            value = "com.jsontextfield.godepartures.GODepartures"
-            isEnabled = "YES">
-         </EnvironmentVariable>
       </EnvironmentVariables>
+      <LocationScenarioReference
+         identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
+         referenceType = "1">
+      </LocationScenarioReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
