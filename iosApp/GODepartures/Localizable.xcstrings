@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+
+    },
     "%d\nmin" : {
       "localizations" : {
         "en" : {
@@ -77,6 +80,15 @@
         }
       }
     },
+    "Select station" : {
+
+    },
+    "Select the station to view departure information for." : {
+
+    },
+    "Selected station" : {
+
+    },
     "Shows departure information for a station" : {
       "localizations" : {
         "fr" : {
@@ -86,6 +98,9 @@
           }
         }
       }
+    },
+    "Station" : {
+
     },
     "Update" : {
       "localizations" : {

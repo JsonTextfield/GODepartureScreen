@@ -11,7 +11,7 @@ import ComposeApp
 import SwiftUI
 import WidgetKit
 
-struct Provider: TimelineProvider {
+struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
     let goTrainDataSource: CoreIGoTrainDataSource
     let departureScreenUseCase: CoreDepartureScreenUseCase
@@ -21,92 +21,100 @@ struct Provider: TimelineProvider {
         departureScreenUseCase = widgetHelper.departureScreenUseCase
     }
 
-    func getSnapshot(
+    func snapshot(
+        for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping @Sendable (SimpleEntry) -> Void
-    ) {
-        Task { @MainActor in
-            let userDefaults = UserDefaults(
-                suiteName: "group.com.jsontextfield.godepartures"
-            )
-            if let selectedStationCode = userDefaults?.object(
+    ) async -> SimpleEntry {
+        let userDefaults = UserDefaults(
+            suiteName: "group.com.jsontextfield.godepartures"
+        )
+        let selectedStationCode =
+            configuration.selectedStation?.id
+            ?? userDefaults?.object(
                 forKey: "selectedStationCode"
-            ) as? String {
-                let allStations = try await goTrainDataSource.getAllStations()
-                if let station =
-                    allStations
-                    .first(where: {
-                        $0.code.contains(selectedStationCode)
-                    })
-                    ?? allStations
-                    .first(where: {
-                        $0.code.contains("UN")
-                    })
-                    ?? allStations.first
-                {
-                    let trips: [CoreTrip]
-                    let sortMode = CoreSortMode.allCases[
-                        userDefaults?.integer(forKey: "sortMode") ?? 0
-                    ]
-                    let visibleTrains: String =
-                        userDefaults?.object(forKey: "hiddenTrains")
-                        as? String ?? ""
+            ) as? String
+            ?? "UN"
 
-                    // Parse comma-separated station codes
-                    let codes: [String] = station.code
-                        .split(separator: ",")
-                        .map { String($0) }
+        do {
+            let allStations = try await goTrainDataSource.getAllStations()
+            if let station =
+                allStations
+                .first(where: {
+                    $0.code.contains(selectedStationCode)
+                })
+                ?? allStations
+                .first(where: {
+                    $0.code.contains("UN")
+                })
+                ?? allStations.first
+            {
+                let trips: [CoreTrip]
+                let sortMode = CoreSortMode.allCases[
+                    userDefaults?.integer(forKey: "sortMode") ?? 0
+                ]
+                let visibleTrains: String =
+                    userDefaults?.object(forKey: "hiddenTrains")
+                    as? String ?? ""
 
-                    // Fetch trips per code (sequentially; safe for widgets)
-                    var fetchedTrips: [CoreTrip] = []
-                    for code in codes {
-                        do {
-                            let result =
-                                try await goTrainDataSource.getTrains(
-                                    stationCode: code
-                                )
-                            fetchedTrips.append(contentsOf: result)
-                        } catch {
-                            // Ignore individual code failures
-                        }
+                // Parse comma-separated station codes
+                let codes: [String] = station.code
+                    .split(separator: ",")
+                    .map { String($0) }
+
+                // Fetch trips per code (sequentially; safe for widgets)
+                var fetchedTrips: [CoreTrip] = []
+                for code in codes {
+                    do {
+                        let result =
+                            try await goTrainDataSource.getTrains(
+                                stationCode: code
+                            )
+                        fetchedTrips.append(contentsOf: result)
+                    } catch {
+                        // Ignore individual code failures
                     }
-                    // Sort according to mode
-                    trips = fetchedTrips.filter { trip in
-                        visibleTrains.isEmpty
-                            || visibleTrains.contains(trip.code)
-                    }.sorted(by: {
-                        switch sortMode {
-                        case .time:
-                            return $0.departureTime.toEpochMilliseconds()
-                                < $1.departureTime.toEpochMilliseconds()
-                        case .line:
-                            fallthrough
-                        default:
-                            if $0.code == $1.code {
-                                return $0.destination < $1.destination
-                            }
-                            return $0.code < $1.code
-                        }
-                    })
-                    completion(
-                        SimpleEntry(
-                            date: Date(),
-                            stationName: station.name,
-                            trips: trips
-                        )
-                    )
                 }
+                // Sort according to mode
+                trips = fetchedTrips.filter { trip in
+                    visibleTrains.isEmpty
+                        || visibleTrains.contains(trip.code)
+                }.sorted(by: {
+                    switch sortMode {
+                    case .time:
+                        return $0.departureTime.toEpochMilliseconds()
+                            < $1.departureTime.toEpochMilliseconds()
+                    case .line:
+                        fallthrough
+                    default:
+                        if $0.code == $1.code {
+                            return $0.destination < $1.destination
+                        }
+                        return $0.code < $1.code
+                    }
+                })
+                return SimpleEntry(
+                    date: Date(),
+                    stationName: station.name,
+                    trips: trips
+                )
             }
+        } catch {
+
         }
+
+        return SimpleEntry(
+            date: Date(),
+            stationName: "",
+            trips: []
+        )
     }
 
-    func getTimeline(
+    func timeline(
+        for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping @Sendable (Timeline<SimpleEntry>) -> Void
-    ) {
-        getSnapshot(in: context) { entry in
-            completion(Timeline(entries: [entry], policy: .atEnd))
-        }
+    ) async -> Timeline<SimpleEntry> {
+        let entry = await snapshot(for: configuration, in: context)
+        return Timeline(entries: [entry], policy: .atEnd)
     }
 
     func placeholder(in context: Context) -> SimpleEntry {
@@ -209,8 +217,9 @@ struct GODepartures: Widget {
     let kind: String = "com.jsontextfield.godepartures.GODepartures"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(
+        AppIntentConfiguration(
             kind: kind,
+            intent: ConfigurationIntent.self,
             provider: Provider()
         ) { entry in
             GODeparturesEntryView(entry: entry).containerBackground(

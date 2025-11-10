@@ -22,10 +22,18 @@ class DepartureScreenUseCase(
         preferencesRepository.setFavouriteStations(updatedStations)
     }
 
+    suspend fun getFavouriteStations(): List<Station> {
+        val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
+        val allStations = goTrainDataSource.getAllStations()
+        return allStations.filter { station ->
+            favouriteStationCodes.any { it in station.code } || "UN" in station.code
+        }
+    }
+
     fun getSelectedStation(): Flow<Station?> {
         return preferencesRepository.getSelectedStationCode().map { selectedStation ->
             val allStations = goTrainDataSource.getAllStations()
-             allStations.firstOrNull {
+            allStations.firstOrNull {
                 selectedStation in it.code
             } ?: allStations.firstOrNull {
                 "UN" in it.code
