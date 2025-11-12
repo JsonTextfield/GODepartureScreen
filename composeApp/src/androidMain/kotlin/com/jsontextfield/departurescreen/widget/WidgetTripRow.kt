@@ -74,21 +74,40 @@ fun WidgetTripRow(
                 )
             )
             val context = LocalContext.current
-            if (trip.isCancelled) {
-                Text(
-                    text = context.getString(R.string.cancelled),
-                    style = TextDefaults.defaultTextStyle.copy(
-                        color = GlanceTheme.colors.error,
-                    ),
-                )
-            }
-            else if (trip.isExpress) {
-                Text(
-                    text = context.getString(R.string.express),
-                    style = TextDefaults.defaultTextStyle.copy(
-                        color = GlanceTheme.colors.primary
-                    ),
-                )
+            Row {
+                if (trip.isCancelled) {
+                    Text(
+                        text = context.getString(R.string.cancelled),
+                        style = TextDefaults.defaultTextStyle.copy(
+                            color = GlanceTheme.colors.error,
+                        ),
+                    )
+                    Spacer(modifier = GlanceModifier.width(12.dp))
+                } else if (trip.isExpress) {
+                    Text(
+                        text = context.getString(R.string.express),
+                        style = TextDefaults.defaultTextStyle.copy(
+                            color = GlanceTheme.colors.primary
+                        ),
+                    )
+                    Spacer(modifier = GlanceModifier.width(12.dp))
+                }
+                trip.cars?.let {
+                    Text(
+                        text = context.resources.getQuantityString(R.plurals.number_of_cars, it.toIntOrNull() ?: 0, it),
+                        style = TextDefaults.defaultTextStyle.copy(
+                            color = GlanceTheme.colors.onBackground,
+                        ),
+                    )
+                }
+                trip.busType?.let {
+                    Text(
+                        text = it,
+                        style = TextDefaults.defaultTextStyle.copy(
+                            color = GlanceTheme.colors.onBackground,
+                        ),
+                    )
+                }
             }
         }
         Spacer(modifier = GlanceModifier.width(12.dp))

@@ -3,6 +3,8 @@ package com.jsontextfield.departurescreen.core.network
 import com.jsontextfield.departurescreen.core.network.model.Alerts
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBusesResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
@@ -62,6 +64,14 @@ class DepartureScreenAPI() {
 
     suspend fun getUnionDepartures(): UnionDeparturesResponse {
         return client.get("ServiceUpdate/UnionDepartures/All").body()
+    }
+
+    suspend fun getServiceAtAGlanceTrains(): ServiceAtAGlanceTrainsResponse {
+        return client.get("ServiceataGlance/Trains/All").body()
+    }
+
+    suspend fun getServiceAtAGlanceBuses(): ServiceAtAGlanceBusesResponse {
+        return client.get("ServiceataGlance/Buses/All").body()
     }
 
     suspend fun getServiceAlerts(): Alerts {

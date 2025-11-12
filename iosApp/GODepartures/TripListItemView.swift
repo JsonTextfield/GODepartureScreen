@@ -24,9 +24,15 @@ struct TripListItemView: View {
                 ? coreKit.ColourKt.errorDark : coreKit.ColourKt.errorLight)
         )
         HStack(alignment: .center, spacing: 12) {
-            Text("\(trip.departureDiffMinutes)\nmin")
-                .multilineTextAlignment(.center)
-                .bold()
+            VStack(alignment: .center, spacing: 0) {
+                Text("\(trip.departureDiffMinutes)")
+                    .multilineTextAlignment(.center)
+                    .bold()
+                Text("min")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .bold()
+            }
             ZStack(alignment: .center) {
                 SquircleShape()
                     .frame(width: 32, height: 32)
@@ -50,10 +56,18 @@ struct TripListItemView: View {
                         .font(.footnote)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
-            Text(trip.platform)
-                .foregroundColor(trip.platform == "-" ? nil : colour)
-                .bold()
-                .frame(maxWidth: .infinity)
+            VStack {
+                Text(trip.platform)
+                    .foregroundColor(trip.platform == "-" ? nil : colour)
+                    .bold()
+                    .frame(maxWidth: .infinity)
+                if let cars = trip.cars {
+                    Text("\(cars) cars")
+                        .font(.footnote)
+                } else if let busType = trip.busType {
+                    Text(busType).font(.footnote)
+                }
+            }
         }
     }
 }

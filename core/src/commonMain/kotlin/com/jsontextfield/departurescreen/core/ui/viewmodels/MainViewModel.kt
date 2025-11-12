@@ -140,7 +140,7 @@ class MainViewModel(
         val stationCodes = station.code.split(",")
         viewModelScope.launch {
             runCatching {
-                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
+                stationCodes.flatMap { goTrainDataSource.getTrips(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {

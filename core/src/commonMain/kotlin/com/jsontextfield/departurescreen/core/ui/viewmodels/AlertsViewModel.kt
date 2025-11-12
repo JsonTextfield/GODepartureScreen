@@ -55,7 +55,7 @@ class AlertsViewModel(
                 runCatching {
                     val selectedStationCodes = selectedStation?.code?.split(",") ?: emptySet()
                     val allTrainCodes =
-                        selectedStationCodes.flatMap { goTrainDataSource.getTrains(it).map { it.code } }.toSet()
+                        selectedStationCodes.flatMap { goTrainDataSource.getTrips(it).map { it.code } }.toSet()
 
                     val predicate: (Alert) -> Boolean = {
                         (selectedStationCodes.any { code -> code in it.affectedStations } || it.affectedStations.isEmpty())

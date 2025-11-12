@@ -58,7 +58,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
     var informationAlerts: List<Alert> = emptyList()
 
 
-    override suspend fun getTrains(stationCode: String): List<Trip> {
+    override suspend fun getTrips(stationCode: String): List<Trip> {
         return trips
     }
 

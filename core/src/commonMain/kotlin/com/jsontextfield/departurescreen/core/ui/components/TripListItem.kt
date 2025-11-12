@@ -26,6 +26,7 @@ import departure_screen.core.generated.resources.cancelled
 import departure_screen.core.generated.resources.express
 import departure_screen.core.generated.resources.min
 import departure_screen.core.generated.resources.minutes_content_description
+import departure_screen.core.generated.resources.number_of_cars
 import departure_screen.core.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -104,18 +105,32 @@ fun TripListItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (trip.isCancelled) {
-                Text(
-                    text = stringResource(Res.string.cancelled),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            } else if (trip.isExpress) {
-                Text(
-                    text = stringResource(Res.string.express),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelMedium,
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (trip.isCancelled) {
+                    Text(
+                        text = stringResource(Res.string.cancelled),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                } else if (trip.isExpress) {
+                    Text(
+                        text = stringResource(Res.string.express),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+                trip.cars?.let {
+                    Text(
+                        pluralStringResource(Res.plurals.number_of_cars, it.toIntOrNull() ?: 0, it),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+                trip.busType?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
         val platform = stringResource(Res.string.platform, trip.platform)

@@ -66,7 +66,7 @@ struct Provider: AppIntentTimelineProvider {
                 for code in codes {
                     do {
                         let result =
-                            try await goTrainDataSource.getTrains(
+                            try await goTrainDataSource.getTrips(
                                 stationCode: code
                             )
                         fetchedTrips.append(contentsOf: result)
@@ -137,7 +137,9 @@ struct Provider: AppIntentTimelineProvider {
                     info: "Wait",
                     isVisible: true,
                     isCancelled: false,
-                    isBus: true
+                    isBus: true,
+                    cars: nil,
+                    busType: nil,
                 )
             ]
         )

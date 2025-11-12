@@ -6,6 +6,7 @@ import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
@@ -21,8 +22,10 @@ class GoTrainDataSource(
 ) : IGoTrainDataSource {
     private var stations = emptyList<Station>()
 
-    override suspend fun getTrains(stationCode: String): List<Trip> {
+    override suspend fun getTrips(stationCode: String): List<Trip> {
         return try {
+            val serviceAtAGlanceBuses = departureScreenAPI.getServiceAtAGlanceBuses().trips?.trip?.associateBy { it.tripNumber }
+            val serviceAtAGlanceTrains = departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
             val nextService = departureScreenAPI.getNextService(stationCode)
             val exceptions = departureScreenAPI.getExceptions()
             val lastUpdated = Instant.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter)
@@ -59,6 +62,8 @@ class GoTrainDataSource(
                     platform = platform,
                     isBus = line.serviceType == "B",
                     info = trip?.info.orEmpty(),
+                    cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
+                    busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
                 )
             }?.sortedBy { it.departureTime } ?: emptyList()
         } catch (exception: IOException) {
@@ -77,19 +82,13 @@ class GoTrainDataSource(
             return stations
         }
         return try {
-            departureScreenAPI.getAllStops().stations?.stops?.map { stop ->
-                Station(
-                    name = stop.locationName,
-                    code = stop.locationCode,
-                    type = stop.locationType,
-                )
-            }?.groupBy { it.name }
-                ?.map { (stationName: String, stations: List<Station>) ->
+            departureScreenAPI.getAllStops().stations?.stops?.groupBy {
+                it.locationName
+            }?.map { (stationName: String, stations: List<StopResponse.Stations.Stop>) ->
                     Station(
                         name = stationName,
-                        code = stations.map { it.code }.toSet().joinToString(","),
-                        type = stations.map { it.type }.toSet().joinToString(","),
-                        isFavourite = stations.any { it.isFavourite },
+                        code = stations.joinToString(",") { it.locationCode },
+                        type = stations.joinToString(",") { it.locationType },
                     )
                 } ?: emptyList()
         } catch (exception: IOException) {

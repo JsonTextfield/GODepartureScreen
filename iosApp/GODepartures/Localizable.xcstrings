@@ -4,7 +4,27 @@
     "%@" : {
 
     },
+    "%@ cars" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ cars"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ voitures"
+          }
+        }
+      }
+    },
+    "%d" : {
+
+    },
     "%d\nmin" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -79,6 +99,9 @@
           }
         }
       }
+    },
+    "min" : {
+
     },
     "Select station" : {
 

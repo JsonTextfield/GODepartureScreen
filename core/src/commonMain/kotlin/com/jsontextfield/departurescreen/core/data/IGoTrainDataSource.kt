@@ -5,7 +5,7 @@ import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 
 interface IGoTrainDataSource {
-    suspend fun getTrains(stationCode: String) : List<Trip>
+    suspend fun getTrips(stationCode: String) : List<Trip>
 
     suspend fun getServiceAlerts() : List<Alert>
 
