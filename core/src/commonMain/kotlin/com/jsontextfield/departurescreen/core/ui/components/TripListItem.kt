@@ -31,6 +31,8 @@ import departure_screen.core.generated.resources.platform
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
+private const val SHOULD_SHOW_TRAIN_INFO = false
+
 @Composable
 fun TripListItem(
     trip: Trip,
@@ -76,7 +78,7 @@ fun TripListItem(
         if (shouldShowTrainCode) {
             val fontScale = LocalDensity.current.fontScale
             TripCodeBox(
-                trip.code,
+                tripCode = trip.code,
                 modifier = Modifier
                     .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
                     .background(color = trip.color, shape = SquircleShape)
@@ -119,40 +121,58 @@ fun TripListItem(
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
-                trip.cars?.let {
-                    Text(
-                        pluralStringResource(Res.plurals.number_of_cars, it.toIntOrNull() ?: 0, it),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-                trip.busType?.let {
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
             }
         }
         val platform = stringResource(Res.string.platform, trip.platform)
-        Text(
-            text = trip.platform,
-            maxLines = 3,
-            modifier = Modifier
-                .weight(3 / 12f)
-                .clearAndSetSemantics {
-                    if (trip.hasPlatform) {
-                        contentDescription = platform
-                    }
+        Column(
+            modifier = Modifier.weight(3 / 12f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = trip.platform,
+                maxLines = 3,
+                modifier = Modifier
+                    .clearAndSetSemantics {
+                        if (trip.hasPlatform) {
+                            contentDescription = platform
+                        }
+                    },
+                textAlign = TextAlign.Center,
+                style = if (trip.hasPlatform) {
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                } else {
+                    MaterialTheme.typography.titleMedium
                 },
-            textAlign = TextAlign.Center,
-            style = if (trip.hasPlatform) {
-                MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+            )
+            if (trip.info.isNotBlank() && SHOULD_SHOW_TRAIN_INFO) {
+                Text(
+                    text = trip.info,
+                    textAlign = TextAlign.Center,
+                    style = if (trip.hasPlatform) {
+                        MaterialTheme.typography.labelMedium.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    } else {
+                        MaterialTheme.typography.labelMedium
+                    },
                 )
-            } else {
-                MaterialTheme.typography.titleMedium
-            },
-        )
+            }
+            trip.cars?.let {
+                Text(
+                    text = pluralStringResource(Res.plurals.number_of_cars, it.toIntOrNull() ?: 0, it),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            } ?: trip.busType?.let {
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+        }
     }
 }

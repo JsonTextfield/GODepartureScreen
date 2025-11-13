@@ -155,7 +155,7 @@ fun DepartureScreenWidget(
                     Status.LOADED -> {
                         LazyColumn(modifier = GlanceModifier.defaultWeight()) {
                             items(uiState.allTrips) { trip ->
-                                WidgetTripRow(
+                                WidgetTripListItem(
                                     trip,
                                     modifier = GlanceModifier
                                         .fillMaxWidth()

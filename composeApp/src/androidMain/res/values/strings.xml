@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GO Departures</string>
+    <string name="platform">Platform %s</string>
     <string name="express">Express</string>
+    <string name="min">min</string>
     <string name="cancelled">Cancelled</string>
     <string name="updated">Updated %s</string>
     <string name="error">An error occurred</string>
@@ -10,5 +12,10 @@
     <plurals name="number_of_cars">
         <item quantity="one">%s car</item>
         <item quantity="other">%s cars</item>
+    </plurals>
+
+    <plurals name="minutes_content_description">
+        <item quantity="one">Departing in %1$s minute</item>
+        <item quantity="other">Departing in %1$s minutes</item>
     </plurals>
 </resources>
