@@ -10,6 +10,7 @@ import AppIntents
 import ComposeApp
 import SwiftUI
 import WidgetKit
+import coreKit
 
 struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
@@ -31,7 +32,7 @@ struct Provider: AppIntentTimelineProvider {
         let selectedStationCode =
             configuration.selectedStation?.id
             ?? userDefaults?.object(
-                forKey: "selectedStationCode"
+                forKey: SELECTED_STATION_CODE_KEY
             ) as? String
             ?? "UN"
 
@@ -50,10 +51,10 @@ struct Provider: AppIntentTimelineProvider {
             {
                 let trips: [CoreTrip]
                 let sortMode = CoreSortMode.allCases[
-                    userDefaults?.integer(forKey: "sortMode") ?? 0
+                    userDefaults?.integer(forKey: SORT_MODE_KEY) ?? 0
                 ]
                 let visibleTrains: String =
-                    userDefaults?.object(forKey: "hiddenTrains")
+                    userDefaults?.object(forKey: HIDDEN_TRAINS_KEY)
                     as? String ?? ""
 
                 // Parse comma-separated station codes
@@ -64,22 +65,15 @@ struct Provider: AppIntentTimelineProvider {
                 // Fetch trips per code (sequentially; safe for widgets)
                 var fetchedTrips: [CoreTrip] = []
                 for code in codes {
-                    do {
-                        let result =
-                            try await goTrainDataSource.getTrips(
-                                stationCode: code
-                            )
-                        fetchedTrips.append(contentsOf: result)
-                    } catch {
-                        // Ignore individual code failures
-                    }
+                    let result = try await goTrainDataSource.getTrips(stationCode: code)
+                    fetchedTrips.append(contentsOf: result)
                 }
                 // Sort according to mode
                 trips = fetchedTrips.filter { trip in
                     visibleTrains.isEmpty
                         || visibleTrains.contains(trip.code)
                 }.sorted(by: {
-                    switch sortMode {
+                    switch configuration.sortMode {
                     case .time:
                         return $0.departureTime.toEpochMilliseconds()
                             < $1.departureTime.toEpochMilliseconds()
@@ -156,64 +150,6 @@ struct SimpleEntry: TimelineEntry {
     let trips: [CoreTrip]
 }
 
-struct GODeparturesEntryView: View {
-    var entry: SimpleEntry
-    @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
-
-    init(entry: SimpleEntry) {
-        self.entry = entry
-    }
-
-    var body: some View {
-        VStack {
-            Text(entry.stationName)
-                .font(.footnote)
-                .bold()
-            if !entry.trips.isEmpty {
-                switch widgetFamily {
-                case .systemMedium:
-                    ForEach(entry.trips.prefix(1), id: \.self.id) { trip in
-                        TripListItemView(
-                            trip: trip
-                        )
-                    }
-                case .systemLarge:
-                    ForEach(entry.trips.prefix(4), id: \.self.id) { trip in
-                        TripListItemView(
-                            trip: trip
-                        )
-                    }
-                case .systemExtraLarge:
-                    Grid {
-                        ForEach(
-                            entry.trips.chunked(into: 2).prefix(4),
-                            id: \.self.first?.id
-                        ) { trips in
-                            GridRow {
-                                ForEach(trips, id: \.self.id) { trip in
-                                    TripListItemView(
-                                        trip: trip
-                                    )
-                                }
-                            }
-                        }
-                    }
-                default:
-                    Spacer()
-                }
-            }
-            Spacer()
-            Button(intent: RefreshIntent()) {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                    Text("Last updated: \(entry.date, style: .time)")
-                }
-            }
-
-        }.frame(maxHeight: .infinity)
-    }
-}
-
 @main
 struct GODepartures: Widget {
     let kind: String = "com.jsontextfield.godepartures.GODepartures"
@@ -236,22 +172,5 @@ struct GODepartures: Widget {
 
     init() {
         KoinKt.doInitKoin()
-    }
-}
-
-struct RefreshIntent: AppIntent {
-    static var title: LocalizedStringResource = "Update"
-    static var description = IntentDescription("Update the departure screen.")
-    func perform() async throws -> some IntentResult {
-        WidgetCenter.shared.reloadAllTimelines()
-        return .result()
-    }
-}
-
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0..<Swift.min($0 + size, count)])
-        }
     }
 }

@@ -3,8 +3,12 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.FAVOURITE_STATIONS_KEY
+import com.jsontextfield.departurescreen.core.data.HIDDEN_TRAINS_KEY
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.SELECTED_STATION_CODE_KEY
+import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -26,20 +30,21 @@ actual fun preferencesModule(): Module {
             DataStorePreferencesRepository(
                 dataStore = createDataStore(),
                 onSetStation = { stationCode: String ->
-                    val selectedStationCodeKey = "selectedStationCode"
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setObject(stationCode, forKey = selectedStationCodeKey)
+                    userDefaults.setObject(stationCode, forKey = SELECTED_STATION_CODE_KEY)
                 },
                 onSetSortMode = { sortMode ->
-                    val sortModeKey = "sortMode"
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setInteger(sortMode.ordinal.toLong(), forKey = sortModeKey)
+                    userDefaults.setInteger(sortMode.ordinal.toLong(), forKey = SORT_MODE_KEY)
                 },
                 onSetVisibleTrains = { visibleTrains ->
-                    val hiddenTrainsKey = "hiddenTrains"
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setObject(visibleTrains.joinToString(","), forKey = hiddenTrainsKey)
+                    userDefaults.setObject(visibleTrains.joinToString(","), forKey = HIDDEN_TRAINS_KEY)
                 },
+                onSetFavouriteStations = { favouriteStations ->
+                    val userDefaults = NSUserDefaults(suiteName = appGroupId)
+                    userDefaults.setObject(favouriteStations.joinToString(","), forKey = FAVOURITE_STATIONS_KEY)
+                }
             )
         }
     }

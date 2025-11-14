@@ -32,15 +32,8 @@ struct TripListItemView: View {
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .bold()
-            }
-            ZStack(alignment: .center) {
-                SquircleShape()
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(Color(argb: trip.color))
-                Text(trip.code)
-                    .foregroundColor(.white)
-                    .bold()
-            }
+            }.frame(width: 40)
+            TripCodeBox(trip: trip)
             VStack(alignment: .leading) {
                 Text(trip.destination)
                     .lineLimit(2)

@@ -57,6 +57,9 @@
         }
       }
     },
+    "Configure the GO Departures widget." : {
+
+    },
     "express" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -100,16 +103,10 @@
         }
       }
     },
+    "Line" : {
+
+    },
     "min" : {
-
-    },
-    "Select station" : {
-
-    },
-    "Select the station to view departure information for." : {
-
-    },
-    "Selected station" : {
 
     },
     "Shows departure information for a station" : {
@@ -122,8 +119,31 @@
         }
       }
     },
+    "Sort by..." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier par…"
+          }
+        }
+      }
+    },
+    "Sort mode" : {
+
+    },
     "Station" : {
 
+    },
+    "Time" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heure"
+          }
+        }
+      }
     },
     "Update" : {
       "localizations" : {
@@ -144,6 +164,9 @@
           }
         }
       }
+    },
+    "Widget settings" : {
+
     }
   },
   "version" : "1.1"

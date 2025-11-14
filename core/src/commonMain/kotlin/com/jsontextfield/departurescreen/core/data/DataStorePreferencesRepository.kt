@@ -16,6 +16,7 @@ class DataStorePreferencesRepository(
     private val onSetStation: (String) -> Unit = {},
     private val onSetSortMode: (SortMode) -> Unit = {},
     private val onSetVisibleTrains: (Set<String>) -> Unit = {},
+    private val onSetFavouriteStations: (Set<String>) -> Unit = {},
 ) : IPreferencesRepository {
     override fun getVisibleTrains(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
@@ -77,6 +78,7 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] = favouriteStations
         }
+        onSetFavouriteStations(favouriteStations)
     }
 
     override fun getFavouriteStations(): Flow<Set<String>> {
@@ -84,12 +86,10 @@ class DataStorePreferencesRepository(
             preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] ?: emptySet()
         }
     }
-
-    private companion object {
-        const val SORT_MODE_KEY = "sortMode"
-        const val THEME_KEY = "theme"
-        const val SELECTED_STATION_CODE_KEY = "selectedStationCode"
-        const val FAVOURITE_STATIONS_KEY = "favouriteStations"
-        const val HIDDEN_TRAINS_KEY = "hiddenTrains"
-    }
 }
+
+const val SORT_MODE_KEY = "sortMode"
+const val THEME_KEY = "theme"
+const val SELECTED_STATION_CODE_KEY = "selectedStationCode"
+const val FAVOURITE_STATIONS_KEY = "favouriteStations"
+const val HIDDEN_TRAINS_KEY = "hiddenTrains"

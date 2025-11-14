@@ -11,17 +11,25 @@ import WidgetKit
 import AppIntents
 
 struct ConfigurationIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Select station"
-    static var description = IntentDescription("Select the station to view departure information for.")
+    static var title: LocalizedStringResource = "Widget settings"
+    static var description = IntentDescription("Configure the GO Departures widget.")
     
-    @Parameter(title: "Selected station")
+    @Parameter(title: "Station")
     var selectedStation: StationDetail?
     
-    init(selectedStation: StationDetail? = nil) {
+    @Parameter(title: "Sort by...")
+    var sortMode: SortMode?
+    
+    init(
+        selectedStation: StationDetail? = nil,
+        sortMode: SortMode? = SortMode.time,
+    ) {
         self.selectedStation = selectedStation
+        self.sortMode = sortMode
     }
     
     init() {
         self.selectedStation = nil
+        self.sortMode = SortMode.time
     }
 }
