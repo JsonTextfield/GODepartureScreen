@@ -6,6 +6,7 @@ import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,18 +76,27 @@ class StationsViewModel(
         }
     }
 
+    fun setStationType(stationType: StationType?) {
+        _uiState.update {
+            it.copy(
+                stationType = stationType,
+            )
+        }
+    }
+
 }
 
 data class StationsUIState(
     val status: Status = Status.LOADING,
     val allStations: List<Station> = emptyList(),
     val selectedStation: Station? = null,
+    val stationType: StationType? = null,
 ) {
     fun getFilteredStations(query: String): List<Station> {
-        if (query.isBlank()) return allStations
+        if (stationType == null && query.isBlank()) return allStations
         val lowerCaseQuery = query.lowercase()
         return allStations.filter {
-            lowerCaseQuery in it.name.lowercase()
+            (stationType == null || stationType in it.types ) && lowerCaseQuery in it.name.lowercase()
         }
     }
 }

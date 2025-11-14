@@ -31,6 +31,8 @@
     <string name="clear">Effacer</string>
     <string name="search">Chercher</string>
     <string name="scroll_to_top">Faire défiler vers le haut</string>
+    <string name="bus">Autobus</string>
+    <string name="train">Train</string>
     <plurals name="number_of_cars">
         <item quantity="one">%1$s voiture</item>
         <item quantity="other">%1$s voitures</item>

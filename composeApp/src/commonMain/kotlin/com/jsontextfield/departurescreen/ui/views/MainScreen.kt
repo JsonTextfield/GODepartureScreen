@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.components.CountdownTimer
 import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
-import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.TrainList
+import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.menu.Action
 import com.jsontextfield.departurescreen.core.ui.menu.ActionBar
 import com.jsontextfield.departurescreen.core.ui.menu.getActions
@@ -139,7 +139,7 @@ fun MainScreen(
                 Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
                     uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
                         AnimatedVisibility(data.size > 1) {
-                            FilterChipStrip(
+                            TripFilterChipStrip(
                                 data = data.sortedBy { it.code },
                                 selectedItems = uiState.visibleTrains,
                                 onSelectionChanged = onSetVisibleTrains,

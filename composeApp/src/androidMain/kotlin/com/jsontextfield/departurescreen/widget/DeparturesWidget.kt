@@ -39,6 +39,7 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lightScheme
@@ -69,7 +70,7 @@ class DeparturesWidget : GlanceAppWidget() {
             selectedStation = Station(
                 name = "Union Station GO",
                 code = "UN",
-                type = "Train Station",
+                types = setOf(StationType.TRAIN),
             ),
             _allTrips = listOf(
                 Trip(

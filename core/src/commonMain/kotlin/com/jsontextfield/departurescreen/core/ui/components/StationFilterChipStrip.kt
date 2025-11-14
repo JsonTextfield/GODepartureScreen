@@ -10,12 +10,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
@@ -25,17 +23,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.StationType
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.all
 import departure_screen.core.generated.resources.filter
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun FilterChipStrip(
-    data: List<Trip>,
-    selectedItems: Set<String>,
-    onSelectionChanged: (Set<String>) -> Unit,
+fun StationFilterChipStrip(
+    stationType: StationType?,
+    onSelectionChanged: (StationType?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val filter = stringResource(Res.string.filter)
@@ -44,7 +41,7 @@ fun FilterChipStrip(
             contentDescription = filter
             collectionInfo = CollectionInfo(
                 rowCount = 1,
-                columnCount = data.size + 1,
+                columnCount = 3,
             )
         },
         contentPadding = PaddingValues(
@@ -55,9 +52,9 @@ fun FilterChipStrip(
     ) {
         item {
             FilterChip(
-                selected = selectedItems.isEmpty() || data.isEmpty(),
+                selected = stationType == null,
                 onClick = {
-                    onSelectionChanged(emptySet())
+                    onSelectionChanged(null)
                 },
                 label = {
                     Text(
@@ -79,31 +76,19 @@ fun FilterChipStrip(
                 shape = RoundedCornerShape(4.dp),
             )
         }
-        itemsIndexed(data, key = { _, train -> train.code }) { index, train ->
+
+        itemsIndexed(StationType.entries, key = { _, type -> type.name }) { index, type ->
             FilterChip(
-                selected = train.code in selectedItems,
+                selected = type == stationType,
                 onClick = {
-                    val newSelection = if (train.code in selectedItems) {
-                        selectedItems - train.code
-                    } else {
-                        selectedItems + train.code
-                    }
-                    onSelectionChanged(newSelection)
+                    onSelectionChanged(type)
                 },
                 label = {
                     Text(
-                        text = train.code,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = if (train.code in selectedItems) Color.White else Color.Unspecified
-                        ),
-                        modifier = Modifier.padding(8.dp).semantics {
-                            contentDescription = if (train.isBus) {
-                                train.code
-                            } else {
-                                train.name
-                            }
-                        }
+                        text = stringResource(type.stringResId),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(8.dp),
                     )
                 },
                 modifier = Modifier
@@ -117,9 +102,6 @@ fun FilterChipStrip(
                         )
                     },
                 shape = RoundedCornerShape(4.dp),
-                colors = FilterChipDefaults.filterChipColors().copy(
-                    selectedContainerColor = train.color,
-                )
             )
         }
     }

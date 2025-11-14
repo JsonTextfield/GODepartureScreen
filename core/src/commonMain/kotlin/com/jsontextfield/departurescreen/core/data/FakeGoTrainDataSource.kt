@@ -5,6 +5,7 @@ package com.jsontextfield.departurescreen.core.data
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.StationType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -14,7 +15,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         Station(
             code = "UN",
             name = "Union Station",
-            type = "Train Station",
+            types = setOf(StationType.TRAIN),
         )
     )
     var trips: List<Trip> = listOf(

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.data
 
 import androidx.compose.ui.graphics.Color
@@ -6,7 +8,10 @@ import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
+import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
@@ -15,6 +20,8 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalSerializationApi::class)
 class GoTrainDataSource(
@@ -22,15 +29,23 @@ class GoTrainDataSource(
 ) : IGoTrainDataSource {
     private var stations = emptyList<Station>()
 
+    private var lastUpdated: Long = 0L
+    private var serviceAtAGlanceTrains: Map<String, ServiceAtAGlanceTrainsResponse.Trips.Trip>? = null
+    private var exceptions: ExceptionsResponse? = null
+
     override suspend fun getTrips(stationCode: String): List<Trip> {
+        if (Clock.System.now().toEpochMilliseconds() - lastUpdated > 60_000) {
+            serviceAtAGlanceTrains =
+                departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
+            exceptions = departureScreenAPI.getExceptions()
+            lastUpdated = Clock.System.now().toEpochMilliseconds()
+        }
         return try {
-            val serviceAtAGlanceBuses = departureScreenAPI.getServiceAtAGlanceBuses().trips?.trip?.associateBy { it.tripNumber }
-            val serviceAtAGlanceTrains = departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
             val nextService = departureScreenAPI.getNextService(stationCode)
-            val exceptions = departureScreenAPI.getExceptions()
             val lastUpdated = Instant.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter)
             val lines = nextService.nextService?.lines
-            val cancelledTrips = exceptions.trip.filter { it.isCancelled == "1" }.map { it.tripNumber }
+            val cancelledTrips =
+                exceptions?.trip?.filter { it.isCancelled == "1" }?.map { it.tripNumber } ?: emptyList()
 
             val tripsMap = if (stationCode == "UN") {
                 val unionDepartures = departureScreenAPI.getUnionDepartures()
@@ -63,7 +78,7 @@ class GoTrainDataSource(
                     isBus = line.serviceType == "B",
                     info = trip?.info.orEmpty(),
                     cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
-                    busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
+                    //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
                 )
             }?.sortedBy { it.departureTime } ?: emptyList()
         } catch (exception: IOException) {
@@ -85,12 +100,22 @@ class GoTrainDataSource(
             departureScreenAPI.getAllStops().stations?.stops?.groupBy {
                 it.locationName
             }?.map { (stationName: String, stations: List<StopResponse.Stations.Stop>) ->
-                    Station(
-                        name = stationName,
-                        code = stations.joinToString(",") { it.locationCode },
-                        type = stations.joinToString(",") { it.locationType },
-                    )
-                } ?: emptyList()
+                val types = buildSet {
+                    stations.forEach {
+                        if ("Bus" in it.locationType) {
+                            add(StationType.BUS)
+                        }
+                        if ("Train" in it.locationType) {
+                            add(StationType.TRAIN)
+                        }
+                    }
+                }
+                Station(
+                    name = stationName,
+                    code = stations.joinToString(",") { it.locationCode },
+                    types = types,
+                )
+            } ?: emptyList()
         } catch (exception: IOException) {
             throw exception
         } catch (_: Exception) {
