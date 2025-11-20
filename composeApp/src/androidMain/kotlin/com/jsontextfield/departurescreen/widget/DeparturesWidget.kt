@@ -52,18 +52,6 @@ import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes
 
 class DeparturesWidget : GlanceAppWidget() {
-    val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
-    val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
-    val departureScreenUseCase = DepartureScreenUseCase(
-        goTrainDataSource = goTrainDataSource,
-        preferencesRepository = preferencesRepository,
-    )
-    val viewModel = WidgetViewModel(
-        departureScreenUseCase = departureScreenUseCase,
-        goTrainDataSource = goTrainDataSource,
-        preferencesRepository = preferencesRepository,
-    )
-
     override suspend fun providePreview(context: Context, widgetCategory: Int) {
         val uiState = WidgetUIState(
             status = Status.LOADED,
@@ -98,7 +86,17 @@ class DeparturesWidget : GlanceAppWidget() {
         // In this method, load data needed to render the AppWidget.
         // Use `withContext` to switch to another thread for long running
         // operations.
-
+        val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
+        val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
+        val departureScreenUseCase = DepartureScreenUseCase(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+        val viewModel = WidgetViewModel(
+            departureScreenUseCase = departureScreenUseCase,
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
         provideContent {
             // create your AppWidget here
             val uiState by viewModel.uiState.collectAsState()

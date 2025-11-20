@@ -50,7 +50,7 @@ struct Provider: AppIntentTimelineProvider {
                 ?? allStations.first
             {
                 let trips: [CoreTrip]
-                let sortMode = CoreSortMode.allCases[
+                let sortMode = CoreSortMode.entries[
                     userDefaults?.integer(forKey: SORT_MODE_KEY) ?? 0
                 ]
                 let visibleTrains: String =
