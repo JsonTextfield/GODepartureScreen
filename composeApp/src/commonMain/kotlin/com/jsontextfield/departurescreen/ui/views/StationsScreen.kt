@@ -58,13 +58,26 @@ fun StationsScreen(
     stationsViewModel: StationsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
-    val uiState by stationsViewModel.uiState.collectAsState()
     StationsScreen(
-        uiState = uiState,
+        stationsViewModel = stationsViewModel,
         onStationSelected = {
             stationsViewModel.setSelectedStation(it)
             onBackPressed()
         },
+        onBackPressed = onBackPressed,
+    )
+}
+
+@Composable
+fun StationsScreen(
+    stationsViewModel: StationsViewModel,
+    onStationSelected: (Station) -> Unit = {},
+    onBackPressed: () -> Unit = {},
+) {
+    val uiState by stationsViewModel.uiState.collectAsState()
+    StationsScreen(
+        uiState = uiState,
+        onStationSelected = onStationSelected,
         onFavouriteClick = stationsViewModel::setFavouriteStations,
         onBackPressed = onBackPressed,
         onSetStationType = stationsViewModel::setStationType,
@@ -73,7 +86,7 @@ fun StationsScreen(
 
 
 @Composable
-fun StationsScreen(
+private fun StationsScreen(
     uiState: StationsUIState,
     onStationSelected: (Station) -> Unit,
     onFavouriteClick: (Station) -> Unit,

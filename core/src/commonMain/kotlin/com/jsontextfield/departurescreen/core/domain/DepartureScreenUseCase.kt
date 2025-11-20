@@ -30,14 +30,13 @@ class DepartureScreenUseCase(
         }
     }
 
-    fun getSelectedStation(): Flow<Station?> {
+    fun getSelectedStation(selectedStationCode: String? = null): Flow<Station?> {
         return preferencesRepository.getSelectedStationCode().map { selectedStation ->
             val allStations = goTrainDataSource.getAllStations()
-            allStations.firstOrNull {
-                selectedStation in it.code
-            } ?: allStations.firstOrNull {
-                "UN" in it.code
-            } ?: allStations.firstOrNull()
+            allStations.firstOrNull { station -> selectedStationCode?.let { it in station.code } == true }
+                ?: allStations.firstOrNull { selectedStation in it.code }
+                ?: allStations.firstOrNull { "UN" in it.code }
+                ?: allStations.firstOrNull()
         }
     }
 }

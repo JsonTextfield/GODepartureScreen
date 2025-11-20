@@ -31,6 +31,7 @@
     <string name="clear">Clear</string>
     <string name="search">Search</string>
     <string name="scroll_to_top">Scroll to top</string>
+    <string name="add_widget">Add widget</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

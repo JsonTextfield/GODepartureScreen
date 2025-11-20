@@ -31,6 +31,7 @@
     <string name="clear">Effacer</string>
     <string name="search">Chercher</string>
     <string name="scroll_to_top">Faire défiler vers le haut</string>
+    <string name="add_widget">Ajouter un widget</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Partira dans %1$s minute</item>
         <item quantity="other">Partira dans %1$s minutes</item>

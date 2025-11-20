@@ -9,6 +9,14 @@
     <string name="error">An error occurred</string>
     <string name="retry">Retry</string>
     <string name="widget_description">Shows the departure information for the stop currently selected in the app</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="opacity">Opacity</string>
+    <string name="line">Line</string>
+    <string name="time">Time</string>
+    <string name="sort_by">Sort by...</string>
+    <string name="station">Station</string>
+    <string name="widget_settings">Widget settings</string>
     <plurals name="number_of_cars">
         <item quantity="one">%s car</item>
         <item quantity="other">%s cars</item>

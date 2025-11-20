@@ -33,12 +33,12 @@ import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.TrainList
 import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
-import com.jsontextfield.departurescreen.core.ui.menu.Action
-import com.jsontextfield.departurescreen.core.ui.menu.ActionBar
-import com.jsontextfield.departurescreen.core.ui.menu.getActions
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.ui.menu.Action
+import com.jsontextfield.departurescreen.ui.menu.ActionBar
+import com.jsontextfield.departurescreen.ui.menu.getActions
 
 
 @Composable

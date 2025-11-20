@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.core.ui.viewmodels
+package com.jsontextfield.departurescreen.widget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,10 +10,12 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.widget.config.WidgetConfigDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -30,7 +32,8 @@ import kotlinx.datetime.toLocalDateTime
 class WidgetViewModel(
     departureScreenUseCase: DepartureScreenUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
-    preferencesRepository: IPreferencesRepository,
+    private val preferencesRepository: IPreferencesRepository,
+    private val configDataStore: WidgetConfigDataStore,
 ) : ViewModel() {
     private var _uiState: MutableStateFlow<WidgetUIState> = MutableStateFlow(WidgetUIState())
     val uiState: StateFlow<WidgetUIState> = _uiState.asStateFlow()
@@ -79,6 +82,25 @@ class WidgetViewModel(
         }
     }
 
+    fun loadConfig(widgetId: Int) {
+        viewModelScope.launch {
+            val allStations = goTrainDataSource.getAllStations()
+            combine(
+                configDataStore.getConfig(widgetId),
+                preferencesRepository.getSelectedStationCode(),
+            ) { widgetConfig, selectedStationCode ->
+                _uiState.update {
+                    it.copy(
+                        selectedStation = widgetConfig.selectedStationCode?.let { allStations.firstOrNull { widgetConfig.selectedStationCode in it.code } }
+                            ?: allStations.firstOrNull { selectedStationCode in it.code }
+                            ?: allStations.firstOrNull { "UN" in it.code }
+                            ?: allStations.firstOrNull(),
+                    )
+                }
+            }.collect()
+        }
+    }
+
     fun refresh() {
         _uiState.update {
             it.copy(
@@ -92,7 +114,8 @@ class WidgetViewModel(
     private fun fetchDepartureData() {
         viewModelScope.launch {
             runCatching {
-                uiState.value.selectedStation?.code?.split(",")?.flatMap { goTrainDataSource.getTrips(it) } ?: emptyList()
+                uiState.value.selectedStation?.code?.split(",")?.flatMap { goTrainDataSource.getTrips(it) }
+                    ?: emptyList()
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
                 _uiState.update {

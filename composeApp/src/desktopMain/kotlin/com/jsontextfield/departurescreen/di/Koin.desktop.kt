@@ -20,3 +20,6 @@ actual fun preferencesModule(): Module {
     }
 }
 
+actual fun widgetModule(): Module {
+    return module {  }
+}

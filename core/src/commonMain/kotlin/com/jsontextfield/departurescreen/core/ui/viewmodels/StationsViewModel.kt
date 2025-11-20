@@ -29,7 +29,7 @@ class StationsViewModel(
         loadData()
     }
 
-    private fun loadData() {
+    fun loadData(selectedStationCode: String? = null) {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
@@ -37,7 +37,7 @@ class StationsViewModel(
         }
         viewModelScope.launch {
             combine(
-                departureScreenUseCase.getSelectedStation(),
+                departureScreenUseCase.getSelectedStation(selectedStationCode),
                 preferencesRepository.getFavouriteStations(),
             ) { selectedStation, favouriteStationCodes ->
                 val allStations = goTrainDataSource.getAllStations()

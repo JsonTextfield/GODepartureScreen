@@ -10,7 +10,6 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.SELECTED_STATION_CODE_KEY
 import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -77,9 +76,8 @@ class WidgetHelper : KoinComponent {
         goTrainDataSource = goTrainDataSource,
         preferencesRepository = preferencesRepository,
     )
-    val widgetViewModel = WidgetViewModel(
-        departureScreenUseCase = departureScreenUseCase,
-        goTrainDataSource = goTrainDataSource,
-        preferencesRepository = preferencesRepository,
-    )
+}
+
+actual fun widgetModule(): Module {
+    return module {  }
 }

@@ -8,5 +8,7 @@
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:configure="com.jsontextfield.departurescreen.widget.config.WidgetConfigActivity"
     android:description="@string/widget_description"
     />

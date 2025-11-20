@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.core.ui.menu
+package com.jsontextfield.departurescreen.ui.menu
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding

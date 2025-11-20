@@ -11,7 +11,6 @@ import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -38,12 +37,13 @@ val dataModule = module {
 
 expect fun preferencesModule(): Module
 
+expect fun widgetModule(): Module
+
 val viewModelModule = module {
     factoryOf(::DepartureScreenUseCase)
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StationsViewModel)
-    viewModelOf(::WidgetViewModel)
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
@@ -54,6 +54,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             dataModule,
             viewModelModule,
             preferencesModule(),
+            widgetModule(),
         )
     }
 }

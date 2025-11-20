@@ -1,9 +1,10 @@
-package com.jsontextfield.departurescreen.core.ui.menu
+package com.jsontextfield.departurescreen.ui.menu
 
 import OverflowMenu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Notifications
@@ -19,12 +20,13 @@ import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import departure_screen.core.generated.resources.Res
-import departure_screen.core.generated.resources.alerts
-import departure_screen.core.generated.resources.favourite
-import departure_screen.core.generated.resources.more
-import departure_screen.core.generated.resources.sort
-import departure_screen.core.generated.resources.theme
+import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.add_widget
+import departure_screen.composeapp.generated.resources.alerts
+import departure_screen.composeapp.generated.resources.favourite
+import departure_screen.composeapp.generated.resources.more
+import departure_screen.composeapp.generated.resources.sort
+import departure_screen.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -81,6 +83,9 @@ fun ActionBar(
         }
     }
 }
+
+expect fun addWidgetAction()
+expect fun isAddWidgetActionVisible() : Boolean
 
 @Composable
 fun getActions(
@@ -142,10 +147,19 @@ fun getActions(
         onClick = navigationActions.onShowAlerts,
     )
 
+    val addWidget = Action(
+        icon = Icons.Rounded.Add,
+        tooltip = stringResource(Res.string.add_widget),
+        onClick = { addWidgetAction() },
+        menuContent = null,
+        isVisible = isAddWidgetActionVisible(),
+    )
+
     return listOf(
         favourite,
         sort,
         alerts,
         theme,
+        addWidget,
     ).filter { it.isVisible }
 }

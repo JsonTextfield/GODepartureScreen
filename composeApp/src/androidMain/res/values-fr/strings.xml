@@ -9,6 +9,14 @@
     <string name="error">Une erreur s\'est produite</string>
     <string name="retry">Réessayer</string>
     <string name="widget_description">Affiche les informations de départ pour l\'arrêt actuellement sélectionné dans l\'application</string>
+    <string name="done">Fini</string>
+    <string name="cancel">Annuler</string>
+    <string name="opacity">Opacité</string>
+    <string name="line">Ligne</string>
+    <string name="time">Heure</string>
+    <string name="sort_by">Trier par...</string>
+    <string name="station">Station</string>
+    <string name="widget_settings">Paramètres du widget</string>
     <plurals name="number_of_cars">
         <item quantity="one">%s voiture</item>
         <item quantity="other">%s voitures</item>

@@ -16,9 +16,11 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.components.TitleBar
-import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.GridCells
+import androidx.glance.appwidget.lazy.LazyVerticalGrid
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
@@ -39,14 +41,15 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lightScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
-import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetUIState
-import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import com.jsontextfield.departurescreen.ui.MainActivity
+import com.jsontextfield.departurescreen.widget.config.WidgetConfig
+import com.jsontextfield.departurescreen.widget.config.WidgetConfigDataStore
 import kotlinx.datetime.Instant
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes
@@ -88,6 +91,7 @@ class DeparturesWidget : GlanceAppWidget() {
         // operations.
         val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
         val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
+        val configDataStore: WidgetConfigDataStore by inject(WidgetConfigDataStore::class.java)
         val departureScreenUseCase = DepartureScreenUseCase(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
@@ -96,11 +100,20 @@ class DeparturesWidget : GlanceAppWidget() {
             departureScreenUseCase = departureScreenUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            configDataStore = configDataStore,
         )
+        val dataStore = WidgetConfigDataStore(context)
+        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(id)
+
+        viewModel.loadConfig(appWidgetId)
+
         provideContent {
             // create your AppWidget here
             val uiState by viewModel.uiState.collectAsState()
-            DepartureScreenWidget(uiState, viewModel::refresh)
+            val dataStoreWidgetConfig by dataStore.getConfig(appWidgetId).collectAsState(WidgetConfig())
+            // Use the in-memory companion map if available; otherwise use the stored config
+            DepartureScreenWidget(uiState, dataStoreWidgetConfig, viewModel::refresh)
         }
     }
 }
@@ -108,6 +121,7 @@ class DeparturesWidget : GlanceAppWidget() {
 @Composable
 fun DepartureScreenWidget(
     uiState: WidgetUIState,
+    config: WidgetConfig? = null,
     onRefresh: () -> Unit = {},
 ) {
     GlanceTheme(
@@ -127,7 +141,7 @@ fun DepartureScreenWidget(
                 )
             },
             horizontalPadding = 0.dp,
-            backgroundColor = ColorProvider(GlanceTheme.colors.background.getColor(context).copy(alpha = .8f))
+            backgroundColor = ColorProvider(GlanceTheme.colors.background.getColor(context).copy(alpha = config?.opacity ?: .8f))
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize(),
@@ -152,8 +166,17 @@ fun DepartureScreenWidget(
                     }
 
                     Status.LOADED -> {
-                        LazyColumn(modifier = GlanceModifier.defaultWeight()) {
-                            items(uiState.allTrips) { trip ->
+                        LazyVerticalGrid(
+                            gridCells = GridCells.Adaptive(240.dp),
+                            modifier = GlanceModifier.defaultWeight(),
+                        ) {
+                            items(uiState.allTrips.sortedWith (
+                                if (config?.sortMode == SortMode.LINE) {
+                                    compareBy({ it.code }, { it.destination })
+                                } else {
+                                    compareBy { it.departureTime }
+                                }
+                            )) { trip ->
                                 WidgetTripListItem(
                                     trip,
                                     modifier = GlanceModifier
