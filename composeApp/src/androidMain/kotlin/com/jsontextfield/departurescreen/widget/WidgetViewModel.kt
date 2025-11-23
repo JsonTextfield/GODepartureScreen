@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -30,7 +30,7 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
 class WidgetViewModel(
-    departureScreenUseCase: DepartureScreenUseCase,
+    private val departureScreenUseCase: DepartureScreenUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
     private val configDataStore: WidgetConfigDataStore,
@@ -38,7 +38,7 @@ class WidgetViewModel(
     private var _uiState: MutableStateFlow<WidgetUIState> = MutableStateFlow(WidgetUIState())
     val uiState: StateFlow<WidgetUIState> = _uiState.asStateFlow()
 
-    init {
+    fun loadConfig(widgetId: Int) {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
@@ -58,46 +58,28 @@ class WidgetViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-
         viewModelScope.launch {
-            departureScreenUseCase.getSelectedStation()
-                .distinctUntilChanged()
-                .catch { _ ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.ERROR,
-                            isRefreshing = false,
-                        )
+            configDataStore.getConfig(widgetId).collectLatest { widgetConfig ->
+                departureScreenUseCase.getSelectedStation(widgetConfig.selectedStationCode)
+                    .distinctUntilChanged()
+                    .catch { _ ->
+                        _uiState.update {
+                            it.copy(
+                                status = Status.ERROR,
+                                isRefreshing = false,
+                            )
+                        }
+                    }.collect { selectedStation ->
+                        _uiState.update {
+                            it.copy(
+                                status = Status.LOADING,
+                                isRefreshing = false,
+                                selectedStation = selectedStation,
+                            )
+                        }
+                        fetchDepartureData()
                     }
-                }.collect { selectedStation ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADING,
-                            isRefreshing = false,
-                            selectedStation = selectedStation,
-                        )
-                    }
-                    fetchDepartureData()
-                }
-        }
-    }
-
-    fun loadConfig(widgetId: Int) {
-        viewModelScope.launch {
-            val allStations = goTrainDataSource.getAllStations()
-            combine(
-                configDataStore.getConfig(widgetId),
-                preferencesRepository.getSelectedStationCode(),
-            ) { widgetConfig, selectedStationCode ->
-                _uiState.update {
-                    it.copy(
-                        selectedStation = widgetConfig.selectedStationCode?.let { allStations.firstOrNull { widgetConfig.selectedStationCode in it.code } }
-                            ?: allStations.firstOrNull { selectedStationCode in it.code }
-                            ?: allStations.firstOrNull { "UN" in it.code }
-                            ?: allStations.firstOrNull(),
-                    )
-                }
-            }.collect()
+            }
         }
     }
 

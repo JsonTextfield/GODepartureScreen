@@ -187,6 +187,30 @@ class MainViewModel(
         }
     }
 
+    fun setSelectedStation(stationCode: String?) {
+        viewModelScope.launch {
+            departureScreenUseCase.getSelectedStation(stationCode)
+                .distinctUntilChanged()
+                .catch {
+                    _uiState.update {
+                        it.copy(
+                            status = Status.ERROR,
+                            isRefreshing = false,
+                        )
+                    }
+                }.collect { selectedStation ->
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADING,
+                            isRefreshing = false,
+                            selectedStation = selectedStation,
+                        )
+                    }
+                    fetchDepartureData()
+                }
+        }
+    }
+
     fun stop() {
         timerJob?.cancel()
         timerJob = null

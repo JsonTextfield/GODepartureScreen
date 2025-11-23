@@ -12,6 +12,8 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
@@ -137,11 +139,19 @@ fun DepartureScreenWidget(
                     startIcon = ImageProvider(R.mipmap.ic_launcher),
                     iconColor = null,
                     title = uiState.selectedStation?.name.orEmpty(),
-                    modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>()),
+                    modifier = GlanceModifier.clickable(
+                        actionStartActivity<MainActivity>(
+                            parameters = actionParametersOf(
+                                selectedStationKey to uiState.selectedStation?.code.orEmpty()
+                            )
+                        ),
+                    ),
                 )
             },
             horizontalPadding = 0.dp,
-            backgroundColor = ColorProvider(GlanceTheme.colors.background.getColor(context).copy(alpha = config?.opacity ?: .8f))
+            backgroundColor = ColorProvider(
+                GlanceTheme.colors.background.getColor(context).copy(alpha = config?.opacity ?: .8f)
+            )
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxSize(),
@@ -170,13 +180,14 @@ fun DepartureScreenWidget(
                             gridCells = GridCells.Adaptive(240.dp),
                             modifier = GlanceModifier.defaultWeight(),
                         ) {
-                            items(uiState.allTrips.sortedWith (
-                                if (config?.sortMode == SortMode.LINE) {
-                                    compareBy({ it.code }, { it.destination })
-                                } else {
-                                    compareBy { it.departureTime }
-                                }
-                            )) { trip ->
+                            items(
+                                uiState.allTrips.sortedWith(
+                                    if (config?.sortMode == SortMode.LINE) {
+                                        compareBy({ it.code }, { it.destination })
+                                    } else {
+                                        compareBy { it.departureTime }
+                                    }
+                                )) { trip ->
                                 WidgetTripListItem(
                                     trip,
                                     modifier = GlanceModifier
@@ -195,3 +206,5 @@ fun DepartureScreenWidget(
         }
     }
 }
+
+private val selectedStationKey = ActionParameters.Key<String>("selectedStation")

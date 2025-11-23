@@ -80,6 +80,7 @@ fun WidgetConfigControls(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = stringResource(R.string.opacity))
             Slider(
@@ -88,7 +89,10 @@ fun WidgetConfigControls(
                 modifier = Modifier.fillMaxWidth(9 / 12f)
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             FilledTonalButton(onClick = onCancel) {
                 Text(text = stringResource(R.string.cancel))
             }

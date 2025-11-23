@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,12 +22,18 @@ import com.jsontextfield.departurescreen.widget.MyAppWidgetReceiver
 import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
+    private lateinit var mainViewModel : MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val mainViewModel: MainViewModel = koinViewModel()
+            mainViewModel = koinViewModel<MainViewModel>()
+            LaunchedEffect(Unit) {
+                intent.extras?.getString("selectedStation")?.let {
+                    mainViewModel.setSelectedStation(it)
+                }
+            }
             val uiState by mainViewModel.uiState.collectAsState(MainUIState())
             val isAppearanceLightStatusBars = when (uiState.theme) {
                 ThemeMode.LIGHT -> true
@@ -44,6 +51,13 @@ class MainActivity : ComponentActivity() {
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isAppearanceLightStatusBars
             }
             App(mainViewModel)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.extras?.getString("selectedStation")?.let {
+            mainViewModel.setSelectedStation(it)
         }
     }
 }

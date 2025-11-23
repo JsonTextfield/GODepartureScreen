@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
@@ -16,13 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 
 @Composable
 fun WidgetConfigScreen(
     widgetConfig: WidgetConfig,
-    trips: List<Trip>,
     onSortModeChanged: (SortMode) -> Unit,
     onOpacityChanged: (Float) -> Unit,
     onStationButtonClicked: () -> Unit,
@@ -33,22 +31,22 @@ fun WidgetConfigScreen(
         LazyVerticalGrid(
             columns = GridCells.Adaptive(300.dp),
             modifier = Modifier
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(innerPadding)
+                .padding(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
-                start = WindowInsets.safeContent.asPaddingValues().calculateStartPadding(
+                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
                     LayoutDirection.Ltr
-                ),
-                end = WindowInsets.safeContent.asPaddingValues().calculateEndPadding(
+                ) + 16.dp,
+                end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(
                     LayoutDirection.Ltr
-                ),
+                ) + 16.dp,
             )
         ) {
             item {
                 WidgetConfigPreview(
                     widgetConfig = widgetConfig,
-                    trips = trips,
                     modifier = Modifier.aspectRatio(15 / 12f)
                 )
             }

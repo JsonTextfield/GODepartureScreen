@@ -20,14 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.R
-import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 
 @Composable
 fun WidgetConfigPreview(
     widgetConfig: WidgetConfig = WidgetConfig(),
-    trips: List<Trip> = emptyList(),
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -55,7 +53,7 @@ fun WidgetConfigPreview(
                 modifier = Modifier.weight(1f),
             ) {
                 items(
-                    trips.sortedWith(
+                    widgetConfig.trips.sortedWith(
                         if (widgetConfig.sortMode == SortMode.TIME) {
                             compareBy { it.departureTime }
                         } else {

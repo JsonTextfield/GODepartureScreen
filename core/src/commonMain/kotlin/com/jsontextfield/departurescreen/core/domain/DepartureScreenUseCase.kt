@@ -11,6 +11,8 @@ class DepartureScreenUseCase(
     private val preferencesRepository: IPreferencesRepository,
     private val goTrainDataSource: IGoTrainDataSource
 ) {
+
+    private var selectedStationCode: String? = null
     suspend fun setFavouriteStations(station: Station) {
         val favouriteStationCodes = preferencesRepository.getFavouriteStations().first()
         val stationCodes = station.code.split(",")
@@ -31,9 +33,10 @@ class DepartureScreenUseCase(
     }
 
     fun getSelectedStation(selectedStationCode: String? = null): Flow<Station?> {
+        this.selectedStationCode = selectedStationCode ?: this.selectedStationCode
         return preferencesRepository.getSelectedStationCode().map { selectedStation ->
             val allStations = goTrainDataSource.getAllStations()
-            allStations.firstOrNull { station -> selectedStationCode?.let { it in station.code } == true }
+            allStations.firstOrNull { station -> this.selectedStationCode?.let { it in station.code } == true }
                 ?: allStations.firstOrNull { selectedStation in it.code }
                 ?: allStations.firstOrNull { "UN" in it.code }
                 ?: allStations.firstOrNull()
