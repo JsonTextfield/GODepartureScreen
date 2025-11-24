@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.widget
+package com.jsontextfield.departurescreen.widget.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color

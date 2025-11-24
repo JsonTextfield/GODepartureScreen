@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.widget
+package com.jsontextfield.departurescreen.widget.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
@@ -13,11 +13,8 @@ import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
-import androidx.glance.layout.fillMaxHeight
-import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.layout.wrapContentHeight
 import androidx.glance.layout.wrapContentWidth
 import androidx.glance.semantics.contentDescription
 import androidx.glance.semantics.semantics

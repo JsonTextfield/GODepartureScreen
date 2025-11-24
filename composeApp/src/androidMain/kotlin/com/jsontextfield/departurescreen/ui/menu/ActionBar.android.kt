@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import com.jsontextfield.departurescreen.widget.DeparturesWidget
 import com.jsontextfield.departurescreen.widget.MyAppWidgetReceiver
+import com.jsontextfield.departurescreen.widget.ui.DeparturesWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

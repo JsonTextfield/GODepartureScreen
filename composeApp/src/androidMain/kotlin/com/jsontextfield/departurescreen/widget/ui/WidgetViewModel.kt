@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.widget
+package com.jsontextfield.departurescreen.widget.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

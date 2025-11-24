@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.widget
+package com.jsontextfield.departurescreen.widget.ui
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -52,6 +52,8 @@ import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.ui.MainActivity
 import com.jsontextfield.departurescreen.widget.config.WidgetConfig
 import com.jsontextfield.departurescreen.widget.config.WidgetConfigDataStore
+import com.jsontextfield.departurescreen.widget.ui.components.RefreshButton
+import com.jsontextfield.departurescreen.widget.ui.components.WidgetTripListItem
 import kotlinx.datetime.Instant
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes

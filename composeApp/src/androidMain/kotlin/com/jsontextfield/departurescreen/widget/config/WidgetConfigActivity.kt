@@ -20,8 +20,8 @@ import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import com.jsontextfield.departurescreen.ui.views.StationsScreen
-import com.jsontextfield.departurescreen.widget.DeparturesWidget
 import com.jsontextfield.departurescreen.widget.WidgetSettingsRoute
+import com.jsontextfield.departurescreen.widget.ui.DeparturesWidget
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
