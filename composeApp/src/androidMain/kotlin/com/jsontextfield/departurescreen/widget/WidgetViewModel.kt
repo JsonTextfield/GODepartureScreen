@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
@@ -30,7 +30,7 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
 class WidgetViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    private val getSelectedStationUseCase: GetSelectedStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
     private val configDataStore: WidgetConfigDataStore,
@@ -60,7 +60,7 @@ class WidgetViewModel(
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             configDataStore.getConfig(widgetId).collectLatest { widgetConfig ->
-                departureScreenUseCase.getSelectedStation(widgetConfig.selectedStationCode)
+                getSelectedStationUseCase(widgetConfig.selectedStationCode)
                     .distinctUntilChanged()
                     .catch { _ ->
                         _uiState.update {

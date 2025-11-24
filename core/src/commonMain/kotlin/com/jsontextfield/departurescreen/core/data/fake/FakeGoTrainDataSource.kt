@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package com.jsontextfield.departurescreen.core.data
+package com.jsontextfield.departurescreen.core.data.fake
 
+import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip

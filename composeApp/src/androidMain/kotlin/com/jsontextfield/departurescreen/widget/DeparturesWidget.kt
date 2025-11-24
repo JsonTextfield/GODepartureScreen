@@ -40,7 +40,7 @@ import androidx.glance.unit.ColorProvider
 import com.jsontextfield.departurescreen.R
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
@@ -94,12 +94,12 @@ class DeparturesWidget : GlanceAppWidget() {
         val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
         val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
         val configDataStore: WidgetConfigDataStore by inject(WidgetConfigDataStore::class.java)
-        val departureScreenUseCase = DepartureScreenUseCase(
+        val getSelectedStationUseCase = GetSelectedStationUseCase(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )
         val viewModel = WidgetViewModel(
-            departureScreenUseCase = departureScreenUseCase,
+            getSelectedStationUseCase = getSelectedStationUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             configDataStore = configDataStore,

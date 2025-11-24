@@ -1,10 +1,10 @@
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.core.ui
 
-import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.ui.SortMode
-import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,8 +61,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            departureScreenUseCase = DepartureScreenUseCase(
+            getSelectedStationUseCase = GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            ),
+            setFavouriteStationUseCase = SetFavouriteStationUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -111,8 +114,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            departureScreenUseCase = DepartureScreenUseCase(
+            getSelectedStationUseCase = GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            ),
+            setFavouriteStationUseCase = SetFavouriteStationUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -155,10 +161,13 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            departureScreenUseCase = DepartureScreenUseCase(
+            getSelectedStationUseCase = GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
-            )
+            ),
+            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+                preferencesRepository = preferencesRepository,
+            ),
         )
 
         val result = mainViewModel.uiState.value.visibleTrains
@@ -185,10 +194,13 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            departureScreenUseCase = DepartureScreenUseCase(
+            getSelectedStationUseCase = GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
-            )
+            ),
+            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+                preferencesRepository = preferencesRepository,
+            ),
         )
         advanceTimeBy(20000)
 
@@ -205,8 +217,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            departureScreenUseCase = DepartureScreenUseCase(
+            getSelectedStationUseCase = GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
+                preferencesRepository = preferencesRepository,
+            ),
+            setFavouriteStationUseCase = SetFavouriteStationUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )

@@ -1,9 +1,11 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.core.ui
 
-import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +25,9 @@ class StationsViewModelTest {
 
     lateinit var preferencesRepository: FakePreferencesRepository
     lateinit var goTrainDataSource: FakeGoTrainDataSource
-    lateinit var departureScreenUseCase: DepartureScreenUseCase
+    lateinit var getSelectedStationUseCase: GetSelectedStationUseCase
 
+    lateinit var setFavouriteStationUseCase: SetFavouriteStationUseCase
     lateinit var stationsViewModel: StationsViewModel
     val testDispatcher = StandardTestDispatcher()
 
@@ -33,14 +36,18 @@ class StationsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         preferencesRepository = FakePreferencesRepository()
         goTrainDataSource = FakeGoTrainDataSource()
-        departureScreenUseCase = DepartureScreenUseCase(
+        getSelectedStationUseCase = GetSelectedStationUseCase(
             preferencesRepository,
             goTrainDataSource,
         )
+        setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            preferencesRepository,
+        )
         stationsViewModel = StationsViewModel(
-            departureScreenUseCase = departureScreenUseCase,
+            getSelectedStationUseCase = getSelectedStationUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
+            setFavouriteStationUseCase = setFavouriteStationUseCase,
         )
     }
 
@@ -54,18 +61,15 @@ class StationsViewModelTest {
         val station = Station(
             name = "Test",
             code = "TST",
-            type = "Bus Stop",
         )
         goTrainDataSource.stations = listOf(
             Station(
                 name = "Union Station",
                 code = "UN",
-                type = "Train Station",
             ),
             Station(
                 name = "Test",
                 code = "TST",
-                type = "Bus Stop",
             )
         )
         advanceUntilIdle()
@@ -74,9 +78,10 @@ class StationsViewModelTest {
         stationsViewModel.setSelectedStation(station)
         advanceUntilIdle()
         assertEquals(station.code.split(",").first(), preferencesRepository.getSelectedStationCode().first())
-        assertEquals(station, departureScreenUseCase.getSelectedStation().first())
+        assertEquals(station, getSelectedStationUseCase().first())
         stationsViewModel = StationsViewModel(
-            departureScreenUseCase = departureScreenUseCase,
+            getSelectedStationUseCase = getSelectedStationUseCase,
+            setFavouriteStationUseCase = setFavouriteStationUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )

@@ -3,10 +3,11 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
@@ -40,7 +41,8 @@ expect fun preferencesModule(): Module
 expect fun widgetModule(): Module
 
 val viewModelModule = module {
-    factoryOf(::DepartureScreenUseCase)
+    factoryOf(::GetSelectedStationUseCase)
+    factoryOf(::SetFavouriteStationUseCase)
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StationsViewModel)

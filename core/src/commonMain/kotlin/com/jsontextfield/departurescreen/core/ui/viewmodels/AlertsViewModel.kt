@@ -3,7 +3,7 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlertsViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    private val getSelectedStationUseCase: GetSelectedStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())
@@ -44,7 +44,7 @@ class AlertsViewModel(
 
     private fun loadAlerts() {
         viewModelScope.launch {
-            departureScreenUseCase.getSelectedStation().catch {
+            getSelectedStationUseCase().catch {
                 _uiState.update {
                     it.copy(
                         status = Status.ERROR,

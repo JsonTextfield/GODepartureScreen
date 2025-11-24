@@ -9,7 +9,7 @@ import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.SELECTED_STATION_CODE_KEY
 import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -72,7 +72,7 @@ fun createDataStore(): DataStore<Preferences> = createDataStore(
 class WidgetHelper : KoinComponent {
     val preferencesRepository: IPreferencesRepository by inject()
     val goTrainDataSource: IGoTrainDataSource by inject()
-    val departureScreenUseCase = DepartureScreenUseCase(
+    val getSelectedStationUseCase = GetSelectedStationUseCase(
         goTrainDataSource = goTrainDataSource,
         preferencesRepository = preferencesRepository,
     )

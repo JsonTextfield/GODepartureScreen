@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -18,7 +19,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class StationsViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    private val getSelectedStationUseCase: GetSelectedStationUseCase,
+    private val setFavouriteStationUseCase: SetFavouriteStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
@@ -37,7 +39,7 @@ class StationsViewModel(
         }
         viewModelScope.launch {
             combine(
-                departureScreenUseCase.getSelectedStation(selectedStationCode),
+                getSelectedStationUseCase(selectedStationCode),
                 preferencesRepository.getFavouriteStations(),
             ) { selectedStation, favouriteStationCodes ->
                 val allStations = goTrainDataSource.getAllStations()
@@ -72,7 +74,7 @@ class StationsViewModel(
 
     fun setFavouriteStations(station: Station) {
         viewModelScope.launch {
-            departureScreenUseCase.setFavouriteStations(station)
+            setFavouriteStationUseCase(station)
         }
     }
 

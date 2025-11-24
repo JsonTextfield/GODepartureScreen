@@ -87,9 +87,3 @@ class DataStorePreferencesRepository(
         }
     }
 }
-
-const val SORT_MODE_KEY = "sortMode"
-const val THEME_KEY = "theme"
-const val SELECTED_STATION_CODE_KEY = "selectedStationCode"
-const val FAVOURITE_STATIONS_KEY = "favouriteStations"
-const val HIDDEN_TRAINS_KEY = "hiddenTrains"

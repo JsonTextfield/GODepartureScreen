@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.io.IOException
 
 class MainViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    private val getSelectedStationUseCase: GetSelectedStationUseCase,
+    private val setFavouriteStationUseCase: SetFavouriteStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
@@ -52,7 +54,7 @@ class MainViewModel(
         }.launchIn(viewModelScope)
 
         combine(
-            departureScreenUseCase.getSelectedStation(),
+            getSelectedStationUseCase(),
             preferencesRepository.getFavouriteStations(),
         ) { selectedStation, favouriteStations ->
             val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
@@ -83,7 +85,7 @@ class MainViewModel(
             )
         }
         viewModelScope.launch {
-            departureScreenUseCase.getSelectedStation()
+            getSelectedStationUseCase()
                 .distinctUntilChanged()
                 .catch {
                     _uiState.update {
@@ -111,7 +113,7 @@ class MainViewModel(
         }
         viewModelScope.launch {
             delay(1000)
-            if (timeRemaining.value < 12000 && timeRemaining.value > 1000) {
+            if (timeRemaining.value in 1001..<12000) {
                 _timeRemaining.value = 1000
             }
             _uiState.update {
@@ -183,13 +185,13 @@ class MainViewModel(
 
     fun setFavouriteStations(station: Station) {
         viewModelScope.launch {
-            departureScreenUseCase.setFavouriteStations(station)
+            setFavouriteStationUseCase(station)
         }
     }
 
     fun setSelectedStation(stationCode: String?) {
         viewModelScope.launch {
-            departureScreenUseCase.getSelectedStation(stationCode)
+            getSelectedStationUseCase(stationCode)
                 .distinctUntilChanged()
                 .catch {
                     _uiState.update {

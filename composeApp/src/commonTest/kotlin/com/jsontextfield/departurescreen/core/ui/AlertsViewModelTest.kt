@@ -1,10 +1,10 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.jsontextfield.departurescreen.ui
+package com.jsontextfield.departurescreen.core.ui
 
-import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +40,7 @@ class AlertsViewModelTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            DepartureScreenUseCase(
+            GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
@@ -63,7 +63,7 @@ class AlertsViewModelTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            DepartureScreenUseCase(
+            GetSelectedStationUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
