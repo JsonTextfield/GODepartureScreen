@@ -17,11 +17,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.R
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.components.TripListItem
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
+import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun WidgetConfigPreview(
@@ -53,7 +58,7 @@ fun WidgetConfigPreview(
                 modifier = Modifier.weight(1f),
             ) {
                 items(
-                    widgetConfig.trips.sortedWith(
+                    trips.sortedWith(
                         if (widgetConfig.sortMode == SortMode.TIME) {
                             compareBy { it.departureTime }
                         } else {
@@ -68,7 +73,7 @@ fun WidgetConfigPreview(
                 }
             }
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(Icons.Rounded.Refresh, null)
@@ -76,4 +81,17 @@ fun WidgetConfigPreview(
             }
         }
     }
+}
+
+private val trips = List(4) {
+    val line = lineColours.keys.random()
+    Trip(
+        id = "$it",
+        code = line,
+        destination = "Destination",
+        platform = "${2 * it + 1}",
+        color = lineColours[line] ?: Color.Gray,
+        departureTime = Clock.System.now() + it.minutes,
+        lastUpdated = Clock.System.now() - 10.minutes,
+    )
 }
