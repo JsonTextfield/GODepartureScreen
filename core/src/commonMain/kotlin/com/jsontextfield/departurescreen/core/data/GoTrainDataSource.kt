@@ -13,6 +13,11 @@ import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrai
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 import kotlinx.datetime.Instant
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
@@ -88,9 +93,19 @@ class GoTrainDataSource(
         }
     }
 
-    override suspend fun getServiceAlerts(): List<Alert> = processAlerts(departureScreenAPI.getServiceAlerts())
+    override suspend fun getServiceAlerts(): Flow<List<Alert>> = flow {
+        while (currentCoroutineContext().isActive) {
+            emit(processAlerts(departureScreenAPI.getServiceAlerts()))
+            delay(60_000)
+        }
+    }
 
-    override suspend fun getInformationAlerts(): List<Alert> = processAlerts(departureScreenAPI.getInfromationAlerts())
+    override suspend fun getInformationAlerts(): Flow<List<Alert>> = flow {
+        while (currentCoroutineContext().isActive) {
+            emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
+            delay(60_000)
+        }
+    }
 
     override suspend fun getAllStations(): List<Station> {
         if (stations.isNotEmpty()) {

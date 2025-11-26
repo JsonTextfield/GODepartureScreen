@@ -7,6 +7,8 @@ import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.StationType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -64,12 +66,12 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         return trips
     }
 
-    override suspend fun getServiceAlerts(): List<Alert> {
-        return serviceAlerts
+    override suspend fun getServiceAlerts(): Flow<List<Alert>> {
+        return flowOf(serviceAlerts)
     }
 
-    override suspend fun getInformationAlerts(): List<Alert> {
-        return informationAlerts
+    override suspend fun getInformationAlerts(): Flow<List<Alert>> {
+        return flowOf(informationAlerts)
     }
 
     override suspend fun getAllStations(): List<Station> {

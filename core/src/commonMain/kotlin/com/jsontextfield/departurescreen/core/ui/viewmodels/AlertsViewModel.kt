@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -53,27 +55,41 @@ class AlertsViewModel(
                 }
             }.collectLatest { selectedStation ->
                 runCatching {
-                    val selectedStationCodes = selectedStation?.code?.split(",") ?: emptySet()
-                    val allTrainCodes =
-                        selectedStationCodes.flatMap { goTrainDataSource.getTrips(it).map { it.code } }.toSet()
+                    val selectedStationCodes = selectedStation?.code?.split(",")?.toSet().orEmpty()
+                    val allTrainCodes = selectedStationCodes
+                        .flatMap {
+                            goTrainDataSource.getTrips(it).map { it.code }
+                        }.toSet()
 
-                    val predicate: (Alert) -> Boolean = {
-                        (selectedStationCodes.any { code -> code in it.affectedStations } || it.affectedStations.isEmpty())
+                    val predicate: (Alert) -> Boolean = { alert: Alert ->
+                        (selectedStationCodes.any { code -> code in alert.affectedStations } || alert.affectedStations.isEmpty())
                                 &&
-                                (allTrainCodes.any { code -> code in it.affectedLines } || it.affectedLines.isEmpty())
+                                (allTrainCodes.any { code -> code in alert.affectedLines } || alert.affectedLines.isEmpty())
                     }
-                    val serviceAlerts = goTrainDataSource.getServiceAlerts().filter(predicate)
-                    val informationAlerts = goTrainDataSource.getInformationAlerts().filter(predicate)
-                    serviceAlerts to informationAlerts
-                }.onSuccess { (serviceAlerts, informationAlerts) ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADED,
-                            isRefreshing = false,
-                            serviceAlerts = serviceAlerts,
-                            informationAlerts = informationAlerts,
-                        )
-                    }
+                    predicate
+                }.onSuccess { predicate ->
+                    combine(
+                        goTrainDataSource.getServiceAlerts(),
+                        goTrainDataSource.getInformationAlerts(),
+                    ) { serviceAlertsList, informationAlertsList ->
+                        val filteredServiceAlerts = serviceAlertsList.filter(predicate)
+                        val filteredInformationAlerts = informationAlertsList.filter(predicate)
+                        _uiState.update {
+                            it.copy(
+                                status = Status.LOADED,
+                                isRefreshing = false,
+                                serviceAlerts = filteredServiceAlerts,
+                                informationAlerts = filteredInformationAlerts,
+                            )
+                        }
+                    }.catch {
+                        _uiState.update {
+                            it.copy(
+                                status = Status.ERROR,
+                                isRefreshing = false,
+                            )
+                        }
+                    }.launchIn(viewModelScope)
                 }.onFailure {
                     _uiState.update {
                         it.copy(
