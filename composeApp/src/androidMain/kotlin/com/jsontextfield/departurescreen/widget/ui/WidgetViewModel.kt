@@ -75,6 +75,7 @@ class WidgetViewModel(
                                 status = Status.LOADING,
                                 isRefreshing = false,
                                 selectedStation = selectedStation,
+                                sortMode = widgetConfig.sortMode,
                             )
                         }
                         fetchDepartureData()

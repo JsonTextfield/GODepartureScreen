@@ -39,7 +39,7 @@ class StationsViewModel(
         }
         viewModelScope.launch {
             combine(
-                getSelectedStationUseCase(selectedStationCode),
+                getSelectedStationUseCase(),
                 preferencesRepository.getFavouriteStations(),
             ) { selectedStation, favouriteStationCodes ->
                 val allStations = goTrainDataSource.getAllStations()
@@ -98,7 +98,7 @@ data class StationsUIState(
         if (stationType == null && query.isBlank()) return allStations
         val lowerCaseQuery = query.lowercase()
         return allStations.filter {
-            (stationType == null || stationType in it.types ) && lowerCaseQuery in it.name.lowercase()
+            (stationType == null || stationType in it.types) && lowerCaseQuery in it.name.lowercase()
         }
     }
 }

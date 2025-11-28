@@ -11,12 +11,11 @@ class GetSelectedStationUseCase(
     private val goTrainDataSource: IGoTrainDataSource
 ) {
 
-    operator fun invoke(selectedStationCode: String? = null): Flow<Station?> {
-        return preferencesRepository.getSelectedStationCode().map { code ->
+    operator fun invoke(selectedStation: String? = null): Flow<Station?> {
+        return preferencesRepository.getSelectedStationCode().map { prefStationCode ->
+            val stationCode = prefStationCode
             val allStations = goTrainDataSource.getAllStations()
-            allStations.firstOrNull { station -> selectedStationCode?.let { it in station.code } == true }
-                ?: allStations.firstOrNull { station -> code in station.code }
-                ?: allStations.firstOrNull()
+            allStations.firstOrNull { station -> stationCode in station.code }
         }
     }
 }

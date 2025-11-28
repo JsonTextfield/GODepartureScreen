@@ -43,7 +43,6 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
@@ -182,14 +181,7 @@ fun DepartureScreenWidget(
                             gridCells = GridCells.Adaptive(240.dp),
                             modifier = GlanceModifier.defaultWeight(),
                         ) {
-                            items(
-                                uiState.allTrips.sortedWith(
-                                    if (config?.sortMode == SortMode.LINE) {
-                                        compareBy({ it.code }, { it.destination })
-                                    } else {
-                                        compareBy { it.departureTime }
-                                    }
-                                )) { trip ->
+                            items(uiState.allTrips) { trip ->
                                 WidgetTripListItem(
                                     trip,
                                     modifier = GlanceModifier
