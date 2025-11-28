@@ -13,9 +13,10 @@ class GetSelectedStationUseCase(
 
     operator fun invoke(selectedStation: String? = null): Flow<Station?> {
         return preferencesRepository.getSelectedStationCode().map { prefStationCode ->
-            val stationCode = selectedStation ?: prefStationCode
             val allStations = goTrainDataSource.getAllStations()
-            allStations.firstOrNull { station -> stationCode in station.code }
+            allStations.firstOrNull { station -> selectedStation?.let { selectedStation in station.code } == true }
+                ?: allStations.firstOrNull { station -> prefStationCode in station.code }
+                ?: allStations.firstOrNull()
         }
     }
 }
