@@ -3,7 +3,8 @@
     <string name="app_name">GO Departures</string>
     <string name="express">Express</string>
     <string name="cancelled">Cancelled</string>
-    <string name="platform">Platform %1$s</string>
+    <string name="platform_number">Platform %1$s</string>
+    <string name="platform">Platform</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
     <string name="cancel">Cancel</string>
@@ -12,8 +13,10 @@
     <string name="about">About</string>
     <string name="licences">Licences</string>
     <string name="more">More</string>
-    <string name="time">Sort by time</string>
-    <string name="line">Sort by line</string>
+    <string name="sort_by_time">Sort by time</string>
+    <string name="sort_by_line">Sort by line</string>
+    <string name="time">Time</string>
+    <string name="line">Line</string>
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">All</string>

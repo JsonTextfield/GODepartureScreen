@@ -46,6 +46,7 @@ fun WidgetTripListItem(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically,
+            modifier = GlanceModifier.width(40.dp)
         ) {
             Text(
                 text = trip.departureDiffMinutes.toString(),

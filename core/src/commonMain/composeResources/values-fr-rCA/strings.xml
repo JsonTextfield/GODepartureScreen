@@ -3,7 +3,8 @@
     <string name="app_name">Départs GO</string>
     <string name="express">Express</string>
     <string name="cancelled">Annullée</string>
-    <string name="platform">Quai %1$s</string>
+    <string name="platform_number">Quai %1$s</string>
+    <string name="platform">Quai</string>
     <string name="filter">Filtrer</string>
     <string name="sort">Trier</string>
     <string name="cancel">Annuler</string>
@@ -12,8 +13,10 @@
     <string name="about">À propos de</string>
     <string name="licences">Licences</string>
     <string name="more">Plus</string>
-    <string name="time">Trier par l'heure</string>
-    <string name="line">Trier par la ligne</string>
+    <string name="sort_by_time">Trier par l'heure</string>
+    <string name="sort_by_line">Trier par la ligne</string>
+    <string name="time">Heure</string>
+    <string name="line">Ligne</string>
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">Tous</string>

@@ -27,7 +27,7 @@ import departure_screen.core.generated.resources.express
 import departure_screen.core.generated.resources.min
 import departure_screen.core.generated.resources.minutes_content_description
 import departure_screen.core.generated.resources.number_of_cars
-import departure_screen.core.generated.resources.platform
+import departure_screen.core.generated.resources.platform_number
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -123,7 +123,7 @@ fun TripListItem(
                 }
             }
         }
-        val platform = stringResource(Res.string.platform, trip.platform)
+        val platform = stringResource(Res.string.platform_number, trip.platform)
         Column(
             modifier = Modifier.weight(3 / 12f),
             horizontalAlignment = Alignment.CenterHorizontally,
