@@ -44,16 +44,18 @@ class MainActivity : ComponentActivity() {
             }
             val view = LocalView.current
             LaunchedEffect(Unit) {
-                intent.extras?.getString("selectedStation")?.let {
+                intent.extras?.getString("selectedStation")?.let { stationCode ->
                     // called when launching from a widget for the first time
                     // set selected station
+                    mainViewModel.setSelectedStation(stationCode)
                 }
             }
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
-                    intent.extras?.getString("selectedStation")?.let {
+                    intent.extras?.getString("selectedStation")?.let { stationCode ->
                         // called when launching from a widget while the activity is already running
                         // set selected station
+                        mainViewModel.setSelectedStation(stationCode)
                     }
                 }
                 addOnNewIntentListener(listener)

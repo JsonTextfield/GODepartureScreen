@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
@@ -26,6 +27,7 @@ import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.StationsScreen
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
@@ -61,7 +63,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                 }
                             },
                             onShowStations = {
-                                navController.navigate(StationsRoute) {
+                                navController.navigate(StationsRoute()) {
                                     launchSingleTop = true
                                 }
                             },
@@ -86,7 +88,10 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     enterTransition = { slideInHorizontally { it } },
                     exitTransition = { slideOutHorizontally { it } },
                 ) {
-                    val stationsViewModel = koinViewModel<StationsViewModel>()
+                    val selectedStationCode = it.toRoute<StationsRoute>().selectedStationCode
+                    val stationsViewModel = koinViewModel<StationsViewModel> {
+                        parametersOf(selectedStationCode)
+                    }
                     StationsScreen(
                         stationsViewModel = stationsViewModel,
                         onBackPressed = {

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
@@ -32,6 +33,8 @@ class MainViewModel(
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
+
+    private val _stationCode: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private val _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
@@ -84,27 +87,32 @@ class MainViewModel(
                 isRefreshing = false,
             )
         }
-        viewModelScope.launch {
-            getSelectedStationUseCase()
-                .distinctUntilChanged()
-                .catch {
-                    _uiState.update {
-                        it.copy(
-                            status = Status.ERROR,
-                            isRefreshing = false,
-                        )
-                    }
-                }.collect { selectedStation ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADING,
-                            isRefreshing = false,
-                            selectedStation = selectedStation,
-                        )
-                    }
-                    fetchDepartureData()
-                }
+        combine(
+            _stationCode,
+            preferencesRepository.getSelectedStationCode(),
+        ) { stationCode, selectedStation ->
+            val allStations = goTrainDataSource.getAllStations()
+            val stationToSelectCode = stationCode ?: selectedStation
+            allStations.firstOrNull { station -> stationToSelectCode in station.code }
         }
+            .distinctUntilChanged()
+            .map { selectedStation ->
+                _uiState.update {
+                    it.copy(
+                        status = Status.LOADING,
+                        isRefreshing = false,
+                        selectedStation = selectedStation,
+                    )
+                }
+                fetchDepartureData()
+            }.catch {
+                _uiState.update {
+                    it.copy(
+                        status = Status.ERROR,
+                        isRefreshing = false,
+                    )
+                }
+            }.launchIn(viewModelScope)
     }
 
     fun refresh() {
@@ -190,27 +198,7 @@ class MainViewModel(
     }
 
     fun setSelectedStation(stationCode: String?) {
-        viewModelScope.launch {
-            getSelectedStationUseCase(stationCode)
-                .distinctUntilChanged()
-                .catch {
-                    _uiState.update {
-                        it.copy(
-                            status = Status.ERROR,
-                            isRefreshing = false,
-                        )
-                    }
-                }.collect { selectedStation ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADING,
-                            isRefreshing = false,
-                            selectedStation = selectedStation,
-                        )
-                    }
-                    fetchDepartureData()
-                }
-        }
+        _stationCode.value = stationCode
     }
 
     fun stop() {

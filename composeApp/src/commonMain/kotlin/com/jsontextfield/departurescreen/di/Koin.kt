@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
@@ -17,6 +18,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -46,6 +48,15 @@ val viewModelModule = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StationsViewModel)
+    viewModel { params ->
+        StationsViewModel(
+            getSelectedStationUseCase = get<GetSelectedStationUseCase>(),
+            setFavouriteStationUseCase = get<SetFavouriteStationUseCase>(),
+            goTrainDataSource = get<IGoTrainDataSource>(),
+            preferencesRepository = get<IPreferencesRepository>(),
+            selectedStationCode = params.getOrNull(String::class),
+        )
+    }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

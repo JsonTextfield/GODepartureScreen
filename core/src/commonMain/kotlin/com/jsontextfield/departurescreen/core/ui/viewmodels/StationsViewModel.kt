@@ -23,12 +23,13 @@ class StationsViewModel(
     private val setFavouriteStationUseCase: SetFavouriteStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
+    selectedStationCode: String? = null,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<StationsUIState> = MutableStateFlow(StationsUIState())
     val uiState: StateFlow<StationsUIState> = _uiState.asStateFlow()
 
     init {
-        loadData()
+        loadData(selectedStationCode)
     }
 
     fun loadData(selectedStationCode: String? = null) {
@@ -39,7 +40,7 @@ class StationsViewModel(
         }
         viewModelScope.launch {
             combine(
-                getSelectedStationUseCase(),
+                getSelectedStationUseCase(selectedStationCode),
                 preferencesRepository.getFavouriteStations(),
             ) { selectedStation, favouriteStationCodes ->
                 val allStations = goTrainDataSource.getAllStations()

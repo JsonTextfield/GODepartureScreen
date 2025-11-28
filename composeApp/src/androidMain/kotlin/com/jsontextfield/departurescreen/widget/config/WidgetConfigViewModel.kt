@@ -9,8 +9,8 @@ import com.jsontextfield.departurescreen.core.ui.SortMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -18,13 +18,14 @@ class WidgetConfigViewModel(
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
     private val widgetConfigDataStore: WidgetConfigDataStore,
+    private val widgetId: Int? = null,
 ) : ViewModel() {
 
     private var _config: MutableStateFlow<WidgetConfig> = MutableStateFlow(WidgetConfig())
     val config: StateFlow<WidgetConfig> = _config.asStateFlow()
 
-    fun loadConfig(widgetId: Int) {
-        viewModelScope.launch {
+    init {
+        widgetId?.let {
             combine(
                 widgetConfigDataStore.getConfig(widgetId),
                 preferencesRepository.getSelectedStationCode(),
@@ -39,7 +40,7 @@ class WidgetConfigViewModel(
                         selectedStationCode = stationCode,
                     )
                 }
-            }.collect()
+            }.launchIn(viewModelScope)
         }
     }
 

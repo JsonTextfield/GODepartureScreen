@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -16,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
@@ -24,6 +24,7 @@ import com.jsontextfield.departurescreen.widget.WidgetSettingsRoute
 import com.jsontextfield.departurescreen.widget.ui.DeparturesWidget
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 class WidgetConfigActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,28 +35,21 @@ class WidgetConfigActivity : ComponentActivity() {
         val widgetId = glanceId?.let { glanceWidgetManager.getAppWidgetId(glanceId) }
 
         setContent {
-            val configViewModel = koinViewModel<WidgetConfigViewModel>()
-            val stationsViewModel = koinViewModel<StationsViewModel>()
-            val scope = rememberCoroutineScope()
             val navController = rememberNavController()
-            val widgetConfig by configViewModel.config.collectAsStateWithLifecycle()
-            LaunchedEffect(Unit) {
-                widgetId?.let {
-                    configViewModel.loadConfig(it)
-                }
-            }
-            LaunchedEffect(widgetConfig) {
-                stationsViewModel.loadData(widgetConfig.selectedStationCode)
+            val configViewModel = koinViewModel<WidgetConfigViewModel> {
+                parametersOf(widgetId)
             }
             AppTheme {
                 NavHost(navController, startDestination = WidgetSettingsRoute) {
                     composable<WidgetSettingsRoute> {
+                        val widgetConfig by configViewModel.config.collectAsStateWithLifecycle()
+                        val scope = rememberCoroutineScope()
                         WidgetConfigScreen(
                             widgetConfig = widgetConfig,
                             onSortModeChanged = configViewModel::onSortModeChanged,
                             onOpacityChanged = configViewModel::onOpacityChanged,
                             onStationButtonClicked = {
-                                navController.navigate(StationsRoute)
+                                navController.navigate(StationsRoute(widgetConfig.selectedStationCode))
                             },
                             onCancel = {
                                 glanceId?.let {
@@ -88,6 +82,10 @@ class WidgetConfigActivity : ComponentActivity() {
                         )
                     }
                     composable<StationsRoute> {
+                        val selectedStationCode = it.toRoute<StationsRoute>().selectedStationCode
+                        val stationsViewModel = koinViewModel<StationsViewModel> {
+                            parametersOf(selectedStationCode)
+                        }
                         StationsScreen(
                             stationsViewModel = stationsViewModel,
                             onStationSelected = {
