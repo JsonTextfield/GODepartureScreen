@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Départs GO</string>
-    <string name="platform">Quai %s</string>
+    <string name="platform_number">Quai %s</string>
+    <string name="platform">Quai</string>
     <string name="express">Express</string>
     <string name="min">min</string>
     <string name="cancelled">Annullée</string>

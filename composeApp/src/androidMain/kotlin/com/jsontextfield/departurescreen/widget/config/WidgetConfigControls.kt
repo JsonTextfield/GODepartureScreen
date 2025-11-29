@@ -86,7 +86,8 @@ fun WidgetConfigControls(
             Slider(
                 value = widgetConfig.opacity,
                 onValueChange = onOpacityChanged,
-                modifier = Modifier.fillMaxWidth(9 / 12f)
+                modifier = Modifier.fillMaxWidth(9 / 12f),
+                steps = 9,
             )
         }
         Row(

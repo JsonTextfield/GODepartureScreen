@@ -117,7 +117,7 @@ fun WidgetTripListItem(
         }
         Spacer(modifier = GlanceModifier.width(12.dp))
 
-        val platform = context.getString(R.string.platform, trip.platform)
+        val platform = context.getString(R.string.platform_number, trip.platform)
         Column(
             modifier = GlanceModifier.width(60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
