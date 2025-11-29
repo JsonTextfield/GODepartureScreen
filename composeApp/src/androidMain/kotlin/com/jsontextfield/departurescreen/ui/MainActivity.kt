@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                         // set selected station
                         mainViewModel.setSelectedStation(stationCode)
                     }
+                    setIntent(intent)
                 }
                 addOnNewIntentListener(listener)
                 onDispose { removeOnNewIntentListener(listener) }
