@@ -104,10 +104,27 @@
       }
     },
     "Line" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligne"
+          }
+        }
+      }
     },
     "min" : {
 
+    },
+    "Platform" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quai"
+          }
+        }
+      }
     },
     "Shows departure information for a station" : {
       "localizations" : {

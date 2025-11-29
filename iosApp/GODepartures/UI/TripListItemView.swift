@@ -53,7 +53,6 @@ struct TripListItemView: View {
                 Text(trip.platform)
                     .foregroundColor(trip.platform == "-" ? nil : colour)
                     .bold()
-                    .frame(maxWidth: .infinity)
                 if let cars = trip.cars {
                     Text("\(cars) cars")
                         .font(.footnote)
@@ -61,6 +60,7 @@ struct TripListItemView: View {
                     Text(busType).font(.footnote)
                 }
             }
+            .frame(width: 60)
         }
     }
 }

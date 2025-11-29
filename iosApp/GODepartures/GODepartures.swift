@@ -15,11 +15,11 @@ import coreKit
 struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
     let goTrainDataSource: CoreIGoTrainDataSource
-    let departureScreenUseCase: CoreDepartureScreenUseCase
+    let departureScreenUseCase: CoreGetSelectedStationUseCase
 
     init() {
         goTrainDataSource = widgetHelper.goTrainDataSource
-        departureScreenUseCase = widgetHelper.departureScreenUseCase
+        departureScreenUseCase = widgetHelper.getSelectedStationUseCase
     }
 
     func snapshot(

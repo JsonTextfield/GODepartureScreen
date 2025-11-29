@@ -22,12 +22,18 @@ struct GODeparturesEntryView: View {
     var body: some View {
         VStack {
             Text(entry.stationName)
+                .lineLimit(1)
                 .font(.footnote)
                 .bold()
             if !entry.trips.isEmpty {
                 let columnCount = widgetFamily == .systemExtraLarge ? 2 : 1
                 let rowCount = widgetFamily == .systemMedium ? 1 : 4
                 Grid {
+                    GridRow {
+                        ForEach(0..<columnCount, id: \.self) { _ in
+                            WidgetTripListHeaderRow()
+                        }
+                    }
                     ForEach(
                         entry.trips
                             .chunks(ofCount: columnCount)
@@ -48,7 +54,8 @@ struct GODeparturesEntryView: View {
             Button(intent: RefreshIntent()) {
                 HStack {
                     Image(systemName: "arrow.clockwise")
-                    Text("Last updated: \(entry.date, style: .time)").font(.footnote)
+                    Text("Last updated: \(entry.date, style: .time)")
+                        .font(.footnote)
                 }
             }
 
