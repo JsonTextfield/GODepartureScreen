@@ -17,11 +17,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
 
@@ -87,16 +88,26 @@ class MainViewModel(
                 isRefreshing = false,
             )
         }
-        combine(
-            _stationCode,
-            preferencesRepository.getSelectedStationCode(),
-        ) { stationCode, selectedStation ->
-            val allStations = goTrainDataSource.getAllStations()
-            val stationToSelectCode = stationCode ?: selectedStation
-            allStations.firstOrNull { station -> stationToSelectCode in station.code }
-        }
-            .distinctUntilChanged()
-            .map { selectedStation ->
+        viewModelScope.launch {
+            combine(
+                _stationCode,
+                preferencesRepository.getSelectedStationCode().distinctUntilChanged(),
+            ) { stationCode, selectedStation ->
+                val allStations = goTrainDataSource.getAllStations()
+                val station =
+                    allStations.firstOrNull { station -> stationCode?.let { stationCode in station.code } == true }
+                        ?: allStations.firstOrNull { station -> selectedStation in station.code }
+                        ?: allStations.firstOrNull()
+                station
+            }.catch {
+                _uiState.update {
+                    it.copy(
+                        status = Status.ERROR,
+                        isRefreshing = false,
+                    )
+                }
+            }.collectLatest { selectedStation ->
+                delay(100)
                 _uiState.update {
                     it.copy(
                         status = Status.LOADING,
@@ -105,14 +116,8 @@ class MainViewModel(
                     )
                 }
                 fetchDepartureData()
-            }.catch {
-                _uiState.update {
-                    it.copy(
-                        status = Status.ERROR,
-                        isRefreshing = false,
-                    )
-                }
-            }.launchIn(viewModelScope)
+            }
+        }
     }
 
     fun refresh() {
@@ -132,7 +137,7 @@ class MainViewModel(
 
     private fun startTimerJob() {
         timerJob = timerJob ?: viewModelScope.launch {
-            while (true) {
+            while (isActive) {
                 if (timeRemaining.value <= 1000) {
                     _timeRemaining.value = 0
                     fetchDepartureData()

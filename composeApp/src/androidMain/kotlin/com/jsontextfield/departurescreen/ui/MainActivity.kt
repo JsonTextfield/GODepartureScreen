@@ -12,6 +12,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalView
 import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
@@ -43,11 +46,15 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.DEFAULT -> !isSystemInDarkTheme()
             }
             val view = LocalView.current
+            var intentProcessed by rememberSaveable { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 intent.extras?.getString("selectedStation")?.let { stationCode ->
                     // called when launching from a widget for the first time
                     // set selected station
-                    mainViewModel.setSelectedStation(stationCode)
+                    if (!intentProcessed) {
+                        intentProcessed = true
+                        mainViewModel.setSelectedStation(stationCode)
+                    }
                 }
             }
             DisposableEffect(Unit) {
