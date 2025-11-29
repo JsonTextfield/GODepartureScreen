@@ -91,6 +91,8 @@ kotlin {
 
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+
+            implementation(libs.touchlab.kermit)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

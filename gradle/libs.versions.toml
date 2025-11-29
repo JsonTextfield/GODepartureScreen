@@ -30,6 +30,7 @@ horologistComposeTools = "0.6.17"
 horologistTiles = "0.6.17"
 watchfaceComplicationsDataSourceKtx = "1.2.1"
 composeMaterial3 = "1.5.2"
+kermit = "2.0.4"
 
 [libraries]
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
@@ -73,6 +74,7 @@ horologist-compose-tools = { group = "com.google.android.horologist", name = "ho
 horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
 androidx-watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
+touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
