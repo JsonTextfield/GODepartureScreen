@@ -10,6 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -35,6 +37,7 @@ class WidgetConfigActivity : ComponentActivity() {
         val widgetId = glanceId?.let { glanceWidgetManager.getAppWidgetId(glanceId) }
 
         setContent {
+            val haptic = LocalHapticFeedback.current
             val navController = rememberNavController()
             val configViewModel = koinViewModel<WidgetConfigViewModel> {
                 parametersOf(widgetId)
@@ -47,7 +50,10 @@ class WidgetConfigActivity : ComponentActivity() {
                         WidgetConfigScreen(
                             widgetConfig = widgetConfig,
                             onSortModeChanged = configViewModel::onSortModeChanged,
-                            onOpacityChanged = configViewModel::onOpacityChanged,
+                            onOpacityChanged = {
+                                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                configViewModel.onOpacityChanged(it)
+                            },
                             onStationButtonClicked = {
                                 navController.navigate(StationsRoute(widgetConfig.selectedStationCode))
                             },
