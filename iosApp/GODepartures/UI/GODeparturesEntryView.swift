@@ -30,7 +30,7 @@ struct GODeparturesEntryView: View {
                 let rowCount = widgetFamily == .systemMedium ? 1 : 4
                 Grid {
                     GridRow {
-                        ForEach(0..<columnCount, id: \.self) { _ in
+                        ForEach(0..<(min(columnCount, entry.trips.count)), id: \.self) { _ in
                             WidgetTripListHeaderRow()
                         }
                     }
