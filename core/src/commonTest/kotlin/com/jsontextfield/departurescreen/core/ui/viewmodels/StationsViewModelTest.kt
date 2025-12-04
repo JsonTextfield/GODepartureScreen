@@ -1,7 +1,5 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package com.jsontextfield.departurescreen.core.ui
-
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase

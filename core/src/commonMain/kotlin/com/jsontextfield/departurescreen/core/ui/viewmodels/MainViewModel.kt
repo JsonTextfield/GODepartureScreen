@@ -2,6 +2,7 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
@@ -144,7 +145,12 @@ class MainViewModel(
                 } else {
                     _timeRemaining.value -= 1000
                 }
+                Logger.d("Time remaining: ${timeRemaining.value}")
                 delay(1000)
+            }
+        }.also {
+            it.invokeOnCompletion {
+                Logger.d("timerJob cancelled")
             }
         }
     }

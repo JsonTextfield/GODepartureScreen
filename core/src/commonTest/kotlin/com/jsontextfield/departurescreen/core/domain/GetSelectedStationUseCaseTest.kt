@@ -2,7 +2,6 @@
 
 package com.jsontextfield.departurescreen.core.domain
 
-import com.jsontextfield.departurescreen.core.data.SELECTED_STATION_CODE_KEY
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
 import com.jsontextfield.departurescreen.core.entities.Station
@@ -65,7 +64,7 @@ class GetSelectedStationUseCaseTest {
                 name = "Test Station",
             )
             fakeGoTrainDataSource.stations = listOf(preferredStation, otherStation)
-            fakePreferencesRepository.data[SELECTED_STATION_CODE_KEY] = "PS"
+            fakePreferencesRepository.setSelectedStationCode(preferredStation.code)
 
             val result = getSelectedStationUseCase(null).first()
 
@@ -84,7 +83,7 @@ class GetSelectedStationUseCaseTest {
                 name = "Test Station",
             )
             fakeGoTrainDataSource.stations = listOf(otherStation, preferredStation)
-            fakePreferencesRepository.data[SELECTED_STATION_CODE_KEY] = "PS"
+            fakePreferencesRepository.setSelectedStationCode(preferredStation.code)
 
             val result = getSelectedStationUseCase("invalid").first()
 

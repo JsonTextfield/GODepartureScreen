@@ -1,18 +1,16 @@
-package com.jsontextfield.departurescreen.core.ui
+package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -42,16 +40,16 @@ class MainViewModelTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(9000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(9000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(8000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(8000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(10000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(10000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(7000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(7000),
             ),
         )
 
@@ -71,18 +69,20 @@ class MainViewModelTest {
         )
         advanceTimeBy(20000)
 
+        mainViewModel.stop()
+
         val expectedResult = listOf(
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(7000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(7000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(8000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(8000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(9000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(9000),
             ),
             baseTrip.copy(
-                departureTime = Instant.fromEpochMilliseconds(10000),
+                departureTime = Instant.Companion.fromEpochMilliseconds(10000),
             ),
         )
 
@@ -123,6 +123,8 @@ class MainViewModelTest {
             )
         )
         advanceTimeBy(20000)
+
+        mainViewModel.stop()
 
         val result = mainViewModel.uiState.value.allTrips
 
@@ -172,6 +174,8 @@ class MainViewModelTest {
 
         val result = mainViewModel.uiState.value.visibleTrains
 
+        mainViewModel.stop()
+
         assertEquals(emptySet(), result)
         assertEquals(true, "LE" !in result)
     }
@@ -204,6 +208,8 @@ class MainViewModelTest {
         )
         advanceTimeBy(20000)
 
+        mainViewModel.stop()
+
         val result = mainViewModel.uiState.value.visibleTrains
 
         assertEquals(true, "LW" in result)
@@ -223,17 +229,18 @@ class MainViewModelTest {
             ),
             setFavouriteStationUseCase = SetFavouriteStationUseCase(
                 preferencesRepository = preferencesRepository,
-            )
+            ),
         )
-        mainViewModel.stop()
 
         assertEquals(ThemeMode.DEFAULT, mainViewModel.uiState.value.theme)
 
         mainViewModel.setTheme(ThemeMode.LIGHT)
-        advanceUntilIdle()
-        val results = mainViewModel.uiState.take(2).toList()
-        // read the current ui state value
-        assertEquals(ThemeMode.LIGHT, results[1].theme)
+        advanceTimeBy(20000)
 
+        mainViewModel.stop()
+
+        val results = mainViewModel.uiState.value
+        // read the current ui state value
+        assertEquals(ThemeMode.LIGHT, results.theme)
     }
 }
