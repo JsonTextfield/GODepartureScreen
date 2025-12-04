@@ -17,11 +17,11 @@ import departure_screen.composeapp.generated.resources.add_widget
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.favourite
 import departure_screen.composeapp.generated.resources.more
+import departure_screen.composeapp.generated.resources.round_bus_alert_24
 import departure_screen.composeapp.generated.resources.round_star_24
 import departure_screen.composeapp.generated.resources.round_star_border_24
 import departure_screen.composeapp.generated.resources.rounded_add_24
 import departure_screen.composeapp.generated.resources.rounded_brightness_4_24
-import departure_screen.composeapp.generated.resources.rounded_bus_alert_24
 import departure_screen.composeapp.generated.resources.rounded_more_vert_24
 import departure_screen.composeapp.generated.resources.rounded_sort_24
 import departure_screen.composeapp.generated.resources.sort
@@ -141,7 +141,7 @@ fun getActions(
     )
 
     val alerts = Action(
-        icon = Res.drawable.rounded_bus_alert_24,
+        icon = Res.drawable.round_bus_alert_24,
         tooltip = stringResource(Res.string.alerts),
         onClick = navigationActions.onShowAlerts,
     )

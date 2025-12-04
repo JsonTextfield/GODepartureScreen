@@ -1,12 +1,12 @@
 package com.jsontextfield.departurescreen.core.ui.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.back
+import departure_screen.core.generated.resources.rounded_arrow_back_24
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -15,7 +15,7 @@ fun BackButton(
 ) {
     IconButton(onBackPressed) {
         Icon(
-            Icons.AutoMirrored.Rounded.ArrowBack,
+            painterResource(Res.drawable.rounded_arrow_back_24),
             contentDescription = stringResource(Res.string.back),
         )
     }

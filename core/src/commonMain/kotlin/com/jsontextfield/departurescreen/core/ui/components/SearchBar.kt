@@ -13,9 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +25,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.clear
+import departure_screen.core.generated.resources.round_clear_24
+import departure_screen.core.generated.resources.round_search_24
 import departure_screen.core.generated.resources.search
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -57,7 +57,7 @@ fun SearchBar(textFieldState: TextFieldState) {
                     .padding(horizontal = 12.dp)
                     .heightIn(min = 56.dp)
             ) {
-                Icon(Icons.Rounded.Search, contentDescription = null)
+                Icon(painterResource(Res.drawable.round_search_24), contentDescription = null)
                 Box(modifier = Modifier.weight(1f)) {
                     if (textFieldState.text.isEmpty()) {
                         Text(
@@ -76,7 +76,7 @@ fun SearchBar(textFieldState: TextFieldState) {
                         textFieldState.setTextAndPlaceCursorAtEnd("")
                     }) {
                         Icon(
-                            Icons.Rounded.Clear,
+                            painterResource(Res.drawable.round_clear_24),
                             contentDescription = stringResource(Res.string.clear),
                         )
                     }
