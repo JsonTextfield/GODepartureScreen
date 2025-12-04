@@ -2,14 +2,6 @@ package com.jsontextfield.departurescreen.ui.menu
 
 import OverflowMenu
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.BrightnessMedium
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +17,13 @@ import departure_screen.composeapp.generated.resources.add_widget
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.favourite
 import departure_screen.composeapp.generated.resources.more
+import departure_screen.composeapp.generated.resources.round_star_24
+import departure_screen.composeapp.generated.resources.round_star_border_24
+import departure_screen.composeapp.generated.resources.rounded_add_24
+import departure_screen.composeapp.generated.resources.rounded_brightness_4_24
+import departure_screen.composeapp.generated.resources.rounded_bus_alert_24
+import departure_screen.composeapp.generated.resources.rounded_more_vert_24
+import departure_screen.composeapp.generated.resources.rounded_sort_24
 import departure_screen.composeapp.generated.resources.sort
 import departure_screen.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
@@ -70,7 +69,7 @@ fun ActionBar(
             var showOverflowMenu by remember { mutableStateOf(false) }
 
             MenuItem(
-                icon = Icons.Rounded.MoreVert,
+                icon = Res.drawable.rounded_more_vert_24,
                 tooltip = stringResource(Res.string.more),
                 onClick = { showOverflowMenu = true }
             )
@@ -94,10 +93,10 @@ fun getActions(
 ): List<Action> {
     val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
-        icon = if (uiState.selectedStation?.isFavourite == true) {
-            Icons.Rounded.Star
+        icon = if (uiState.also { println("station: ${it.selectedStation.toString()}") }.selectedStation?.isFavourite == true) {
+            Res.drawable.round_star_24
         } else {
-            Icons.Rounded.StarBorder
+            Res.drawable.round_star_border_24
         },
         tooltip = stringResource(Res.string.favourite),
         isVisible = uiState.selectedStation != null,
@@ -107,7 +106,7 @@ fun getActions(
     )
 
     val sort = Action(
-        icon = Icons.AutoMirrored.Rounded.Sort,
+        icon = Res.drawable.rounded_sort_24,
         tooltip = stringResource(Res.string.sort),
         isVisible = uiState.allTrips.isNotEmpty(),
         menuContent = { onDismiss ->
@@ -125,7 +124,7 @@ fun getActions(
     )
 
     val theme = Action(
-        icon = Icons.Rounded.BrightnessMedium,
+        icon = Res.drawable.rounded_brightness_4_24,
         tooltip = stringResource(Res.string.theme),
         menuContent = { onDismiss ->
             ThemeMode.entries.forEach { themeMode ->
@@ -142,13 +141,13 @@ fun getActions(
     )
 
     val alerts = Action(
-        icon = Icons.Rounded.Notifications,
+        icon = Res.drawable.rounded_bus_alert_24,
         tooltip = stringResource(Res.string.alerts),
         onClick = navigationActions.onShowAlerts,
     )
 
     val addWidget = Action(
-        icon = Icons.Rounded.Add,
+        icon = Res.drawable.rounded_add_24,
         tooltip = stringResource(Res.string.add_widget),
         onClick = { addWidgetAction() },
         menuContent = null,

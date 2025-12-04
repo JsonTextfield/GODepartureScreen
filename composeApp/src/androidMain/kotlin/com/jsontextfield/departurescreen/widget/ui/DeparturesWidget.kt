@@ -18,7 +18,6 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
@@ -29,6 +28,7 @@ import androidx.glance.appwidget.lazy.LazyVerticalGrid
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
@@ -186,7 +186,15 @@ fun DepartureScreenWidget(
                     }
 
                     Status.LOADING -> {
-                        CircularProgressIndicator(color = GlanceTheme.colors.primary)
+                        Box(
+                            modifier = GlanceModifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = context.getString(R.string.loading),
+                                style = TextDefaults.defaultTextStyle.copy(color = GlanceTheme.colors.onBackground)
+                            )
+                        }
                     }
 
                     Status.LOADED -> {

@@ -62,6 +62,7 @@ class MainViewModel(
             getSelectedStationUseCase(),
             preferencesRepository.getFavouriteStations(),
         ) { selectedStation, favouriteStations ->
+            delay(200)
             val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(

@@ -67,13 +67,15 @@ fun TrainList(
     ) {
         items(columns) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier =
-                    Modifier.padding(
-                        start = WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateStartPadding(LayoutDirection.Ltr),
-                        end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
-                    )
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(
+                            start = WindowInsets.safeDrawing.asPaddingValues()
+                                .calculateStartPadding(LayoutDirection.Ltr),
+                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+                        )
             ) {
                 Text(
                     text = stringResource(Res.string.time),

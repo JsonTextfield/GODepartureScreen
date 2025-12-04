@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Station
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.favourite
+import departure_screen.core.generated.resources.round_star_24
+import departure_screen.core.generated.resources.round_star_border_24
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -60,9 +60,9 @@ fun StationListItem(
         IconButton(onFavouriteClick) {
             Icon(
                 if (station.isFavourite) {
-                    Icons.Rounded.Star
+                    painterResource(Res.drawable.round_star_24)
                 } else {
-                    Icons.Rounded.StarBorder
+                    painterResource(Res.drawable.round_star_border_24)
                 },
                 contentDescription = stringResource(Res.string.favourite)
             )

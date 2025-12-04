@@ -5,6 +5,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -62,7 +63,9 @@ fun TripListItem(
         ) {
             Text(
                 text = trip.departureDiffMinutes.toString(),
-                modifier = Modifier.basicMarquee(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .basicMarquee(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
@@ -71,55 +74,64 @@ fun TripListItem(
             )
             Text(
                 text = stringResource(Res.string.min),
-                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.labelSmall.copy(
+                    textAlign = TextAlign.Center,
+                ),
                 maxLines = 1,
             )
         }
-        if (shouldShowTrainCode) {
-            val fontScale = LocalDensity.current.fontScale
-            TripCodeBox(
-                tripCode = trip.code,
-                modifier = Modifier
-                    .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
-                    .background(color = trip.color, shape = SquircleShape)
-                    .semantics {
-                        contentDescription = if (trip.isBus) {
-                            trip.code
-                        } else {
-                            trip.name
-                        }
-                    },
-            )
-        }
-        Column(modifier = Modifier.weight(6 / 12f)) {
-            if (!shouldShowTrainCode) {
-                Text(
-                    text = if (trip.isBus) {
-                        "${trip.code} ${trip.name}"
-                    } else {
-                        trip.name
-                    },
-                    style = MaterialTheme.typography.labelSmall,
+        Row(
+            modifier = Modifier.weight(6 / 12f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (shouldShowTrainCode) {
+                val fontScale = LocalDensity.current.fontScale
+                TripCodeBox(
+                    tripCode = trip.code,
+                    modifier = Modifier
+                        .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * PHI).dp)
+                        .background(color = trip.color, shape = SquircleShape)
+                        .semantics {
+                            contentDescription = if (trip.isBus) {
+                                trip.code
+                            } else {
+                                trip.name
+                            }
+                        },
                 )
             }
-            Text(
-                text = trip.destination,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (trip.isCancelled) {
+            Column {
+                if (!shouldShowTrainCode) {
                     Text(
-                        text = stringResource(Res.string.cancelled),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelMedium,
+                        text = if (trip.isBus) {
+                            "${trip.code} ${trip.name}"
+                        } else {
+                            trip.name
+                        },
+                        style = MaterialTheme.typography.labelSmall,
                     )
-                } else if (trip.isExpress) {
-                    Text(
-                        text = stringResource(Res.string.express),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+                }
+                Text(
+                    text = trip.destination,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (trip.isCancelled) {
+                        Text(
+                            text = stringResource(Res.string.cancelled),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    } else if (trip.isExpress) {
+                        Text(
+                            text = stringResource(Res.string.express),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
                 }
             }
         }
@@ -176,3 +188,4 @@ fun TripListItem(
         }
     }
 }
+val PHI: Double = 1.618033988749894
