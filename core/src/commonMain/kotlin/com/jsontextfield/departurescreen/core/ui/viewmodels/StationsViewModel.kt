@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,33 +38,31 @@ class StationsViewModel(
                 status = Status.LOADING,
             )
         }
-        viewModelScope.launch {
-            combine(
-                getSelectedStationUseCase(selectedStationCode),
-                preferencesRepository.getFavouriteStations(),
-            ) { selectedStation, favouriteStationCodes ->
-                val allStations = goTrainDataSource.getAllStations()
-                val updatedStations = allStations.map { station ->
-                    station.copy(
-                        isFavourite = station.code.split(",").any { code -> code in favouriteStationCodes }
-                    )
-                }.sortedWith(
-                    compareByDescending<Station> { it.isFavourite }
-                        .thenByDescending { "UN" in it.code || "02300" in it.code }
-                        .thenBy { it.name }
+        combine(
+            getSelectedStationUseCase(selectedStationCode),
+            preferencesRepository.getFavouriteStations(),
+        ) { selectedStation, favouriteStationCodes ->
+            val allStations = goTrainDataSource.getAllStations()
+            val updatedStations = allStations.map { station ->
+                station.copy(
+                    isFavourite = station.code.split(",").any { code -> code in favouriteStationCodes }
                 )
+            }.sortedWith(
+                compareByDescending<Station> { it.isFavourite }
+                    .thenByDescending { "UN" in it.code || "02300" in it.code }
+                    .thenBy { it.name }
+            )
 
-                _uiState.update {
-                    it.copy(
-                        status = Status.LOADED,
-                        allStations = updatedStations,
-                        selectedStation = selectedStation,
-                    )
-                }
-            }.catch {
-                _uiState.update { it.copy(status = Status.ERROR) }
-            }.collect()
-        }
+            _uiState.update {
+                it.copy(
+                    status = Status.LOADED,
+                    allStations = updatedStations,
+                    selectedStation = selectedStation,
+                )
+            }
+        }.catch {
+            _uiState.update { it.copy(status = Status.ERROR) }
+        }.launchIn(viewModelScope)
     }
 
     fun setSelectedStation(station: Station) {

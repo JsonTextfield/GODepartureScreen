@@ -36,8 +36,6 @@ class MainViewModel(
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
 
-    private val _stationCode: MutableStateFlow<String?> = MutableStateFlow(null)
-
     private val _timeRemaining: MutableStateFlow<Int> = MutableStateFlow(0)
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
 
@@ -62,7 +60,6 @@ class MainViewModel(
             getSelectedStationUseCase(),
             preferencesRepository.getFavouriteStations(),
         ) { selectedStation, favouriteStations ->
-            delay(200)
             val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(
@@ -72,12 +69,7 @@ class MainViewModel(
                 )
             }
         }.catch {
-            _uiState.update {
-                it.copy(
-                    status = Status.ERROR,
-                    isRefreshing = false,
-                )
-            }
+            _uiState.value = errorState
         }.launchIn(viewModelScope)
         loadData()
         startTimerJob()
@@ -91,34 +83,20 @@ class MainViewModel(
             )
         }
         viewModelScope.launch {
-            combine(
-                _stationCode,
-                preferencesRepository.getSelectedStationCode().distinctUntilChanged(),
-            ) { stationCode, selectedStation ->
-                val allStations = goTrainDataSource.getAllStations()
-                val station =
-                    allStations.firstOrNull { station -> stationCode?.let { stationCode in station.code } == true }
-                        ?: allStations.firstOrNull { station -> selectedStation in station.code }
-                        ?: allStations.firstOrNull()
-                station
-            }.catch {
-                _uiState.update {
-                    it.copy(
-                        status = Status.ERROR,
-                        isRefreshing = false,
-                    )
+            getSelectedStationUseCase()
+                .distinctUntilChanged()
+                .catch {
+                    _uiState.value = errorState
+                }.collectLatest { selectedStation ->
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADING,
+                            isRefreshing = false,
+                            selectedStation = selectedStation,
+                        )
+                    }
+                    fetchDepartureData()
                 }
-            }.collectLatest { selectedStation ->
-                delay(100)
-                _uiState.update {
-                    it.copy(
-                        status = Status.LOADING,
-                        isRefreshing = false,
-                        selectedStation = selectedStation,
-                    )
-                }
-                fetchDepartureData()
-            }
         }
     }
 
@@ -210,7 +188,9 @@ class MainViewModel(
     }
 
     fun setSelectedStation(stationCode: String?) {
-        _stationCode.value = stationCode
+        viewModelScope.launch {
+            preferencesRepository.setSelectedStationCode(stationCode ?: "UN")
+        }
     }
 
     fun stop() {
@@ -242,3 +222,8 @@ data class MainUIState(
         }
     )
 }
+
+private val errorState = MainUIState(
+    status = Status.ERROR,
+    isRefreshing = false,
+)

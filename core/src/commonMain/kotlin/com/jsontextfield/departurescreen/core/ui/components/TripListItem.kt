@@ -91,7 +91,7 @@ fun TripListItem(
                 TripCodeBox(
                     tripCode = trip.code,
                     modifier = Modifier
-                        .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * PHI).dp)
+                        .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
                         .background(color = trip.color, shape = SquircleShape)
                         .semantics {
                             contentDescription = if (trip.isBus) {
@@ -188,4 +188,3 @@ fun TripListItem(
         }
     }
 }
-val PHI: Double = 1.618033988749894

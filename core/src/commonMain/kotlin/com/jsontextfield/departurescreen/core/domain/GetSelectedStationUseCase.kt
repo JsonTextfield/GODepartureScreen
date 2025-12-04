@@ -10,11 +10,18 @@ class GetSelectedStationUseCase(
     private val preferencesRepository: IPreferencesRepository,
     private val goTrainDataSource: IGoTrainDataSource
 ) {
-
-    operator fun invoke(selectedStation: String? = null): Flow<Station?> {
+    /**
+     * Returns the selected station.
+     * If the [stationCode] passed in is `null` or not found, then the selected station is determined in this order:
+     *
+     * 1. selected station from the preferences
+     * 2. first station with code `UN`
+     * 3. first station in the list
+     */
+    operator fun invoke(stationCode: String? = null): Flow<Station?> {
         return preferencesRepository.getSelectedStationCode().map { prefStationCode ->
             val allStations = goTrainDataSource.getAllStations()
-            allStations.firstOrNull { station -> selectedStation?.let { selectedStation in station.code } == true }
+            allStations.firstOrNull { station -> stationCode?.let { stationCode in station.code } == true }
                 ?: allStations.firstOrNull { station -> prefStationCode in station.code }
                 ?: allStations.firstOrNull()
         }

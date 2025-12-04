@@ -1,8 +1,6 @@
 package com.jsontextfield.departurescreen.core.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -14,9 +12,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -26,16 +22,9 @@ import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
-import departure_screen.core.generated.resources.Res
-import departure_screen.core.generated.resources.line
-import departure_screen.core.generated.resources.platform
-import departure_screen.core.generated.resources.time
-import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -51,7 +40,7 @@ fun TrainList(
                 LayoutDirection.Ltr
             ).value - WindowInsets.safeDrawing.asPaddingValues()
             .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+    val columns = min((widthDp / 320).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {
@@ -66,43 +55,17 @@ fun TrainList(
         )
     ) {
         items(columns) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(
-                            start = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateStartPadding(LayoutDirection.Ltr),
-                            end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
-                        )
-            ) {
-                Text(
-                    text = stringResource(Res.string.time),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(3 / 12f)
-                )
-                Text(
-                    text = stringResource(Res.string.line),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(6 / 12f)
-                )
-                Text(
-                    text = stringResource(Res.string.platform),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(3 / 12f)
-                )
-            }
-        } // Spacer to ensure proper column count for semantics
+            TripListHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(
+                        start = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateStartPadding(LayoutDirection.Ltr),
+                        end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+                    )
+            )
+        }
         itemsIndexed(trips, key = { _, train -> train.id }) { index, trip ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven

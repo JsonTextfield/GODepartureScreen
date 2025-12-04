@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            val glanceAppWidgetManager = GlanceAppWidgetManager(this)
             lifecycleScope.launch {
+                val glanceAppWidgetManager = GlanceAppWidgetManager(this@MainActivity)
                 glanceAppWidgetManager.setWidgetPreviews(MyAppWidgetReceiver::class)
             }
         }
@@ -46,13 +46,12 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.DEFAULT -> !isSystemInDarkTheme()
             }
             val view = LocalView.current
-            var intentProcessed by rememberSaveable { mutableStateOf(false) }
+            var isIntentProcessed by rememberSaveable { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 intent.extras?.getString("selectedStation")?.let { stationCode ->
                     // called when launching from a widget for the first time
-                    // set selected station
-                    if (!intentProcessed) {
-                        intentProcessed = true
+                    if (!isIntentProcessed) {
+                        isIntentProcessed = true
                         mainViewModel.setSelectedStation(stationCode)
                     }
                 }
@@ -61,7 +60,6 @@ class MainActivity : ComponentActivity() {
                 val listener = Consumer<Intent> { intent ->
                     intent.extras?.getString("selectedStation")?.let { stationCode ->
                         // called when launching from a widget while the activity is already running
-                        // set selected station
                         mainViewModel.setSelectedStation(stationCode)
                     }
                     setIntent(intent)

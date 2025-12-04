@@ -94,11 +94,6 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     }
                     StationsScreen(
                         stationsViewModel = stationsViewModel,
-                        onStationSelected = {
-                            mainViewModel.setSelectedStation(null)
-                            stationsViewModel.setSelectedStation(it)
-                            safeNavigation { navController.popBackStack() }
-                        },
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
