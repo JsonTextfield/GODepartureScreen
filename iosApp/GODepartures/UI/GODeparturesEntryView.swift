@@ -25,12 +25,17 @@ struct GODeparturesEntryView: View {
                 .lineLimit(1)
                 .font(.footnote)
                 .bold()
-            if !entry.trips.isEmpty {
+            if widgetFamily == .systemSmall {
+                SmallWidgetView(entry: entry)
+            } else {
                 let columnCount = widgetFamily == .systemExtraLarge ? 2 : 1
-                let rowCount = widgetFamily == .systemMedium ? 1 : 4
+                let rowCount = widgetFamily == .systemMedium ? 1 : 5
                 Grid {
                     GridRow {
-                        ForEach(0..<(min(columnCount, entry.trips.count)), id: \.self) { _ in
+                        ForEach(
+                            0..<(min(columnCount, entry.trips.count)),
+                            id: \.self
+                        ) { _ in
                             WidgetTripListHeaderRow()
                         }
                     }
@@ -46,19 +51,18 @@ struct GODeparturesEntryView: View {
                                     trip: trip
                                 )
                             }
-                        }.frame(maxHeight: .infinity)
+                        }.frame(maxHeight: .infinity, alignment: .top)
+                    }
+                }
+                Spacer()
+                Button(intent: RefreshIntent()) {
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                        Text("Last updated: \(entry.date, style: .time)")
+                            .font(.footnote)
                     }
                 }
             }
-            Spacer()
-            Button(intent: RefreshIntent()) {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                    Text("Last updated: \(entry.date, style: .time)")
-                        .font(.footnote)
-                }
-            }
-
-        }.frame(maxHeight: .infinity)
+        }.frame(maxHeight: .infinity).padding(4)
     }
 }

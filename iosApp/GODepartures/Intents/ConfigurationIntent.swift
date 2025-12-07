@@ -13,23 +13,20 @@ import AppIntents
 struct ConfigurationIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Widget settings"
     static var description = IntentDescription("Configure the GO Departures widget.")
-    
+
     @Parameter(title: "Station")
     var selectedStation: StationDetail?
-    
+
     @Parameter(title: "Sort by...")
     var sortMode: SortMode?
-    
+
+    init() {}
+
     init(
         selectedStation: StationDetail? = nil,
-        sortMode: SortMode? = SortMode.time,
+        sortMode: SortMode
     ) {
         self.selectedStation = selectedStation
         self.sortMode = sortMode
-    }
-    
-    init() {
-        self.selectedStation = nil
-        self.sortMode = SortMode.time
     }
 }

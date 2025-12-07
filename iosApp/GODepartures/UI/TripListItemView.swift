@@ -56,11 +56,12 @@ struct TripListItemView: View {
                 if let cars = trip.cars {
                     Text("\(cars) cars")
                         .font(.footnote)
+                        .multilineTextAlignment(.center)
                 } else if let busType = trip.busType {
                     Text(busType).font(.footnote)
                 }
             }
-            .frame(width: 60)
+            .frame(width: 64)
         }
     }
 }

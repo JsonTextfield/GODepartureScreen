@@ -10,6 +10,7 @@ import AppIntents
 import ComposeApp
 import Foundation
 import WidgetKit
+import coreKit
 
 struct StationDetail: AppEntity {
 
@@ -34,15 +35,22 @@ struct StationQuery: EntityQuery {
     }
 
     func suggestedEntities() async throws -> [StationDetail] {
-        let widgetHelper = WidgetHelper()
+        let userDefaults = UserDefaults(suiteName: "group.com.jsontextfield.godepartures")
+        let favourites = userDefaults?.object(forKey: "favouriteStations") as? String ?? ""
         let descriptors: [SortDescriptor<CoreStation>] = [
-            .boolean(\.isFavourite, order: .reverse),
+            .transform({ trip in
+                let codes: [String] = trip.code.components(separatedBy: ",")
+                return codes.contains(where: { code in
+                    favourites.contains(code)
+                }) ? 1 : 0
+            }, order: .reverse),
             .transform({
                 ($0.code.contains("UN") || $0.code.contains("02300")) ? 1 : 0
             }, order: .reverse),
             .string(\.name, compare: { $0.localizedCaseInsensitiveCompare($1) })
         ]
-
+        
+        let widgetHelper = WidgetHelper()
         StationDetail.allStations =
         try await widgetHelper.goTrainDataSource.getAllStations()
             .sorted(using: descriptors)

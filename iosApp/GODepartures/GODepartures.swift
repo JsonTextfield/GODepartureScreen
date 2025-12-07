@@ -32,7 +32,7 @@ struct Provider: AppIntentTimelineProvider {
         let selectedStationCode =
             configuration.selectedStation?.id
             ?? userDefaults?.object(
-                forKey: SELECTED_STATION_CODE_KEY
+                forKey: "selectedStationCode"
             ) as? String
             ?? "UN"
 
@@ -51,10 +51,10 @@ struct Provider: AppIntentTimelineProvider {
             {
                 let trips: [CoreTrip]
                 let sortMode = CoreSortMode.entries[
-                    userDefaults?.integer(forKey: SORT_MODE_KEY) ?? 0
+                    userDefaults?.integer(forKey: "sortMode") ?? 0
                 ]
                 let visibleTrains: String =
-                    userDefaults?.object(forKey: HIDDEN_TRAINS_KEY)
+                    userDefaults?.object(forKey: "hiddenTrains")
                     as? String ?? ""
 
                 // Parse comma-separated station codes
@@ -65,7 +65,9 @@ struct Provider: AppIntentTimelineProvider {
                 // Fetch trips per code (sequentially; safe for widgets)
                 var fetchedTrips: [CoreTrip] = []
                 for code in codes {
-                    let result = try await goTrainDataSource.getTrips(stationCode: code)
+                    let result = try await goTrainDataSource.getTrips(
+                        stationCode: code
+                    )
                     fetchedTrips.append(contentsOf: result)
                 }
                 // Sort according to mode
@@ -167,7 +169,9 @@ struct GODepartures: Widget {
         }
         .configurationDisplayName("GO Departures")
         .description("Shows departure information for a station")
-        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
+        .supportedFamilies([
+            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
+        ]).contentMarginsDisabled()
     }
 
     init() {
