@@ -23,22 +23,8 @@
     "%d" : {
 
     },
-    "%d\nmin" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d\nmin"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d\nmin"
-          }
-        }
-      }
+    "%d min" : {
+
     },
     "cancelled" : {
       "extractionState" : "manual",
