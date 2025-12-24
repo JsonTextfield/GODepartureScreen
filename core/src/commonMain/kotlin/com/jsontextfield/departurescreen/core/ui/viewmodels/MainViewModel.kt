@@ -72,7 +72,6 @@ class MainViewModel(
             _uiState.value = errorState
         }.launchIn(viewModelScope)
         loadData()
-        startTimerJob()
     }
 
     fun loadData() {
@@ -87,6 +86,7 @@ class MainViewModel(
                 .distinctUntilChanged()
                 .catch {
                     _uiState.value = errorState
+                    stop()
                 }.collectLatest { selectedStation ->
                     _uiState.update {
                         it.copy(
@@ -96,6 +96,7 @@ class MainViewModel(
                         )
                     }
                     fetchDepartureData()
+                    startTimerJob()
                 }
         }
     }
@@ -124,7 +125,7 @@ class MainViewModel(
                 } else {
                     _timeRemaining.value -= 1000
                 }
-                Logger.d("Time remaining: ${timeRemaining.value}")
+                Logger.withTag("MainViewModel").d("Time remaining: ${timeRemaining.value}")
                 delay(1000)
             }
         }.also {
