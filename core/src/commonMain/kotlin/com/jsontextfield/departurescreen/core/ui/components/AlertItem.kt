@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,28 +33,30 @@ fun AlertItem(
     Card(
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .semantics(mergeDescendants = true) {},
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = alert.getSubject(language),
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Text(
-                text = alert.date.format(Format {
-                    byUnicodePattern("HH:mm, d/MM/yyyy")
-                }),
-                style = MaterialTheme.typography.labelSmall,
-            )
-            Text(
-                text = alert.getBody(language),
-                style = MaterialTheme.typography.bodySmall
-            )
+        SelectionContainer {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .semantics(mergeDescendants = true) {},
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(
+                    text = alert.getSubject(language),
+                    modifier = Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Text(
+                    text = alert.date.format(Format {
+                        byUnicodePattern("HH:mm, d/MM/yyyy")
+                    }),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Text(
+                    text = alert.getBody(language),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
