@@ -19,7 +19,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
     private val baseTrip = Trip(id = "0000")

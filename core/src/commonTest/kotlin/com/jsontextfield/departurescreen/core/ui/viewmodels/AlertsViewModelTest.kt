@@ -1,10 +1,9 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.ui.Status
-import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -17,10 +16,9 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AlertsViewModelTest {
-
     private val testDispatcher = StandardTestDispatcher()
-
 
     @BeforeTest
     fun setup() {

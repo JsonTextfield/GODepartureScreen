@@ -66,11 +66,11 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         return trips
     }
 
-    override suspend fun getServiceAlerts(): Flow<List<Alert>> {
+    override fun getServiceAlerts(): Flow<List<Alert>> {
         return flowOf(serviceAlerts)
     }
 
-    override suspend fun getInformationAlerts(): Flow<List<Alert>> {
+    override fun getInformationAlerts(): Flow<List<Alert>> {
         return flowOf(informationAlerts)
     }
 

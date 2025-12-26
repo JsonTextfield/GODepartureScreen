@@ -93,14 +93,14 @@ class GoTrainDataSource(
         }
     }
 
-    override suspend fun getServiceAlerts(): Flow<List<Alert>> = flow {
+    override fun getServiceAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             emit(processAlerts(departureScreenAPI.getServiceAlerts()))
             delay(60_000)
         }
     }
 
-    override suspend fun getInformationAlerts(): Flow<List<Alert>> = flow {
+    override fun getInformationAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
             delay(60_000)

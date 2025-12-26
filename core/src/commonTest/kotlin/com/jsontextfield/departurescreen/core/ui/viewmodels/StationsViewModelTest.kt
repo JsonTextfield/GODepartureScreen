@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.entities.Station
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -19,6 +18,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StationsViewModelTest {
 
     lateinit var preferencesRepository: FakePreferencesRepository

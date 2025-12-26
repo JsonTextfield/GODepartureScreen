@@ -6,11 +6,11 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import kotlinx.coroutines.flow.Flow
 
 interface IGoTrainDataSource {
-    suspend fun getTrips(stationCode: String) : List<Trip>
+    suspend fun getTrips(stationCode: String): List<Trip>
 
-    suspend fun getServiceAlerts() : Flow<List<Alert>>
+    fun getServiceAlerts(): Flow<List<Alert>>
 
-    suspend fun getInformationAlerts() : Flow<List<Alert>>
+    fun getInformationAlerts(): Flow<List<Alert>>
 
     suspend fun getAllStations(): List<Station>
 }
