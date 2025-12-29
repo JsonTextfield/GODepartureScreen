@@ -35,7 +35,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test sort by time`() = runTest(testDispatcher) {
+    fun testSortByTime() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -90,7 +90,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test sort by line`() = runTest(testDispatcher) {
+    fun testSortByLine() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -145,7 +145,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test set visible trains when train departs`() = runTest(testDispatcher) {
+    fun testSetVisibleTrainsWhenTrainDeparts() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -180,7 +180,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test set visible trains when trains have not yet departed`() = runTest(testDispatcher) {
+    fun testSetVisibleTrainsWhenTrainsHaveNotYetDeparted() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
@@ -215,7 +215,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `test setTheme`() = runTest {
+    fun testSetTheme() = runTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
 

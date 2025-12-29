@@ -55,7 +55,7 @@ class StationsViewModelTest {
     }
 
     @Test
-    fun `test setSelectedStation`() = runTest(testDispatcher) {
+    fun testSetSelectedStation() = runTest(testDispatcher) {
         val station = Station(
             name = "Test",
             code = "TST",

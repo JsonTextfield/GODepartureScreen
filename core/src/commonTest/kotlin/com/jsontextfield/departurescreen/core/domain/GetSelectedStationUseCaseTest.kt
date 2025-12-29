@@ -39,8 +39,11 @@ class GetSelectedStationUseCaseTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * test invoke returns station for station code if it exists
+     */
     @Test
-    fun `test invoke returns station for station code if it exists`() = runTest {
+    fun test1() = runTest {
         val station = Station(
             code = "JB",
             name = "Test Station",
@@ -52,8 +55,11 @@ class GetSelectedStationUseCaseTest {
         assertEquals(station, result)
     }
 
+    /**
+     * test invoke returns station from preferences if station code is null and preferences exist
+     */
     @Test
-    fun `test invoke returns station from preferences if station code is null and preferences exist`() =
+    fun test2() =
         runTest {
             val preferredStation = Station(
                 code = "PS",
@@ -71,8 +77,11 @@ class GetSelectedStationUseCaseTest {
             assertEquals(preferredStation, result)
         }
 
+    /**
+     * test invoke returns station from preferences if station code is invalid but preferences exist
+     */
     @Test
-    fun `test invoke returns station from preferences if station code is invalid but preferences exist`() =
+    fun test3() =
         runTest {
             val preferredStation = Station(
                 code = "PS",
@@ -90,8 +99,11 @@ class GetSelectedStationUseCaseTest {
             assertEquals(preferredStation, result)
         }
 
+    /**
+     * test invoke returns default station UN if station code and preferences do not exist
+     */
     @Test
-    fun `test invoke returns default station UN if station code and preferences do not exist`() = runTest {
+    fun test4() = runTest {
         val defaultStation = Station(
             code = "UN",
             name = "Union Station",
@@ -107,8 +119,11 @@ class GetSelectedStationUseCaseTest {
         assertEquals(defaultStation, result)
     }
 
+    /**
+     * test invoke returns the first station in the list as a last resort
+     */
     @Test
-    fun `test invoke returns the first station in the list as a last resort`() = runTest {
+    fun test5() = runTest {
         fakeGoTrainDataSource.stations = List(5) {
             Station(
                 code = "S$it",

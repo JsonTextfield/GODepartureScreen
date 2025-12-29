@@ -33,7 +33,7 @@ class AlertsViewModelTest {
     }
 
     @Test
-    fun `test refresh`() = runTest(testDispatcher) {
+    fun testRefresh() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
@@ -56,7 +56,7 @@ class AlertsViewModelTest {
     }
 
     @Test
-    fun `test loadData`() = runTest(testDispatcher) {
+    fun testLoadData() = runTest(testDispatcher) {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(

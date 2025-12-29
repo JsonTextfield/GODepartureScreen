@@ -34,8 +34,11 @@ class SetFavouriteStationUseCaseTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * test invoke adds station codes to favourites if not already present
+     */
     @Test
-    fun `test invoke adds station codes to favourites if not already present`() = runTest {
+    fun test1() = runTest {
         val station = Station(
             code = "AB,CD",
             name = "Test Station",
@@ -48,8 +51,11 @@ class SetFavouriteStationUseCaseTest {
         assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStations().first())
     }
 
+    /**
+     * test invoke removes station codes from favourites if already present
+     */
     @Test
-    fun `test invoke removes station codes from favourites if already present`() = runTest {
+    fun test2() = runTest {
         val station = Station(
             code = "AB,CD",
             name = "Test Station",
