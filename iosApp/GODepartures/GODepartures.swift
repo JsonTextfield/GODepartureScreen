@@ -95,7 +95,6 @@ struct Provider: AppIntentTimelineProvider {
                 )
             }
         } catch {
-
         }
 
         return SimpleEntry(
@@ -124,9 +123,9 @@ struct Provider: AppIntentTimelineProvider {
                     name: "Lakeshore East",
                     destination: "Durham College Oshawa GO",
                     platform: "9 & 10",
-                    departureTime: Kotlinx_datetimeInstant.companion
+                    departureTime: KotlinInstant.companion
                         .fromEpochMilliseconds(epochMilliseconds: 180_000),
-                    lastUpdated: Kotlinx_datetimeInstant.companion
+                    lastUpdated: KotlinInstant.companion
                         .fromEpochMilliseconds(epochMilliseconds: 0),
                     color: 0xFF56_789F_0000_0000,
                     tripOrder: 1,

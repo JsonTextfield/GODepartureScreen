@@ -81,6 +81,19 @@ class DataStorePreferencesRepository(
         onSetFavouriteStations(favouriteStations)
     }
 
+    override fun getReadAlerts(): Flow<Set<String>> {
+        return dataStore.data.map { preferences ->
+            preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
+        }
+    }
+
+    override suspend fun addReadAlert(id: String) {
+        dataStore.edit { preferences ->
+            val readAlerts = preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
+            preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] = readAlerts + id
+        }
+    }
+
     override fun getFavouriteStations(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
             preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] ?: emptySet()

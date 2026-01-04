@@ -37,4 +37,11 @@ class FakePreferencesRepository : IPreferencesRepository {
     override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
         favouriteStationsFlow.value = favouriteStations
     }
+
+    private val readAlertsFlow = MutableStateFlow(emptySet<String>())
+    override fun getReadAlerts(): Flow<Set<String>> = readAlertsFlow
+
+    override suspend fun addReadAlert(id: String) {
+        readAlertsFlow.value += id
+    }
 }

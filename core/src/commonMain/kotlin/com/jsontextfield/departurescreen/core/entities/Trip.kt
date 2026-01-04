@@ -1,8 +1,8 @@
 package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.ui.graphics.Color
-import kotlinx.datetime.Instant
 import kotlin.time.DurationUnit
+import kotlin.time.Instant
 
 data class Trip(
     val id: String,

@@ -1,10 +1,16 @@
 package com.jsontextfield.departurescreen.core.entities
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Instant
 
 data class Alert(
     val id: String,
-    val date: Instant,
+    val date: Instant = Instant.fromEpochMilliseconds(0),
     val affectedLines: List<String> = emptyList(),
     val affectedStations: List<String> = emptyList(),
     private val subjectEn: String = "",
@@ -13,11 +19,15 @@ data class Alert(
     private val bodyFr: String = "",
     val isRead: Boolean = false,
 ) {
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    val dateDifference: Duration =
+        Clock.System.now().toLocalDateTime(TimeZone.of("America/Toronto")).toInstant(TimeZone.UTC) - date
+
     fun getSubject(language: String): String {
-        return if ("fr" in language) subjectFr else subjectEn
+        return subjectFr.takeIf { "fr" in language && it.isNotEmpty() } ?: subjectEn
     }
 
     fun getBody(language: String): String {
-        return if ("fr" in language) bodyFr else bodyEn
+        return bodyFr.takeIf { "fr" in language && it.isNotEmpty() } ?: bodyEn
     }
 }

@@ -9,4 +9,5 @@ data class Action(
     val onClick: (() -> Unit)? = null,
     val menuContent: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     val isVisible: Boolean = true,
+    val isAlertIndicatorVisible: Boolean = false,
 )

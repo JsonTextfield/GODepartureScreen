@@ -47,6 +47,7 @@ val lineColours = mapOf(
     "LW" to Color(0xFF98002E),
     "LE" to Color(0xFFFF0D00),
     "KI" to Color(0xFF00853E),
+    "GT" to Color(0xFF00853E),
     "ST" to Color(0xFF794500),
     "RH" to Color(0xFF0099C7),
     "BR" to Color(0xFF003767),

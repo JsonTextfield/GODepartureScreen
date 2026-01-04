@@ -57,9 +57,9 @@ import com.jsontextfield.departurescreen.widget.config.WidgetConfigDataStore
 import com.jsontextfield.departurescreen.widget.ui.components.RefreshButton
 import com.jsontextfield.departurescreen.widget.ui.components.WidgetTripListHeaderRow
 import com.jsontextfield.departurescreen.widget.ui.components.WidgetTripListItem
-import kotlinx.datetime.Instant
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 class DeparturesWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode = SizeMode.Responsive(

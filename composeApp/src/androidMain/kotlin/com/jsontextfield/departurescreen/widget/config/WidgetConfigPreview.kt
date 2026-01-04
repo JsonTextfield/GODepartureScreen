@@ -24,7 +24,7 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
 @Composable

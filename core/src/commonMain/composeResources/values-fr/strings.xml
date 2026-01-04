@@ -20,6 +20,7 @@
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">Tous</string>
+    <string name="unread">Non lu</string>
     <string name="light_mode">Lumière</string>
     <string name="dark_mode">Sombre</string>
     <string name="system_default">Défaut</string>
@@ -36,6 +37,9 @@
     <string name="scroll_to_top">Faire défiler vers le haut</string>
     <string name="bus">Autobus</string>
     <string name="train">Train</string>
+    <string name="day_difference">%1$s j</string>
+    <string name="hour_difference">%1$s h</string>
+    <string name="minute_difference">%1$s m</string>
     <plurals name="number_of_cars">
         <item quantity="one">%1$s voiture</item>
         <item quantity="other">%1$s voitures</item>

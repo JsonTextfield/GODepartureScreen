@@ -49,7 +49,8 @@ fun ActionBar(
                     } else {
                         action.onClick?.invoke()
                     }
-                }
+                },
+                isAlertIndicatorVisible = action.isAlertIndicatorVisible,
             )
 
             if (action.menuContent != null && openMenuIndex == index) {
@@ -71,7 +72,8 @@ fun ActionBar(
             MenuItem(
                 icon = Res.drawable.rounded_more_vert_24,
                 tooltip = stringResource(Res.string.more),
-                onClick = { showOverflowMenu = true }
+                onClick = { showOverflowMenu = true },
+                isAlertIndicatorVisible = overflowActions.any { it.isAlertIndicatorVisible }
             )
 
             OverflowMenu(
@@ -93,7 +95,7 @@ fun getActions(
 ): List<Action> {
     val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
-        icon = if (uiState.also { println("station: ${it.selectedStation.toString()}") }.selectedStation?.isFavourite == true) {
+        icon = if (uiState.selectedStation?.isFavourite == true) {
             Res.drawable.round_star_24
         } else {
             Res.drawable.round_star_border_24
@@ -144,6 +146,7 @@ fun getActions(
         icon = Res.drawable.round_bus_alert_24,
         tooltip = stringResource(Res.string.alerts),
         onClick = navigationActions.onShowAlerts,
+        isAlertIndicatorVisible = uiState.unreadAlertsCount > 0,
     )
 
     val addWidget = Action(

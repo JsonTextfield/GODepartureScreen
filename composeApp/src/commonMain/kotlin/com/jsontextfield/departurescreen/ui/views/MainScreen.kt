@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
@@ -82,7 +83,10 @@ fun MainScreen(
                             Text(
                                 text = uiState.selectedStation?.name.orEmpty(),
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(11 / 12f).basicMarquee(),
+                                modifier = Modifier
+                                    .widthIn(max = 400.dp)
+                                    .fillMaxWidth(11 / 12f)
+                                    .basicMarquee(),
                             )
                         }
                     },
@@ -136,21 +140,22 @@ fun MainScreen(
             }
 
             Status.LOADED -> {
-                Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding())) {
-                    uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
-                        AnimatedVisibility(data.size > 1) {
-                            TripFilterChipStrip(
-                                data = data.sortedBy { it.code },
-                                selectedItems = uiState.visibleTrains,
-                                onSelectionChanged = onSetVisibleTrains,
-                            )
-                        }
-                    }
-                    Surface {
-                        PullToRefreshBox(
-                            isRefreshing = uiState.isRefreshing,
-                            onRefresh = onRefresh,
-                        ) {
+                Surface {
+                    PullToRefreshBox(
+                        isRefreshing = uiState.isRefreshing,
+                        onRefresh = onRefresh,
+                        modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
+                    ) {
+                        Column {
+                            uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
+                                AnimatedVisibility(data.size > 1) {
+                                    TripFilterChipStrip(
+                                        data = data.sortedBy { it.code },
+                                        selectedItems = uiState.visibleTrains,
+                                        onSelectionChanged = onSetVisibleTrains,
+                                    )
+                                }
+                            }
                             TrainList(trips = uiState.allTrips.filter { it.isVisible })
                         }
                     }

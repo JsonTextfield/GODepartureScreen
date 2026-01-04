@@ -24,7 +24,8 @@ fun OverflowMenu(
                     onClick = {
                         action.onClick?.invoke()
                         onDismissRequest() // Close the overflow menu
-                    }
+                    },
+                    isAlertIndicatorVisible = action.isAlertIndicatorVisible,
                 )
             } else {
                 // This is a complex action that has a nested menu

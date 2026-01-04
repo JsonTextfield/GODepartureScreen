@@ -72,6 +72,8 @@ class MainViewModel(
             _uiState.value = errorState
         }.launchIn(viewModelScope)
         loadData()
+
+        getUnreadAlertsCount()
     }
 
     fun loadData() {
@@ -125,7 +127,6 @@ class MainViewModel(
                 } else {
                     _timeRemaining.value -= 1000
                 }
-                Logger.withTag("MainViewModel").d("Time remaining: ${timeRemaining.value}")
                 delay(1000)
             }
         }.also {
@@ -199,6 +200,21 @@ class MainViewModel(
         timerJob = null
     }
 
+    fun getUnreadAlertsCount() {
+        combine(
+            preferencesRepository.getReadAlerts(),
+            goTrainDataSource.getServiceAlerts(),
+            goTrainDataSource.getInformationAlerts(),
+        ) { readAlerts, serviceAlertsList, informationAlertsList ->
+            val count = (serviceAlertsList + informationAlertsList).count {
+                it.id !in readAlerts
+            }
+            _uiState.update {
+                it.copy(unreadAlertsCount = count)
+            }
+        }.launchIn(viewModelScope)
+    }
+
     override fun onCleared() {
         super.onCleared()
         stop()
@@ -213,6 +229,7 @@ data class MainUIState(
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
     val isRefreshing: Boolean = false,
+    val unreadAlertsCount: Int = 0,
 ) {
     val allTrips: List<Trip> = _allTrips.map { train ->
         train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())

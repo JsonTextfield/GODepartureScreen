@@ -38,6 +38,7 @@ fun SearchBar(textFieldState: TextFieldState) {
         lineLimits = TextFieldLineLimits.SingleLine,
         modifier = Modifier
             .widthIn(max = 300.dp)
+            .heightIn(max = 64.dp)
             .padding(vertical = 12.dp)
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,

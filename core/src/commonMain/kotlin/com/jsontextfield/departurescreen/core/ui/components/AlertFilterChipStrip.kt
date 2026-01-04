@@ -25,17 +25,19 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.all
 import departure_screen.core.generated.resources.filter
+import departure_screen.core.generated.resources.unread
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TripFilterChipStrip(
-    data: List<Trip>,
+fun AlertFilterChipStrip(
+    data: List<String>,
     selectedItems: Set<String>,
-    onSelectionChanged: (Set<String>) -> Unit,
+    isUnreadSelected: Boolean = false,
+    onSelectionChanged: (selectedLines: Set<String>, isUnreadSelected: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val filter = stringResource(Res.string.filter)
@@ -55,9 +57,9 @@ fun TripFilterChipStrip(
     ) {
         item {
             FilterChip(
-                selected = selectedItems.isEmpty() || data.isEmpty(),
+                selected = !isUnreadSelected && (selectedItems.isEmpty() || data.isEmpty()),
                 onClick = {
-                    onSelectionChanged(emptySet())
+                    onSelectionChanged(emptySet(), false)
                 },
                 label = {
                     Text(
@@ -79,31 +81,51 @@ fun TripFilterChipStrip(
                 shape = RoundedCornerShape(4.dp),
             )
         }
-        itemsIndexed(data, key = { _, train -> train.code }) { index, train ->
+        item {
             FilterChip(
-                selected = train.code in selectedItems,
+                selected = isUnreadSelected,
                 onClick = {
-                    val newSelection = if (train.code in selectedItems) {
-                        selectedItems - train.code
-                    } else {
-                        selectedItems + train.code
-                    }
-                    onSelectionChanged(newSelection)
+                    onSelectionChanged(emptySet(), true)
                 },
                 label = {
                     Text(
-                        text = train.code,
+                        stringResource(Res.string.unread),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                },
+                modifier = Modifier
+                    .animateItem()
+                    .semantics {
+                        collectionItemInfo = CollectionItemInfo(
+                            rowIndex = 0,
+                            columnIndex = 0,
+                            rowSpan = 1,
+                            columnSpan = 1,
+                        )
+                    },
+                shape = RoundedCornerShape(4.dp),
+            )
+        }
+        itemsIndexed(data, key = { _, lineCode -> lineCode }) { index, lineCode ->
+            FilterChip(
+                selected = lineCode in selectedItems,
+                onClick = {
+                    val newSelection = if (lineCode in selectedItems) {
+                        selectedItems - lineCode
+                    } else {
+                        selectedItems + lineCode
+                    }
+                    onSelectionChanged(newSelection, false)
+                },
+                label = {
+                    Text(
+                        text = lineCode,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = if (train.code in selectedItems) Color.White else Color.Unspecified
+                            color = if (lineCode in selectedItems) Color.White else Color.Unspecified
                         ),
-                        modifier = Modifier.padding(8.dp).semantics {
-                            contentDescription = if (train.isBus) {
-                                train.code
-                            } else {
-                                train.name
-                            }
-                        }
+                        modifier = Modifier.padding(8.dp)
                     )
                 },
                 modifier = Modifier
@@ -118,7 +140,7 @@ fun TripFilterChipStrip(
                     },
                 shape = RoundedCornerShape(4.dp),
                 colors = FilterChipDefaults.filterChipColors().copy(
-                    selectedContainerColor = train.color,
+                    selectedContainerColor = lineColours[lineCode] ?: Color.Gray,
                 )
             )
         }
