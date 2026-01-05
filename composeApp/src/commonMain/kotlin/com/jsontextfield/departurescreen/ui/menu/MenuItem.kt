@@ -40,7 +40,7 @@ fun MenuItem(
                 positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
                 tooltip = {
                     PlainTooltip {
-                        Text(text = tooltip, modifier = Modifier.padding(10.dp))
+                        Text(text = tooltip, modifier = Modifier.padding(4.dp))
                     }
                 },
             ) {
