@@ -50,8 +50,8 @@ fun StationListItem(
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.background(
                             color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = RoundedCornerShape(12.dp),
-                        ).padding(horizontal = 4.dp)
+                            shape = RoundedCornerShape(4.dp),
+                        ).padding(horizontal = 4.dp, vertical = 2.dp)
                     )
                 }
             }
