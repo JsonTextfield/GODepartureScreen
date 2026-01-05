@@ -2,7 +2,6 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,11 +36,8 @@ class AlertsViewModelTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            GetSelectedStationUseCase(
-                goTrainDataSource = goTrainDataSource,
-                preferencesRepository = preferencesRepository,
-            ),
             goTrainDataSource,
+            preferencesRepository,
         )
 
         advanceUntilIdle()
@@ -60,11 +56,8 @@ class AlertsViewModelTest {
         val goTrainDataSource = FakeGoTrainDataSource()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            GetSelectedStationUseCase(
-                goTrainDataSource = goTrainDataSource,
-                preferencesRepository = preferencesRepository,
-            ),
-            goTrainDataSource,
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
         )
 
         advanceUntilIdle()
