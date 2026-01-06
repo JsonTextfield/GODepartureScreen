@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.widget.ui
 
 import android.content.Context
@@ -59,6 +61,7 @@ import com.jsontextfield.departurescreen.widget.ui.components.WidgetTripListHead
 import com.jsontextfield.departurescreen.widget.ui.components.WidgetTripListItem
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 class DeparturesWidget : GlanceAppWidget() {

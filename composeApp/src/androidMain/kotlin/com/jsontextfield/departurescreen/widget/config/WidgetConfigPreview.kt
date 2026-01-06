@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.widget.config
 
 import androidx.compose.foundation.background
@@ -26,6 +28,7 @@ import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun WidgetConfigPreview(

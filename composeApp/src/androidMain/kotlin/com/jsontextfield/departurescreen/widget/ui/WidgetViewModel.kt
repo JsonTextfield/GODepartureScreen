@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.widget.ui
 
 import androidx.lifecycle.ViewModel
@@ -28,6 +30,7 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class WidgetViewModel(
     private val getSelectedStationUseCase: GetSelectedStationUseCase,
