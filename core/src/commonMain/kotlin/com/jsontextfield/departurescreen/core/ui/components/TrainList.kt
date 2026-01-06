@@ -40,7 +40,7 @@ fun TrainList(
                 LayoutDirection.Ltr
             ).value - WindowInsets.safeDrawing.asPaddingValues()
             .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = min((widthDp / 320).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+    val columns = min((widthDp / 360).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {
