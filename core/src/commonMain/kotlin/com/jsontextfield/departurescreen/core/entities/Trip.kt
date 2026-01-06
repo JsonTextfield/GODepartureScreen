@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.ui.graphics.Color
 import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class Trip(

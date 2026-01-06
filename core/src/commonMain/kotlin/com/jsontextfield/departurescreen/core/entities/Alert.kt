@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.entities
 
 import kotlinx.datetime.TimeZone
@@ -6,6 +8,7 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class Alert(
