@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
 import kotlin.math.ceil
-import kotlin.math.min
 
 @Composable
 fun TrainList(
@@ -40,7 +39,7 @@ fun TrainList(
                 LayoutDirection.Ltr
             ).value - WindowInsets.safeDrawing.asPaddingValues()
             .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = min((widthDp / 360).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+    val columns = (widthDp / 360).coerceIn(1, 4)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {

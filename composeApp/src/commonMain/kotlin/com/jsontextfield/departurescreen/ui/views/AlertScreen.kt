@@ -115,7 +115,7 @@ fun AlertsScreen(
                             LayoutDirection.Ltr
                         ).value - WindowInsets.safeDrawing.asPaddingValues()
                         .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-                val columns = (widthDp / 320).coerceIn(1, 4)
+                val columns = (widthDp / 320).coerceAtLeast(1)
 
                 val gridState = rememberLazyStaggeredGridState()
                 val visibleItems by remember {
