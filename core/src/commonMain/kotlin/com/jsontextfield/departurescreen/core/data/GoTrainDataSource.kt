@@ -3,6 +3,7 @@
 package com.jsontextfield.departurescreen.core.data
 
 import androidx.compose.ui.graphics.Color
+import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -26,6 +27,7 @@ import kotlinx.datetime.parse
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -96,15 +98,23 @@ class GoTrainDataSource(
 
     override fun getServiceAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
-            emit(processAlerts(departureScreenAPI.getServiceAlerts()))
-            delay(60_000)
+            try {
+                emit(processAlerts(departureScreenAPI.getServiceAlerts()))
+            } catch (exception: Exception) {
+                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+            }
+            delay(1.minutes)
         }
     }
 
     override fun getInformationAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
-            emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
-            delay(60_000)
+            try {
+                emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
+            } catch (exception: Exception) {
+                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+            }
+            delay(1.minutes)
         }
     }
 
@@ -142,13 +152,22 @@ class GoTrainDataSource(
     }
 
     private fun processAlerts(alerts: Alerts): List<Alert> {
+        val allStations = stations.associate {
+            it.code to it.name
+        }
         return try {
             alerts.messages?.message?.map { message ->
                 Alert(
                     id = message.code,
                     date = Instant.parse(message.postedDateTime, inFormatter),
-                    affectedLines = message.lines.map { it.code },
-                    affectedStations = message.stops.map { it.code },
+                    affectedLines = message.lines.map { if (it.code == "GT") "KI" else it.code },
+                    affectedStations = allStations.mapNotNull {
+                        if (message.stops.any { stop -> stop.code in it.key }) {
+                            it.value
+                        } else {
+                            null
+                        }
+                    },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
                     bodyEn = message.bodyEnglish.orEmpty().trim(),

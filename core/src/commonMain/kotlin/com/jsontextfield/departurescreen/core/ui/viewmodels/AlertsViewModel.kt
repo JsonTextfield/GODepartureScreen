@@ -4,7 +4,6 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
@@ -58,42 +57,15 @@ class AlertsViewModel(
             goTrainDataSource.getServiceAlerts(),
             goTrainDataSource.getInformationAlerts(),
         ) { readAlerts, serviceAlerts, informationAlerts ->
-            val allStations = goTrainDataSource.getAllStations().associate {
-                it.code to it.name
-            }
-            val replaceGTWithKI: (String) -> String = { lineCode ->
-                if (lineCode == "GT") {
-                    "KI"
-                } else {
-                    lineCode
-                }
-            }
             val allLines = (serviceAlerts + informationAlerts)
                 .flatMap { it.affectedLines }
-                .map(replaceGTWithKI)
                 .distinct()
                 .sorted()
             val allServiceAlerts = serviceAlerts.map {
-                it.copy(
-                    isRead = it.id in readAlerts,
-                    affectedLines = it.affectedLines.map(replaceGTWithKI),
-                    affectedStations = it.affectedStations.map { stationCode ->
-                        allStations.firstNotNullOf { (code, name) ->
-                            if (stationCode in code) name else null
-                        }
-                    },
-                )
+                it.copy(isRead = it.id in readAlerts)
             }
             val allInformationAlerts = informationAlerts.map {
-                it.copy(
-                    isRead = it.id in readAlerts,
-                    affectedLines = it.affectedLines.map(replaceGTWithKI),
-                    affectedStations = it.affectedStations.map { stationCode ->
-                        allStations.firstNotNullOf { (code, name) ->
-                            if (stationCode in code) name else null
-                        }
-                    },
-                )
+                it.copy(isRead = it.id in readAlerts)
             }
             _uiState.update { uiState ->
                 uiState.copy(
@@ -101,7 +73,6 @@ class AlertsViewModel(
                     isRefreshing = false,
                     allServiceAlerts = allServiceAlerts,
                     allInformationAlerts = allInformationAlerts,
-                    selectedLines = uiState.selectedLines,
                     allLines = allLines,
                 )
             }
@@ -116,7 +87,6 @@ class AlertsViewModel(
     }
 
     fun readAlert(id: String) {
-        Logger.withTag(AlertsViewModel::class.simpleName.toString()).d("Read alert $id")
         viewModelScope.launch {
             preferencesRepository.addReadAlert(id)
         }
@@ -142,14 +112,11 @@ data class AlertsUIState(
     val isUnreadSelected: Boolean = false,
     val isRefreshing: Boolean = false,
 ) {
-    val serviceAlerts: List<Alert> = allServiceAlerts.filter { alert ->
+    private val filterPredicate: (Alert) -> Boolean = { alert ->
         (isUnreadSelected && alert.isRead) xor (selectedLines.isEmpty() || alert.affectedLines.any { lineCode ->
             lineCode in selectedLines
         })
     }
-    val informationAlerts: List<Alert> = allInformationAlerts.filter { alert ->
-        (isUnreadSelected && alert.isRead) xor (selectedLines.isEmpty() || alert.affectedLines.any { lineCode ->
-            lineCode in selectedLines
-        })
-    }
+    val serviceAlerts: List<Alert> = allServiceAlerts.filter(filterPredicate)
+    val informationAlerts: List<Alert> = allInformationAlerts.filter(filterPredicate)
 }
