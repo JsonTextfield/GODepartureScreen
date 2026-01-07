@@ -17,6 +17,10 @@
     <string name="sort_by_line">Sort by line</string>
     <string name="time">Time</string>
     <string name="line">Line</string>
+    <string name="route">Route</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="departure">Departure</string>
+    <string name="destination">Destination</string>
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">All</string>

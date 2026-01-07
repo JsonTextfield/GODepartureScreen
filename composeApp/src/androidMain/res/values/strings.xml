@@ -15,6 +15,10 @@
     <string name="opacity">Opacity</string>
     <string name="line">Line</string>
     <string name="time">Time</string>
+    <string name="route">Route</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="departure">Departure</string>
+    <string name="destination">Destination</string>
     <string name="sort_by">Sort by…</string>
     <string name="station">Station</string>
     <string name="widget_settings">Widget settings</string>

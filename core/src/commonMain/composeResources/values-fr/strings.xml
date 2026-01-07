@@ -17,6 +17,10 @@
     <string name="sort_by_line">Trier par la ligne</string>
     <string name="time">Heure</string>
     <string name="line">Ligne</string>
+    <string name="route">Ligne</string>
+    <string name="scheduled">Programmé</string>
+    <string name="departure">Départ</string>
+    <string name="destination">Destination</string>
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">Tous</string>
