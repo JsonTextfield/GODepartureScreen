@@ -122,7 +122,7 @@ class AlertsViewModel(
         }
     }
 
-    fun filterLines(lines: Set<String>, isUnreadSelected: Boolean) {
+    fun setFilter(lines: Set<String>, isUnreadSelected: Boolean) {
         _uiState.update {
             it.copy(
                 selectedLines = lines,

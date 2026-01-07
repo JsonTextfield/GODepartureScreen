@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
@@ -48,12 +51,14 @@ import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
+import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.information_alerts
 import departure_screen.composeapp.generated.resources.service_alerts
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -69,7 +74,7 @@ fun AlertsScreen(
         onBackPressed = onBackPressed,
         onRefresh = alertsViewModel::refresh,
         onRetryClicked = alertsViewModel::loadData,
-        onLinesSelected = alertsViewModel::filterLines,
+        onLinesSelected = alertsViewModel::setFilter,
         onReadAlert = alertsViewModel::readAlert,
     )
 }
@@ -84,6 +89,8 @@ fun AlertsScreen(
     onReadAlert: (String) -> Unit = {},
     onLinesSelected: (Set<String>, Boolean) -> Unit = { _, _ -> },
 ) {
+    val scope = rememberCoroutineScope()
+    val gridState = rememberLazyStaggeredGridState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -96,6 +103,25 @@ fun AlertsScreen(
                 },
                 modifier = Modifier.shadow(4.dp)
             )
+        },
+        floatingActionButton = {
+            Box(
+                modifier = Modifier.padding(
+                    end = TopAppBarDefaults
+                        .windowInsets
+                        .asPaddingValues()
+                        .calculateEndPadding(LayoutDirection.Ltr),
+                ),
+            ) {
+                ScrollToTopButton(
+                    isVisible = gridState.firstVisibleItemIndex > 4,
+                    onClick = {
+                        scope.launch {
+                            gridState.animateScrollToItem(0)
+                        }
+                    }
+                )
+            }
         },
     ) { innerPadding ->
         when (uiState.status) {
@@ -117,7 +143,6 @@ fun AlertsScreen(
                         .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
                 val columns = (widthDp / 320).coerceAtLeast(1)
 
-                val gridState = rememberLazyStaggeredGridState()
                 val visibleItems by remember {
                     derivedStateOf {
                         gridState.layoutInfo.visibleItemsInfo
