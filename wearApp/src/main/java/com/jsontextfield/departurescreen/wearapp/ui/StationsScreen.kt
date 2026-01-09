@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.jsontextfield.departurescreen.wearapp.ui
 
@@ -16,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +35,7 @@ import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
@@ -86,7 +83,6 @@ fun StationsScreen(
                 ).value - WindowInsets.safeDrawing.asPaddingValues()
                 .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
         val columns = (widthDp / 600).coerceIn(1, 4)
-        Surface {
             TransformingLazyColumn(
                 state = gridState,
                 modifier = Modifier
@@ -117,7 +113,7 @@ fun StationsScreen(
                                     } else if (!station.isEnabled) {
                                         MaterialTheme.colorScheme.surfaceContainerLow
                                     } else {
-                                        MaterialTheme.colorScheme.surface
+                                        MaterialTheme.colorScheme.background
                                     }
                             )
                             .clickable {
@@ -141,7 +137,6 @@ fun StationsScreen(
                     }
                 }
             }
-        }
     }
 
     Box(

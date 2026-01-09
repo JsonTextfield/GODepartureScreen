@@ -8,20 +8,10 @@ import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.network.API_KEY
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.http.URLProtocol
-import io.ktor.http.encodedPath
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import okio.Path.Companion.toPath
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -31,31 +21,6 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val networkModule = module {
-    single<HttpClient> {
-        HttpClient {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }
-                )
-            }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.INFO
-            }
-            defaultRequest {
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = "api.openmetrolinx.com"
-                    encodedPath = "/OpenDataAPI/api/V1/"
-                    parameters.append("key", API_KEY)
-                }
-            }
-        }
-    }
     singleOf(::DepartureScreenAPI)
 }
 
@@ -83,6 +48,8 @@ val preferencesModule = module {
 }
 
 val viewModelModule = module {
+    factoryOf(::GetSelectedStationUseCase)
+    factoryOf(::SetFavouriteStationUseCase)
     factoryOf(::MainViewModel)
 }
 
