@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.jsontextfield.departurescreen.wearapp"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.jsontextfield.departurescreen.wearapp"
-        minSdk = 28
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -24,8 +24,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     useLibrary("wear-sdk")
     buildFeatures {
@@ -59,7 +59,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.tiles.tooling)
 
-    implementation("androidx.compose.material3:material3:1.4.0")
+    implementation(libs.androidx.compose.material3)
 
     implementation(libs.material.icons.extended)
 
