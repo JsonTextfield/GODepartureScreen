@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.ui.graphics.Color
-import kotlinx.datetime.Instant
 import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 data class Trip(
     val id: String,
@@ -18,6 +21,8 @@ data class Trip(
     val isVisible: Boolean = true,
     val isCancelled: Boolean = false,
     val isBus: Boolean = false,
+    val cars: String? = null,
+    val busType: String? = null,
 ) {
     val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"

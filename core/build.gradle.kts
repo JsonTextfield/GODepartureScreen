@@ -73,8 +73,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.material.icons.extended)
-
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
@@ -89,6 +87,8 @@ kotlin {
 
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+
+            implementation(libs.touchlab.kermit)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

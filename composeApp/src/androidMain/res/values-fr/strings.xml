@@ -1,7 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Départs GO</string>
+    <string name="platform_number">Quai %s</string>
+    <string name="platform">Quai</string>
     <string name="express">Express</string>
+    <string name="min">min</string>
     <string name="cancelled">Annullée</string>
     <string name="updated">Mis à jour à %s</string>
+    <string name="error">Une erreur s\'est produite</string>
+    <string name="retry">Réessayer</string>
+    <string name="widget_description">Affiche les informations de départ pour l\'arrêt actuellement sélectionné dans l\'application</string>
+    <string name="done">Fini</string>
+    <string name="cancel">Annuler</string>
+    <string name="opacity">Opacité</string>
+    <string name="line">Ligne</string>
+    <string name="time">Heure</string>
+    <string name="route">Ligne</string>
+    <string name="scheduled">Programmé</string>
+    <string name="departure">Départ</string>
+    <string name="destination">Destination</string>
+    <string name="sort_by">Trier par…</string>
+    <string name="station">Station</string>
+    <string name="widget_settings">Paramètres du widget</string>
+    <string name="loading">Chargement…</string>
+    <plurals name="number_of_cars">
+        <item quantity="one">%s voiture</item>
+        <item quantity="other">%s voitures</item>
+        <item quantity="many">%s voitures</item>
+    </plurals>
+
+    <plurals name="minutes_content_description">
+        <item quantity="one">Partira dans %1$s minute</item>
+        <item quantity="other">Partira dans %1$s minutes</item>
+        <item quantity="many">Partira dans %1$s minutes</item>
+    </plurals>
 </resources>

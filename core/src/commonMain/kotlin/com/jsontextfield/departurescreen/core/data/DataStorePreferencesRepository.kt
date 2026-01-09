@@ -12,49 +12,56 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DataStorePreferencesRepository(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val onSetStation: (String) -> Unit = {},
+    private val onSetSortMode: (SortMode) -> Unit = {},
+    private val onSetVisibleTrains: (Set<String>) -> Unit = {},
+    private val onSetFavouriteStations: (Set<String>) -> Unit = {},
 ) : IPreferencesRepository {
     override fun getVisibleTrains(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey("hiddenTrains")] ?: emptySet()
+            preferences[stringSetPreferencesKey(HIDDEN_TRAINS_KEY)] ?: emptySet()
         }
     }
 
     override suspend fun setVisibleTrains(visibleTrains: Set<String>) {
         dataStore.edit { preferences ->
-            preferences[stringSetPreferencesKey("hiddenTrains")] = visibleTrains
+            preferences[stringSetPreferencesKey(HIDDEN_TRAINS_KEY)] = visibleTrains
         }
+        onSetVisibleTrains(visibleTrains)
     }
 
     override fun getSortMode(): Flow<SortMode> {
         return dataStore.data.map { preferences ->
             SortMode.entries.firstOrNull {
-                it.ordinal == preferences[intPreferencesKey("sortMode")]
+                it.ordinal == preferences[intPreferencesKey(SORT_MODE_KEY)]
             } ?: SortMode.TIME
         }
     }
 
     override suspend fun setSortMode(sortMode: SortMode) {
         dataStore.edit { preferences ->
-            preferences[intPreferencesKey("sortMode")] = sortMode.ordinal
+            preferences[intPreferencesKey(SORT_MODE_KEY)] = sortMode.ordinal
         }
+        onSetSortMode(sortMode)
     }
 
     override fun getSelectedStationCode(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey("selectedStationCode")] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] ?: "UN"
         }
     }
 
     override suspend fun setSelectedStationCode(stationCode: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey("selectedStationCode")] = stationCode
+            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] = stationCode
         }
+        onSetStation(stationCode)
     }
 
     override suspend fun setTheme(theme: ThemeMode) {
         dataStore.edit { preferences ->
-            val key = intPreferencesKey("theme")
+            val key = intPreferencesKey(THEME_KEY)
             preferences[key] = theme.ordinal
         }
     }
@@ -62,20 +69,34 @@ class DataStorePreferencesRepository(
     override fun getTheme(): Flow<ThemeMode> {
         return dataStore.data.map { preferences ->
             ThemeMode.entries.firstOrNull {
-                it.ordinal == preferences[intPreferencesKey("theme")]
+                it.ordinal == preferences[intPreferencesKey(THEME_KEY)]
             } ?: ThemeMode.DEFAULT
         }
     }
 
     override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
         dataStore.edit { preferences ->
-            preferences[stringSetPreferencesKey("favouriteStations")] = favouriteStations
+            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] = favouriteStations
+        }
+        onSetFavouriteStations(favouriteStations)
+    }
+
+    override fun getReadAlerts(): Flow<Set<String>> {
+        return dataStore.data.map { preferences ->
+            preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
+        }
+    }
+
+    override suspend fun addReadAlert(id: String) {
+        dataStore.edit { preferences ->
+            val readAlerts = preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
+            preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] = readAlerts + id
         }
     }
 
     override fun getFavouriteStations(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey("favouriteStations")] ?: emptySet()
+            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] ?: emptySet()
         }
     }
 }

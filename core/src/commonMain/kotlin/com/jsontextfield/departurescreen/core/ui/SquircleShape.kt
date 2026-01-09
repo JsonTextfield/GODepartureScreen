@@ -21,16 +21,18 @@ private class SquircleShapeImpl() : Shape {
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        val n = E
+        val n = 2.0 / E
         val path = Path()
-        val w = size.width
-        val h = size.height
+        val side = size.width
+        val radius = side / 2
         val steps = 100
         for (i in 0..steps) {
             val theta = (2 * PI * i) / steps
-            val x = (w / 2) + (w / 2) * sign(cos(theta)) * abs(cos(theta)).pow(2.0 / n)
-            val y = (h / 2) + (h / 2) * sign(sin(theta)) * abs(sin(theta)).pow(2.0 / n)
-            if (i == 0) path.moveTo(x.toFloat(), y.toFloat()) else path.lineTo(x.toFloat(), y.toFloat())
+            val cosTheta = cos(theta)
+            val sinTheta = sin(theta)
+            val x = (radius * sign(cosTheta) * abs(cosTheta).pow(n) + radius).toFloat()
+            val y = (radius * sign(sinTheta) * abs(sinTheta).pow(n) + radius).toFloat()
+            if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         path.close()
         return Outline.Generic(path)

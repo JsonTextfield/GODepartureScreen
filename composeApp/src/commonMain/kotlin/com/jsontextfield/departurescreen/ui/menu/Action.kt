@@ -1,12 +1,13 @@
 package com.jsontextfield.departurescreen.ui.menu
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
+import org.jetbrains.compose.resources.DrawableResource
 
 data class Action(
-    val icon: ImageVector,
+    val icon: DrawableResource,
     val tooltip: String,
     val onClick: (() -> Unit)? = null,
     val menuContent: (@Composable (onDismiss: () -> Unit) -> Unit)? = null,
     val isVisible: Boolean = true,
+    val isAlertIndicatorVisible: Boolean = false,
 )

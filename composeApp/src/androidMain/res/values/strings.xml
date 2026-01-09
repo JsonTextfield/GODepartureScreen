@@ -1,7 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GO Departures</string>
+    <string name="platform_number">Platform %s</string>
+    <string name="platform">Platform</string>
     <string name="express">Express</string>
+    <string name="min">min</string>
     <string name="cancelled">Cancelled</string>
     <string name="updated">Updated %s</string>
+    <string name="error">An error occurred</string>
+    <string name="retry">Retry</string>
+    <string name="widget_description">Shows the departure information for the stop currently selected in the app</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="opacity">Opacity</string>
+    <string name="line">Line</string>
+    <string name="time">Time</string>
+    <string name="route">Route</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="departure">Departure</string>
+    <string name="destination">Destination</string>
+    <string name="sort_by">Sort by…</string>
+    <string name="station">Station</string>
+    <string name="widget_settings">Widget settings</string>
+    <string name="loading">Loading…</string>
+    <plurals name="number_of_cars">
+        <item quantity="one">%s car</item>
+        <item quantity="other">%s cars</item>
+    </plurals>
+
+    <plurals name="minutes_content_description">
+        <item quantity="one">Departing in %1$s minute</item>
+        <item quantity="other">Departing in %1$s minutes</item>
+    </plurals>
 </resources>

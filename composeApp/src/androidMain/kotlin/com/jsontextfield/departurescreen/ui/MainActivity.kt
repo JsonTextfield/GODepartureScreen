@@ -1,46 +1,72 @@
 package com.jsontextfield.departurescreen.ui
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalView
+import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.widget.MyAppWidgetReceiver
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.Main).launch {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                GlanceAppWidgetManager(this@MainActivity).setWidgetPreviews(MyAppWidgetReceiver::class)
+        enableEdgeToEdge()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            lifecycleScope.launch {
+                val glanceAppWidgetManager = GlanceAppWidgetManager(this@MainActivity)
+                glanceAppWidgetManager.setWidgetPreviews(MyAppWidgetReceiver::class)
             }
         }
-        enableEdgeToEdge()
         setContent {
-            val mainViewModel: MainViewModel = koinViewModel()
-            val uiState by mainViewModel.uiState.collectAsState(MainUIState())
+            val mainViewModel = koinViewModel<MainViewModel>()
+            val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
             val isAppearanceLightStatusBars = when (uiState.theme) {
                 ThemeMode.LIGHT -> true
                 ThemeMode.DARK -> false
                 ThemeMode.DEFAULT -> !isSystemInDarkTheme()
             }
             val view = LocalView.current
+            var isIntentProcessed by rememberSaveable { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                intent.extras?.getString("selectedStation")?.let { stationCode ->
+                    // called when launching from a widget for the first time
+                    if (!isIntentProcessed) {
+                        isIntentProcessed = true
+                        mainViewModel.setSelectedStation(stationCode)
+                    }
+                }
+            }
+            DisposableEffect(Unit) {
+                val listener = Consumer<Intent> { intent ->
+                    intent.extras?.getString("selectedStation")?.let { stationCode ->
+                        // called when launching from a widget while the activity is already running
+                        mainViewModel.setSelectedStation(stationCode)
+                    }
+                    setIntent(intent)
+                }
+                addOnNewIntentListener(listener)
+                onDispose { removeOnNewIntentListener(listener) }
+            }
             SideEffect {
                 val window = (view.context as Activity).window
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isAppearanceLightStatusBars

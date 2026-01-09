@@ -1,23 +1,25 @@
 [versions]
-agp = "8.13.0"
-datastore = "1.1.7"
-glanceAppwidget = "1.2.0-beta01"
-glanceMaterial3 = "1.1.1"
-glanceWearTiles = "1.0.0-alpha07"
-kotlin = "2.2.20"
+versionName = "1.12.0"
+versionCode = "42"
+agp = "8.13.2"
+datastore = "1.2.0"
+kotlin = "2.2.21"
 koin = "4.1.1"
-kotlinxDatetime = "0.6.1"
-ktor = "3.3.0"
-compose = "1.9.2"
-androidx-activityCompose = "1.10.1"
-compose-multiplatform = "1.9.0"
+kotlinxDatetime = "0.7.1"
+ktor = "3.3.3"
+compose = "1.10.0"
+androidx-activityCompose = "1.12.2"
+compose-multiplatform = "1.9.3"
 kotlinx-coroutines = "1.10.2"
 materialIconsExtended = "1.7.3"
-navigationCompose = "2.9.0"
+navigationCompose = "2.9.1"
 playServicesWearable = "19.0.0"
-composeBom = "2025.09.01"
-composeMaterial = "1.2.1"
-composeFoundation = "1.2.1"
+composeBom = "2025.12.01"
+composeMaterial = "1.5.6"
+composeFoundation = "1.5.6"
+composeMaterial3 = "1.5.6"
+kermit = "2.0.8"
+# Wear
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.0.1"
 tiles = "1.4.0"
@@ -27,7 +29,10 @@ tilesToolingPreview = "1.4.0"
 horologistComposeTools = "0.6.17"
 horologistTiles = "0.6.17"
 watchfaceComplicationsDataSourceKtx = "1.2.1"
-composeMaterial3 = "1.5.2"
+# Glance
+glanceAppwidget = "1.2.0-beta01"
+glanceMaterial3 = "1.1.1"
+glanceWearTiles = "1.0.0-alpha07"
 
 [libraries]
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
@@ -71,6 +76,7 @@ horologist-compose-tools = { group = "com.google.android.horologist", name = "ho
 horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
 androidx-watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
+touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

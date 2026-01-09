@@ -3,20 +3,22 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.core.data.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.WidgetViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -38,12 +40,23 @@ val dataModule = module {
 
 expect fun preferencesModule(): Module
 
+expect fun widgetModule(): Module
+
 val viewModelModule = module {
-    factoryOf(::DepartureScreenUseCase)
+    factoryOf(::GetSelectedStationUseCase)
+    factoryOf(::SetFavouriteStationUseCase)
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StationsViewModel)
-    viewModelOf(::WidgetViewModel)
+    viewModel { params ->
+        StationsViewModel(
+            getSelectedStationUseCase = get<GetSelectedStationUseCase>(),
+            setFavouriteStationUseCase = get<SetFavouriteStationUseCase>(),
+            goTrainDataSource = get<IGoTrainDataSource>(),
+            preferencesRepository = get<IPreferencesRepository>(),
+            selectedStationCode = params.getOrNull(String::class),
+        )
+    }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
@@ -54,6 +67,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             dataModule,
             viewModelModule,
             preferencesModule(),
+            widgetModule(),
         )
     }
 }

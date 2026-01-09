@@ -43,8 +43,8 @@ import androidx.wear.compose.material3.TimeText
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import com.jsontextfield.departurescreen.core.ui.Status
-import com.jsontextfield.departurescreen.core.ui.components.FilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
+import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
@@ -134,7 +134,7 @@ fun MainScreen(
                                 uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
                                     if (data.size > 1) {
                                         item {
-                                            FilterChipStrip(
+                                            TripFilterChipStrip(
                                                 data = data.sortedBy { it.code },
                                                 selectedItems = uiState.visibleTrains,
                                                 onSelectionChanged = onSetVisibleTrains,

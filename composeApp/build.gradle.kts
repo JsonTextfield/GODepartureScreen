@@ -61,8 +61,6 @@ kotlin {
 
             implementation(libs.navigation.compose)
 
-            implementation(libs.material.icons.extended)
-
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
@@ -96,8 +94,8 @@ android {
         applicationId = "com.jsontextfield.departurescreen.android"
         minSdk = 28
         targetSdk = 36
-        versionCode = 34
-        versionName = "1.9.3"
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
     }
     packaging {
         resources {

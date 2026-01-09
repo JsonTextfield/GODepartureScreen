@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/glance_default_loading_layout"
-    android:widgetCategory="home_screen"
-    android:widgetFeatures="reconfigurable"
+    android:widgetCategory="home_screen|keyguard"
     android:minWidth="210dp"
     android:minHeight="120dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="6000"
+    android:updatePeriodMillis="1800000"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:configure="com.jsontextfield.departurescreen.widget.config.WidgetConfigActivity"
+    android:description="@string/widget_description"
     />

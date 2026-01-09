@@ -1,25 +1,31 @@
 package com.jsontextfield.departurescreen.core.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.StarBorder
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.entities.Station
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.favourite
+import departure_screen.core.generated.resources.round_star_24
+import departure_screen.core.generated.resources.round_star_border_24
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StationListItem(
-    station: CombinedStation,
+    station: Station,
     modifier: Modifier = Modifier,
     onFavouriteClick: () -> Unit = {},
 ) {
@@ -28,19 +34,35 @@ fun StationListItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier,
     ) {
-        Text(
-            text = station.name,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
+        Column(
             modifier = Modifier.weight(1f),
-        )
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = station.name,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                station.types.forEach {
+                    Text(
+                        text = stringResource(it.stringResId),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.background(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(4.dp),
+                        ).padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+                }
+            }
+        }
 
         IconButton(onFavouriteClick) {
             Icon(
                 if (station.isFavourite) {
-                    Icons.Rounded.Star
+                    painterResource(Res.drawable.round_star_24)
                 } else {
-                    Icons.Rounded.StarBorder
+                    painterResource(Res.drawable.round_star_border_24)
                 },
                 contentDescription = stringResource(Res.string.favourite)
             )

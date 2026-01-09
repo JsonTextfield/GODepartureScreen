@@ -1,5 +1,6 @@
-import SwiftUI
 import ComposeApp
+import SwiftUI
+import WidgetKit
 
 @main
 struct iOSApp: App {

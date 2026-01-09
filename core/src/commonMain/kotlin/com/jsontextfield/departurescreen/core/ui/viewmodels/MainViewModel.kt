@@ -1,11 +1,15 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.DepartureScreenUseCase
-import com.jsontextfield.departurescreen.core.entities.CombinedStation
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -16,15 +20,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.io.IOException
+import kotlin.time.ExperimentalTime
 
 class MainViewModel(
-    private val departureScreenUseCase: DepartureScreenUseCase,
+    private val getSelectedStationUseCase: GetSelectedStationUseCase,
+    private val setFavouriteStationUseCase: SetFavouriteStationUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
@@ -37,12 +45,6 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
-        _uiState.update {
-            it.copy(
-                status = Status.LOADING,
-                isRefreshing = false,
-            )
-        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -58,29 +60,39 @@ class MainViewModel(
         }.launchIn(viewModelScope)
 
         combine(
-            departureScreenUseCase.getSelectedStation(),
+            getSelectedStationUseCase(),
             preferencesRepository.getFavouriteStations(),
         ) { selectedStation, favouriteStations ->
+            val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(
                     selectedStation = selectedStation?.copy(
-                        isFavourite = selectedStation.codes.any { code -> code in favouriteStations }
+                        isFavourite = stationCodes.any { code -> code in favouriteStations }
                     )
                 )
             }
+        }.catch {
+            _uiState.value = errorState
         }.launchIn(viewModelScope)
+        loadData()
 
+        getUnreadAlertsCount()
+    }
+
+    fun loadData() {
+        _uiState.update {
+            it.copy(
+                status = Status.LOADING,
+                isRefreshing = false,
+            )
+        }
         viewModelScope.launch {
-            departureScreenUseCase.getSelectedStation()
+            getSelectedStationUseCase()
                 .distinctUntilChanged()
-                .catch { _ ->
-                    _uiState.update {
-                        it.copy(
-                            status = Status.ERROR,
-                            isRefreshing = false,
-                        )
-                    }
-                }.collect { selectedStation ->
+                .catch {
+                    _uiState.value = errorState
+                    stop()
+                }.collectLatest { selectedStation ->
                     _uiState.update {
                         it.copy(
                             status = Status.LOADING,
@@ -89,19 +101,9 @@ class MainViewModel(
                         )
                     }
                     fetchDepartureData()
+                    startTimerJob()
                 }
         }
-
-        startTimerJob()
-    }
-
-    fun loadData() {
-        if (uiState.value.status == Status.ERROR) {
-            _uiState.update {
-                it.copy(status = Status.LOADING)
-            }
-        }
-        fetchDepartureData()
     }
 
     fun refresh() {
@@ -110,8 +112,8 @@ class MainViewModel(
         }
         viewModelScope.launch {
             delay(1000)
-            if (timeRemaining.value < 12000) {
-                _timeRemaining.update { 1000 }
+            if (timeRemaining.value in 1001..<12000) {
+                _timeRemaining.value = 1000
             }
             _uiState.update {
                 it.copy(isRefreshing = false)
@@ -121,14 +123,18 @@ class MainViewModel(
 
     private fun startTimerJob() {
         timerJob = timerJob ?: viewModelScope.launch {
-            while (true) {
-                delay(1000)
+            while (isActive) {
                 if (timeRemaining.value <= 1000) {
-                    _timeRemaining.update { 0 }
+                    _timeRemaining.value = 0
                     fetchDepartureData()
                 } else {
-                    _timeRemaining.update { it - 1000 }
+                    _timeRemaining.value -= 1000
                 }
+                delay(1000)
+            }
+        }.also {
+            it.invokeOnCompletion {
+                Logger.d("timerJob cancelled")
             }
         }
     }
@@ -136,24 +142,25 @@ class MainViewModel(
     private fun fetchDepartureData() {
         val station = uiState.value.selectedStation ?: return
 
+        val stationCodes = station.code.split(",")
         viewModelScope.launch {
             runCatching {
-                val stationCodes = station.codes
-                stationCodes.flatMap { goTrainDataSource.getTrains(it) }
+                stationCodes.flatMap { goTrainDataSource.getTrips(it) }
             }.onSuccess { trains ->
-                val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
+                val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
+                        isRefreshing = false,
                         _allTrips = trains,
                         visibleTrains = trainCodes,
                     )
                 }
                 // Reset the countdown timer only on a successful fetch.
-                _timeRemaining.update { 20000 }
+                _timeRemaining.value = 20000
             }.onFailure { exception ->
                 if (exception is IOException) {
-                    _timeRemaining.update { 1000 }
+                    _timeRemaining.value = 1000
                 }
             }
         }
@@ -173,21 +180,42 @@ class MainViewModel(
 
     fun setVisibleTrains(selectedTrains: Set<String>) {
         // Ensure that the visible trains are a subset of all trains
-        val trainCodes = _uiState.value.allTrips.map { it.code }.toSet() intersect selectedTrains
+        val trainCodes = uiState.value.allTrips.map { it.code }.toSet() intersect selectedTrains
         viewModelScope.launch {
             preferencesRepository.setVisibleTrains(trainCodes)
         }
     }
 
-    fun setFavouriteStations(station: CombinedStation) {
+    fun setFavouriteStations(station: Station) {
         viewModelScope.launch {
-            departureScreenUseCase.setFavouriteStations(station)
+            setFavouriteStationUseCase(station)
+        }
+    }
+
+    fun setSelectedStation(stationCode: String?) {
+        viewModelScope.launch {
+            preferencesRepository.setSelectedStationCode(stationCode ?: "UN")
         }
     }
 
     fun stop() {
         timerJob?.cancel()
         timerJob = null
+    }
+
+    fun getUnreadAlertsCount() {
+        combine(
+            preferencesRepository.getReadAlerts(),
+            goTrainDataSource.getServiceAlerts(),
+            goTrainDataSource.getInformationAlerts(),
+        ) { readAlerts, serviceAlertsList, informationAlertsList ->
+            val count = (serviceAlertsList + informationAlertsList).count {
+                it.id !in readAlerts
+            }
+            _uiState.update {
+                it.copy(unreadAlertsCount = count)
+            }
+        }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -198,22 +226,25 @@ class MainViewModel(
 
 data class MainUIState(
     val status: Status = Status.LOADING,
-    val selectedStation: CombinedStation? = null,
+    val selectedStation: Station? = null,
     private val _allTrips: List<Trip> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
     val isRefreshing: Boolean = false,
+    val unreadAlertsCount: Int = 0,
 ) {
-    val allTrips: List<Trip>
-        get() {
-            return _allTrips.map { train ->
-                train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
-            }.sortedWith(
-                when (sortMode) {
-                    SortMode.TIME -> compareBy { it.departureTime }
-                    SortMode.LINE -> compareBy({ it.code }, { it.destination })
-                }
-            )
+    val allTrips: List<Trip> = _allTrips.map { train ->
+        train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())
+    }.sortedWith(
+        when (sortMode) {
+            SortMode.TIME -> compareBy { it.departureTime }
+            SortMode.LINE -> compareBy({ it.code }, { it.destination })
         }
+    )
 }
+
+private val errorState = MainUIState(
+    status = Status.ERROR,
+    isRefreshing = false,
+)

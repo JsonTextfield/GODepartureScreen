@@ -3,7 +3,8 @@
     <string name="app_name">GO Departures</string>
     <string name="express">Express</string>
     <string name="cancelled">Cancelled</string>
-    <string name="platform">Platform %1$s</string>
+    <string name="platform_number">Platform %1$s</string>
+    <string name="platform">Platform</string>
     <string name="filter">Filter</string>
     <string name="sort">Sort</string>
     <string name="cancel">Cancel</string>
@@ -12,11 +13,18 @@
     <string name="about">About</string>
     <string name="licences">Licences</string>
     <string name="more">More</string>
-    <string name="time">Sort by time</string>
-    <string name="line">Sort by line</string>
+    <string name="sort_by_time">Sort by time</string>
+    <string name="sort_by_line">Sort by line</string>
+    <string name="time">Time</string>
+    <string name="line">Line</string>
+    <string name="route">Route</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="departure">Departure</string>
+    <string name="destination">Destination</string>
     <string name="minutes">%1$s min</string>
     <string name="min">min</string>
     <string name="all">All</string>
+    <string name="unread">Unread</string>
     <string name="light_mode">Light</string>
     <string name="dark_mode">Dark</string>
     <string name="system_default">Default</string>
@@ -31,6 +39,15 @@
     <string name="clear">Clear</string>
     <string name="search">Search</string>
     <string name="scroll_to_top">Scroll to top</string>
+    <string name="bus">Bus</string>
+    <string name="train">Train</string>
+    <string name="day_difference">%1$sd</string>
+    <string name="hour_difference">%1$sh</string>
+    <string name="minute_difference">%1$sm</string>
+    <plurals name="number_of_cars">
+        <item quantity="one">%1$s car</item>
+        <item quantity="other">%1$s cars</item>
+    </plurals>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

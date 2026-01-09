@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
 import kotlin.math.ceil
-import kotlin.math.min
 
 @Composable
 fun TrainList(
@@ -34,9 +33,13 @@ fun TrainList(
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
-    val widthDp = (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues().calculateLeftPadding(
-        LayoutDirection.Ltr).value - WindowInsets.safeDrawing.asPaddingValues().calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-    val columns = min((widthDp / 300).coerceIn(1, 4), ceil(3 / density.fontScale).toInt())
+    val widthDp =
+        (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
+            .calculateLeftPadding(
+                LayoutDirection.Ltr
+            ).value - WindowInsets.safeDrawing.asPaddingValues()
+            .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
+    val columns = (widthDp / 360).coerceIn(1, 4)
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier.semantics {
@@ -50,11 +53,22 @@ fun TrainList(
             bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding() + 100.dp,
         )
     ) {
-        itemsIndexed(trips, key = { _, train -> train.id }) { index, train ->
+        items(columns) {
+            TripListHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(
+                        start = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateStartPadding(LayoutDirection.Ltr),
+                        end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+                    )
+            )
+        }
+        itemsIndexed(trips, key = { _, train -> train.id }) { index, trip ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven
-            }
-            else {
+            } else {
                 val row = index / columns
                 index.isOdd xor row.isEven
             }
@@ -70,13 +84,14 @@ fun TrainList(
                 }.animateItem()
             ) {
                 TripListItem(
-                    train,
+                    trip,
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
                         .padding(8.dp)
                         .padding(
-                            start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr),
+                            start = WindowInsets.safeDrawing.asPaddingValues()
+                                .calculateStartPadding(LayoutDirection.Ltr),
                             end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
                         )
                 )

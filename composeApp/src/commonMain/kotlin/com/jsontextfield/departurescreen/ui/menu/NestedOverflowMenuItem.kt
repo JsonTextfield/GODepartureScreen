@@ -12,7 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.ImageVector
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 /**
  * An item for an overflow menu that, when clicked, opens a nested sub-menu.
@@ -24,7 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 @Composable
 fun NestedOverflowMenuItem(
-    icon: ImageVector,
+    icon: DrawableResource,
     tooltip: String,
     onDismissRequest: () -> Unit,
     menuContent: @Composable (onDismiss: () -> Unit) -> Unit
@@ -37,7 +38,7 @@ fun NestedOverflowMenuItem(
         // This is the item the user sees and clicks in the main overflow menu
         DropdownMenuItem(
             text = { Text(text = tooltip) },
-            leadingIcon = { Icon(icon, null) },
+            leadingIcon = { Icon(painterResource(icon), null) },
             onClick = { isSubMenuExpanded = true } // Click to open the nested menu
             // We don't need a trailing icon here, but one could be added (e.g., a right arrow)
         )
