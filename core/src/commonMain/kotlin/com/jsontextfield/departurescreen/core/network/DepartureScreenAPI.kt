@@ -78,7 +78,7 @@ class DepartureScreenAPI() {
         return client.get("ServiceUpdate/ServiceAlert/All").body()
     }
 
-    suspend fun getInfromationAlerts(): Alerts {
+    suspend fun getInformationAlerts(): Alerts {
         return client.get("ServiceUpdate/InformationAlert/All").body()
     }
 

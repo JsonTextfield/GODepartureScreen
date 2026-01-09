@@ -35,7 +35,9 @@ import kotlin.time.Instant
 class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
-    private var stations = emptyList<Station>()
+    private var stations : List<Station> = emptyList()
+    private var serviceAlerts : List<Alert> = emptyList()
+    private var informationAlerts: List<Alert> = emptyList()
 
     private var lastUpdated: Long = 0L
     private var serviceAtAGlanceTrains: Map<String, ServiceAtAGlanceTrainsResponse.Trips.Trip>? = null
@@ -99,9 +101,12 @@ class GoTrainDataSource(
     override fun getServiceAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                emit(processAlerts(departureScreenAPI.getServiceAlerts()))
+                serviceAlerts = processAlerts(departureScreenAPI.getServiceAlerts()).also {
+                    emit(it)
+                }
             } catch (exception: Exception) {
                 Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+                emit(serviceAlerts)
             }
             delay(1.minutes)
         }
@@ -110,9 +115,12 @@ class GoTrainDataSource(
     override fun getInformationAlerts(): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
+                informationAlerts = processAlerts(departureScreenAPI.getInformationAlerts()).also {
+                    emit(it)
+                }
             } catch (exception: Exception) {
                 Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+                emit(informationAlerts)
             }
             delay(1.minutes)
         }
