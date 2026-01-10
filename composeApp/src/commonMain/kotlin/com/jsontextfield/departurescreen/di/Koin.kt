@@ -13,6 +13,7 @@ import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -55,6 +56,13 @@ val viewModelModule = module {
             goTrainDataSource = get<IGoTrainDataSource>(),
             preferencesRepository = get<IPreferencesRepository>(),
             selectedStationCode = params.getOrNull(String::class),
+        )
+    }
+    viewModel { params ->
+        TripDetailsViewModel(
+            goTrainDataSource = get<IGoTrainDataSource>(),
+            stopId = params[0],
+            tripId = params[1],
         )
     }
 }

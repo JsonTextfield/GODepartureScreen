@@ -18,13 +18,16 @@ import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.StationsScreen
+import com.jsontextfield.departurescreen.ui.views.TripDetailsScreen
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -67,6 +70,16 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                     launchSingleTop = true
                                 }
                             },
+                            onShowTripDetails = { tripId ->
+                                navController.navigate(
+                                    TripDetailsRoute(
+                                        stopId = uiState.selectedStation?.code,
+                                        tripId = tripId,
+                                    )
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            },
                         )
                     )
                 }
@@ -97,6 +110,24 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
+                    )
+                }
+
+                composable<TripDetailsRoute>(
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    val tripDetailsViewModel = koinViewModel<TripDetailsViewModel> {
+                        parametersOf(
+                            it.toRoute<TripDetailsRoute>().stopId,
+                            it.toRoute<TripDetailsRoute>().tripId,
+                        )
+                    }
+                    TripDetailsScreen(
+                        tripDetailsViewModel = tripDetailsViewModel,
+                        onBackPressed = {
+                            safeNavigation { navController.popBackStack() }
+                        }
                     )
                 }
 

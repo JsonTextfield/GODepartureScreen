@@ -6,6 +6,7 @@ import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.ui.StationType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -65,6 +66,10 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
 
     override suspend fun getTrips(stationCode: String): List<Trip> {
         return trips
+    }
+
+    override suspend fun getTripDetails(tripNumber: String) : TripDetails {
+        TODO("Not yet implemented")
     }
 
     override fun getServiceAlerts(): Flow<List<Alert>> {

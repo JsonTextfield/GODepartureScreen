@@ -32,6 +32,9 @@
     <string name="search">Search</string>
     <string name="scroll_to_top">Scroll to top</string>
     <string name="add_widget">Add widget</string>
+    <string name="rate">Rate</string>
+    <string name="stops">Stops</string>
+    <string name="more_trips">More trips</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

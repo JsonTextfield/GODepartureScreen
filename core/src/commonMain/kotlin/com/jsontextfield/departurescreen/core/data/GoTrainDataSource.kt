@@ -7,6 +7,7 @@ import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Station
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.model.Alerts
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
@@ -47,7 +48,7 @@ class GoTrainDataSource(
         if (Clock.System.now().toEpochMilliseconds() - lastUpdated > 60_000) {
             serviceAtAGlanceTrains =
                 departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
-            exceptions = departureScreenAPI.getExceptions()
+            exceptions = departureScreenAPI.getAllExceptions()
             lastUpdated = Clock.System.now().toEpochMilliseconds()
         }
         return try {
@@ -96,6 +97,16 @@ class GoTrainDataSource(
         } catch (_: Exception) {
             emptyList()
         }
+    }
+
+    override suspend fun getTripDetails(tripNumber: String) : TripDetails? {
+        val response = departureScreenAPI.getTrip(tripNumber).trips
+        return response.map {
+            TripDetails(
+                id = it.tripNumber,
+                stops = it.stops.map { stop -> stop.code }
+            )
+        }.firstOrNull()
     }
 
     override fun getServiceAlerts(): Flow<List<Alert>> = flow {

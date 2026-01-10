@@ -156,7 +156,10 @@ fun MainScreen(
                                     )
                                 }
                             }
-                            TrainList(trips = uiState.allTrips.filter { it.isVisible })
+                            TrainList(
+                                trips = uiState.allTrips.filter { it.isVisible },
+                                onItemClick = navigationActions.onShowTripDetails,
+                            )
                         }
                     }
                 }
