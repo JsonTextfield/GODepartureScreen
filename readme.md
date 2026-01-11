@@ -1,4 +1,4 @@
-# GO Departure Screen
+# GO Departures
 
 A multiplatform application that displays GO Transit bus and train schedules and information.
 
