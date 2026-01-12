@@ -29,7 +29,7 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import kotlin.math.ceil
 
 @Composable
-fun TrainList(
+fun TripList(
     trips: List<Trip>,
     onItemClick: (Trip) -> Unit,
     modifier: Modifier = Modifier,
@@ -91,7 +91,7 @@ fun TrainList(
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
                         .clickable(
-                            enabled = false,
+                            enabled = !trip.isCancelled,
                             onClick = { onItemClick(trip) },
                         )
                         .padding(8.dp)

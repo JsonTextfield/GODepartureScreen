@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,16 +28,16 @@ class WidgetConfigViewModel(
         widgetId?.let {
             combine(
                 widgetConfigDataStore.getConfig(widgetId),
-                preferencesRepository.getSelectedStationCode(),
-            ) { widgetConfig, selectedStationCode ->
-                val allStations = goTrainDataSource.getAllStations()
+                preferencesRepository.getSelectedStopCode(),
+            ) { widgetConfig, selectedStopCode ->
+                val allStops = goTrainDataSource.getAllStops()
                 _config.update {
-                    val stationCode = widgetConfig.selectedStationCode ?: selectedStationCode
+                    val stopCode = widgetConfig.selectedStopCode ?: selectedStopCode
                     widgetConfig.copy(
-                        selectedStation = allStations.firstOrNull {
-                            stationCode in it.code
+                        selectedStop = allStops.firstOrNull {
+                            stopCode in it.code
                         },
-                        selectedStationCode = stationCode,
+                        selectedStopCode = stopCode,
                     )
                 }
             }.launchIn(viewModelScope)
@@ -66,19 +66,19 @@ class WidgetConfigViewModel(
         }
     }
 
-    fun onStationChanged(station: Station) {
+    fun onStopChanged(stop: Stop) {
         _config.update {
             it.copy(
-                selectedStation = station,
-                selectedStationCode = station.code.split(",").first()
+                selectedStop = stop,
+                selectedStopCode = stop.code.split(",").first()
             )
         }
     }
 }
 
 data class WidgetConfig(
-    val selectedStation: Station? = null,
-    val selectedStationCode: String? = null,
+    val selectedStop: Stop? = null,
+    val selectedStopCode: String? = null,
     val sortMode: SortMode = SortMode.TIME,
     val opacity: Float = 0.8f,
 )

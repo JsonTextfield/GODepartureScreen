@@ -82,8 +82,8 @@ class DepartureScreenAPI() {
     }
 
     // Stop
-    suspend fun getNextService(stationCode: String): NextServiceResponse {
-        return client.get("Stop/NextService/$stationCode").body()
+    suspend fun getNextService(stopCode: String): NextServiceResponse {
+        return client.get("Stop/NextService/$stopCode").body()
     }
     suspend fun getStopDetails(stopCode: String): String {
         return client.get("Stop/Details/$stopCode").body()

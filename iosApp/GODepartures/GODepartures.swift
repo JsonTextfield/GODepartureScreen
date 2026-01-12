@@ -15,11 +15,11 @@ import coreKit
 struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
     let goTrainDataSource: CoreIGoTrainDataSource
-    let departureScreenUseCase: CoreGetSelectedStationUseCase
+    let departureScreenUseCase: CoreGetSelectedStopUseCase
 
     init() {
         goTrainDataSource = widgetHelper.goTrainDataSource
-        departureScreenUseCase = widgetHelper.getSelectedStationUseCase
+        departureScreenUseCase = widgetHelper.getSelectedStopUseCase
     }
 
     func snapshot(
@@ -29,25 +29,25 @@ struct Provider: AppIntentTimelineProvider {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
-        let selectedStationCode =
-            configuration.selectedStation?.id
+        let selectedStopCode =
+            configuration.selectedStop?.id
             ?? userDefaults?.object(
-                forKey: "selectedStationCode"
+                forKey: "selectedStopCode"
             ) as? String
             ?? "UN"
 
         do {
-            let allStations = try await goTrainDataSource.getAllStations()
-            if let station =
-                allStations
+            let allStops = try await goTrainDataSource.getAllStops()
+            if let stop =
+                allStops
                 .first(where: {
-                    $0.code.contains(selectedStationCode)
+                    $0.code.contains(selectedStopCode)
                 })
-                ?? allStations
+                ?? allStops
                 .first(where: {
                     $0.code.contains("UN")
                 })
-                ?? allStations.first
+                ?? allStops.first
             {
                 let trips: [CoreTrip]
                 let sortMode = CoreSortMode.entries[
@@ -57,8 +57,8 @@ struct Provider: AppIntentTimelineProvider {
                     userDefaults?.object(forKey: "hiddenTrains")
                     as? String ?? ""
 
-                // Parse comma-separated station codes
-                let codes: [String] = station.code
+                // Parse comma-separated stop codes
+                let codes: [String] = stop.code
                     .split(separator: ",")
                     .map { String($0) }
 
@@ -66,7 +66,7 @@ struct Provider: AppIntentTimelineProvider {
                 var fetchedTrips: [CoreTrip] = []
                 for code in codes {
                     let result = try await goTrainDataSource.getTrips(
-                        stationCode: code
+                        stopCode: code
                     )
                     fetchedTrips.append(contentsOf: result)
                 }
@@ -90,7 +90,7 @@ struct Provider: AppIntentTimelineProvider {
                 })
                 return SimpleEntry(
                     date: Date(),
-                    stationName: station.name,
+                    stopName: stop.name,
                     trips: trips
                 )
             }
@@ -99,7 +99,7 @@ struct Provider: AppIntentTimelineProvider {
 
         return SimpleEntry(
             date: Date(),
-            stationName: "",
+            stopName: "",
             trips: []
         )
     }
@@ -115,7 +115,7 @@ struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            stationName: "Union GO Station",
+            stopName: "Union GO Station",
             trips: [
                 CoreTrip(
                     id: "X1234",
@@ -147,7 +147,7 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let stationName: String
+    let stopName: String
     let trips: [CoreTrip]
 }
 
@@ -167,7 +167,7 @@ struct GODepartures: Widget {
             )
         }
         .configurationDisplayName("GO Departures")
-        .description("Shows departure information for a station")
+        .description("Shows departure information for a stop")
         .supportedFamilies([
             .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
         ]).contentMarginsDisabled()

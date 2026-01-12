@@ -8,8 +8,8 @@ import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import okio.Path.Companion.toPath
@@ -48,8 +48,8 @@ val preferencesModule = module {
 }
 
 val viewModelModule = module {
-    factoryOf(::GetSelectedStationUseCase)
-    factoryOf(::SetFavouriteStationUseCase)
+    factoryOf(::GetSelectedStopUseCase)
+    factoryOf(::SetFavouriteStopUseCase)
     factoryOf(::MainViewModel)
 }
 

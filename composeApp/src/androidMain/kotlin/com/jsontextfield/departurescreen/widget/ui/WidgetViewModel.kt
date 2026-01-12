@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -33,7 +33,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class WidgetViewModel(
-    private val getSelectedStationUseCase: GetSelectedStationUseCase,
+    private val getSelectedStopUseCase: GetSelectedStopUseCase,
     private val goTrainDataSource: IGoTrainDataSource,
     private val preferencesRepository: IPreferencesRepository,
     private val configDataStore: WidgetConfigDataStore,
@@ -63,7 +63,7 @@ class WidgetViewModel(
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             configDataStore.getConfig(widgetId).collectLatest { widgetConfig ->
-                getSelectedStationUseCase(widgetConfig.selectedStationCode)
+                getSelectedStopUseCase(widgetConfig.selectedStopCode)
                     .distinctUntilChanged()
                     .catch { _ ->
                         _uiState.update {
@@ -72,12 +72,12 @@ class WidgetViewModel(
                                 isRefreshing = false,
                             )
                         }
-                    }.collect { selectedStation ->
+                    }.collect { selectedStop ->
                         _uiState.update {
                             it.copy(
                                 status = Status.LOADING,
                                 isRefreshing = false,
-                                selectedStation = selectedStation,
+                                selectedStop = selectedStop,
                                 sortMode = widgetConfig.sortMode,
                             )
                         }
@@ -100,7 +100,7 @@ class WidgetViewModel(
     private fun fetchDepartureData() {
         viewModelScope.launch {
             runCatching {
-                uiState.value.selectedStation?.code?.split(",")?.flatMap { goTrainDataSource.getTrips(it) }
+                uiState.value.selectedStop?.code?.split(",")?.flatMap { goTrainDataSource.getTrips(it) }
                     ?: emptyList()
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect _uiState.value.visibleTrains
@@ -129,7 +129,7 @@ class WidgetViewModel(
 
 data class WidgetUIState(
     val status: Status = Status.LOADING,
-    val selectedStation: Station? = null,
+    val selectedStop: Stop? = null,
     private val _allTrips: List<Trip> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,

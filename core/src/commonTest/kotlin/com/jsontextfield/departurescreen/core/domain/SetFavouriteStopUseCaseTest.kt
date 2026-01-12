@@ -3,7 +3,7 @@
 package com.jsontextfield.departurescreen.core.domain
 
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Stop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -16,15 +16,15 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SetFavouriteStationUseCaseTest {
+class SetFavouriteStopUseCaseTest {
     private lateinit var fakePreferencesRepository: FakePreferencesRepository
-    private lateinit var setFavouriteStationUseCase: SetFavouriteStationUseCase
+    private lateinit var setFavouriteStopUseCase: SetFavouriteStopUseCase
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakePreferencesRepository = FakePreferencesRepository()
-        setFavouriteStationUseCase = SetFavouriteStationUseCase(
+        setFavouriteStopUseCase = SetFavouriteStopUseCase(
             preferencesRepository = fakePreferencesRepository,
         )
     }
@@ -35,36 +35,36 @@ class SetFavouriteStationUseCaseTest {
     }
 
     /**
-     * test invoke adds station codes to favourites if not already present
+     * test invoke adds stop codes to favourites if not already present
      */
     @Test
     fun test1() = runTest {
-        val station = Station(
+        val stop = Stop(
             code = "AB,CD",
-            name = "Test Station",
+            name = "Test Stop",
         )
-        fakePreferencesRepository.setFavouriteStations(setOf("EF"))
+        fakePreferencesRepository.setFavouriteStops(setOf("EF"))
 
-        setFavouriteStationUseCase(station)
+        setFavouriteStopUseCase(stop)
 
         val expectedFavourites = setOf("EF", "AB", "CD")
-        assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStations().first())
+        assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStops().first())
     }
 
     /**
-     * test invoke removes station codes from favourites if already present
+     * test invoke removes stop codes from favourites if already present
      */
     @Test
     fun test2() = runTest {
-        val station = Station(
+        val stop = Stop(
             code = "AB,CD",
-            name = "Test Station",
+            name = "Test Stop",
         )
-        fakePreferencesRepository.setFavouriteStations(setOf("AB", "EF"))
+        fakePreferencesRepository.setFavouriteStops(setOf("AB", "EF"))
 
-        setFavouriteStationUseCase(station)
+        setFavouriteStopUseCase(stop)
 
         val expectedFavourites = setOf("EF")
-        assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStations().first())
+        assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStops().first())
     }
 }

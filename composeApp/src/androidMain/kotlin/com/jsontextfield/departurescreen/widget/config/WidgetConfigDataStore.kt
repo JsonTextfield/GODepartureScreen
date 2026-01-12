@@ -19,7 +19,7 @@ class WidgetConfigDataStore(private val context: Context) {
 
     // Define preference keys. We will append the GlanceId to make them unique.
     private object PreferenceKeys {
-        fun selectedStation(appWidgetId: Int) = stringPreferencesKey("selected_station_${appWidgetId}")
+        fun selectedStop(appWidgetId: Int) = stringPreferencesKey("selected_stop_${appWidgetId}")
         fun sortMode(appWidgetId: Int) = intPreferencesKey("sort_mode_${appWidgetId}")
         fun opacity(appWidgetId: Int) = floatPreferencesKey("opacity_${appWidgetId}")
     }
@@ -28,7 +28,7 @@ class WidgetConfigDataStore(private val context: Context) {
     fun getConfig(appWidgetId: Int): Flow<WidgetConfig> = context.dataStore.data
         .map { preferences ->
             WidgetConfig(
-                selectedStationCode = preferences[PreferenceKeys.selectedStation(appWidgetId)] ?: "UN",
+                selectedStopCode = preferences[PreferenceKeys.selectedStop(appWidgetId)] ?: "UN",
                 sortMode = SortMode.entries.firstOrNull {
                     preferences[PreferenceKeys.sortMode(appWidgetId)] == it.ordinal
                 } ?: SortMode.TIME,
@@ -39,8 +39,8 @@ class WidgetConfigDataStore(private val context: Context) {
     // Save the config for a specific widget
     suspend fun saveConfig(appWidgetId: Int, config: WidgetConfig) {
         context.dataStore.edit { preferences ->
-            config.selectedStationCode?.let {
-                preferences[PreferenceKeys.selectedStation(appWidgetId)] = it
+            config.selectedStopCode?.let {
+                preferences[PreferenceKeys.selectedStop(appWidgetId)] = it
             }
             preferences[PreferenceKeys.sortMode(appWidgetId)] = config.sortMode.ordinal
             preferences[PreferenceKeys.opacity(appWidgetId)] = config.opacity

@@ -5,7 +5,7 @@ import departure_screen.core.generated.resources.bus
 import departure_screen.core.generated.resources.train
 import org.jetbrains.compose.resources.StringResource
 
-enum class StationType(
+enum class StopType(
     val stringResId: StringResource,
 ) {
     BUS(Res.string.bus),

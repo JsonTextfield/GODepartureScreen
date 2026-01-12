@@ -112,11 +112,11 @@ fun MainScreen(
                         item {
                             if (uiState.status == Status.LOADED) {
                                 FilledTonalButton(
-                                    onClick = navigationActions.onShowStations,
+                                    onClick = navigationActions.onShowStops,
                                     contentPadding = PaddingValues(horizontal = 8.dp),
                                 ) {
                                     Text(
-                                        text = uiState.selectedStation?.name.orEmpty(),
+                                        text = uiState.selectedStop?.name.orEmpty(),
                                         modifier = Modifier.basicMarquee(),
                                     )
                                 }

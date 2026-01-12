@@ -18,10 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
-import com.jsontextfield.departurescreen.ui.views.StationsScreen
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
+import com.jsontextfield.departurescreen.ui.views.StopsScreen
 import com.jsontextfield.departurescreen.widget.WidgetSettingsRoute
 import com.jsontextfield.departurescreen.widget.ui.DeparturesWidget
 import kotlinx.coroutines.launch
@@ -54,8 +54,8 @@ class WidgetConfigActivity : ComponentActivity() {
                                 haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                 configViewModel.onOpacityChanged(it)
                             },
-                            onStationButtonClicked = {
-                                navController.navigate(StationsRoute(widgetConfig.selectedStationCode))
+                            onStopButtonClicked = {
+                                navController.navigate(StopsRoute(widgetConfig.selectedStopCode))
                             },
                             onCancel = {
                                 glanceId?.let {
@@ -87,15 +87,15 @@ class WidgetConfigActivity : ComponentActivity() {
                             },
                         )
                     }
-                    composable<StationsRoute> {
-                        val selectedStationCode = it.toRoute<StationsRoute>().selectedStationCode
-                        val stationsViewModel = koinViewModel<StationsViewModel> {
-                            parametersOf(selectedStationCode)
+                    composable<StopsRoute> {
+                        val selectedStopCode = it.toRoute<StopsRoute>().selectedStopCode
+                        val stopsViewModel = koinViewModel<StopsViewModel> {
+                            parametersOf(selectedStopCode)
                         }
-                        StationsScreen(
-                            stationsViewModel = stationsViewModel,
-                            onStationSelected = {
-                                configViewModel.onStationChanged(it)
+                        StopsScreen(
+                            stopsViewModel = stopsViewModel,
+                            onStopSelected = {
+                                configViewModel.onStopChanged(it)
                                 navController.popBackStack()
                             },
                             onBackPressed = {

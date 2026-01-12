@@ -61,10 +61,10 @@ fun TripDetailsScreen(
                         TripCodeBox(
                             tripCode = uiState.lineCode,
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(36.dp)
                                 .background(color = lineColours[uiState.lineCode] ?: Color.Gray, shape = SquircleShape)
                         )
-                        Text(text = uiState.destination)
+                        Text(text = uiState.destination, style = MaterialTheme.typography.titleMedium)
                     }
                 },
                 navigationIcon = {
@@ -78,6 +78,7 @@ fun TripDetailsScreen(
             modifier = Modifier.padding(it), contentPadding = PaddingValues(
                 start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr),
                 end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+                bottom = 100.dp,
             )
         ) {
             item {

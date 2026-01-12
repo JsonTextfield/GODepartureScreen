@@ -15,11 +15,11 @@ import androidx.navigation.compose.rememberNavController
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
-import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -55,8 +55,8 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                 launchSingleTop = true
                             }
                         },
-                        onShowStations = {
-                            navController.navigate(StationsRoute) {
+                        onShowStops = {
+                            navController.navigate(StopsRoute) {
                                 launchSingleTop = true
                             }
                         },
@@ -77,13 +77,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                 )
             }
 
-            composable<StationsRoute>(
+            composable<StopsRoute>(
                 enterTransition = { slideInHorizontally { it } },
                 exitTransition = { slideOutHorizontally { it } },
             ) {
-                val stationsViewModel = koinViewModel<StationsViewModel>()
-                StationsScreen(
-                    stationsViewModel = stationsViewModel,
+                val stopsViewModel = koinViewModel<StopsViewModel>()
+                StopsScreen(
+                    stopsViewModel = stopsViewModel,
                     onBackPressed = {
                         safeNavigation { navController.popBackStack() }
                     },

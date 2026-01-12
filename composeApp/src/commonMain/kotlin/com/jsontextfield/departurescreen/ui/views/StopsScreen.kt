@@ -42,26 +42,26 @@ import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.entities.Station
-import com.jsontextfield.departurescreen.core.ui.StationType
+import com.jsontextfield.departurescreen.core.entities.Stop
+import com.jsontextfield.departurescreen.core.ui.StopType
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
-import com.jsontextfield.departurescreen.core.ui.components.StationFilterChipStrip
-import com.jsontextfield.departurescreen.core.ui.components.StationListItem
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsUIState
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.components.StopFilterChipStrip
+import com.jsontextfield.departurescreen.core.ui.components.StopListItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun StationsScreen(
-    stationsViewModel: StationsViewModel,
+fun StopsScreen(
+    stopsViewModel: StopsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
-    StationsScreen(
-        stationsViewModel = stationsViewModel,
-        onStationSelected = {
-            stationsViewModel.setSelectedStation(it)
+    StopsScreen(
+        stopsViewModel = stopsViewModel,
+        onStopSelected = {
+            stopsViewModel.setSelectedStop(it)
             onBackPressed()
         },
         onBackPressed = onBackPressed,
@@ -69,29 +69,29 @@ fun StationsScreen(
 }
 
 @Composable
-fun StationsScreen(
-    stationsViewModel: StationsViewModel,
-    onStationSelected: (Station) -> Unit = {},
+fun StopsScreen(
+    stopsViewModel: StopsViewModel,
+    onStopSelected: (Stop) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {
-    val uiState by stationsViewModel.uiState.collectAsState()
-    StationsScreen(
+    val uiState by stopsViewModel.uiState.collectAsState()
+    StopsScreen(
         uiState = uiState,
-        onStationSelected = onStationSelected,
-        onFavouriteClick = stationsViewModel::setFavouriteStations,
+        onStopSelected = onStopSelected,
+        onFavouriteClick = stopsViewModel::setFavouriteStops,
         onBackPressed = onBackPressed,
-        onSetStationType = stationsViewModel::setStationType,
+        onSetStopType = stopsViewModel::setStopType,
     )
 }
 
 
 @Composable
-private fun StationsScreen(
-    uiState: StationsUIState,
-    onStationSelected: (Station) -> Unit,
-    onFavouriteClick: (Station) -> Unit,
+private fun StopsScreen(
+    uiState: StopsUIState,
+    onStopSelected: (Stop) -> Unit,
+    onFavouriteClick: (Stop) -> Unit,
     onBackPressed: () -> Unit,
-    onSetStationType: (StationType?) -> Unit,
+    onSetStopType: (StopType?) -> Unit,
 ) {
     val textFieldState = rememberTextFieldState()
     val gridState = rememberLazyGridState()
@@ -127,7 +127,7 @@ private fun StationsScreen(
 
         Surface(Modifier.padding(top = innerPadding.calculateTopPadding())) {
             Column {
-                val filteredStations = uiState.getFilteredStations(textFieldState.text.toString())
+                val filteredStops = uiState.getFilteredStops(textFieldState.text.toString())
                 val density = LocalDensity.current
                 val widthDp =
                     (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
@@ -136,14 +136,14 @@ private fun StationsScreen(
                         ).value - WindowInsets.safeDrawing.asPaddingValues()
                         .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
                 val columns = (widthDp / 300).coerceIn(1, 4)
-                StationFilterChipStrip(uiState.stationType, onSetStationType)
+                StopFilterChipStrip(uiState.stopType, onSetStopType)
 
                 LazyVerticalGrid(
                     state = gridState,
                     modifier = Modifier
                         .semantics {
                             collectionInfo = CollectionInfo(
-                                rowCount = filteredStations.size,
+                                rowCount = filteredStops.size,
                                 columnCount = columns,
                             )
                         },
@@ -151,29 +151,29 @@ private fun StationsScreen(
                     contentPadding = PaddingValues(bottom = 100.dp),
                 ) {
                     itemsIndexed(
-                        filteredStations,
-                        key = { _, station -> station.code.split(",") }) { index, station ->
-                        StationListItem(
-                            station = station,
-                            onFavouriteClick = { onFavouriteClick(station) },
+                        filteredStops,
+                        key = { _, stop -> stop.code.split(",") }) { index, stop ->
+                        StopListItem(
+                            stop = stop,
+                            onFavouriteClick = { onFavouriteClick(stop) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 60.dp)
-                                .alpha(if (station.isEnabled) 1f else 0.5f)
+                                .alpha(if (stop.isEnabled) 1f else 0.5f)
                                 .background(
                                     color =
-                                        if (station.code.split(",")
-                                                .any { it in uiState.selectedStation?.code?.split(",").orEmpty() }
+                                        if (stop.code.split(",")
+                                                .any { it in uiState.selectedStop?.code?.split(",").orEmpty() }
                                         ) {
                                             MaterialTheme.colorScheme.primaryContainer
-                                        } else if (!station.isEnabled) {
+                                        } else if (!stop.isEnabled) {
                                             MaterialTheme.colorScheme.surfaceContainerLow
                                         } else {
                                             MaterialTheme.colorScheme.surface
                                         }
                                 )
                                 .clickable {
-                                    onStationSelected(station)
+                                    onStopSelected(stop)
                                 }
                                 .padding(8.dp)
                                 .then(

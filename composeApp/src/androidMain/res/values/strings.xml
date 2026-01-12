@@ -20,7 +20,7 @@
     <string name="departure">Departure</string>
     <string name="destination">Destination</string>
     <string name="sort_by">Sort by…</string>
-    <string name="station">Station</string>
+    <string name="stop">Stop</string>
     <string name="widget_settings">Widget settings</string>
     <string name="loading">Loading…</string>
     <plurals name="number_of_cars">

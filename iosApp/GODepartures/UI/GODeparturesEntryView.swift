@@ -21,7 +21,7 @@ struct GODeparturesEntryView: View {
 
     var body: some View {
         VStack {
-            Text(entry.stationName)
+            Text(entry.stopName)
                 .lineLimit(1)
                 .font(.footnote)
                 .bold()

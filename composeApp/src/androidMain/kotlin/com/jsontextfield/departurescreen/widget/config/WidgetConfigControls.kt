@@ -24,7 +24,7 @@ import com.jsontextfield.departurescreen.core.ui.SortMode
 @Composable
 fun WidgetConfigControls(
     widgetConfig: WidgetConfig,
-    onStationButtonClicked: () -> Unit,
+    onStopButtonClicked: () -> Unit,
     onSortModeChanged: (SortMode) -> Unit,
     onOpacityChanged: (Float) -> Unit,
     onCancel: () -> Unit,
@@ -45,12 +45,12 @@ fun WidgetConfigControls(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(R.string.station))
+            Text(text = stringResource(R.string.stop))
             FilledTonalButton(
-                onClick = onStationButtonClicked,
+                onClick = onStopButtonClicked,
                 modifier = Modifier.fillMaxWidth(9 / 12f),
             ) {
-                Text(text = widgetConfig.selectedStation?.name.orEmpty(), modifier = Modifier.basicMarquee())
+                Text(text = widgetConfig.selectedStop?.name.orEmpty(), modifier = Modifier.basicMarquee())
             }
         }
         Row(

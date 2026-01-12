@@ -7,12 +7,12 @@ import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
@@ -44,18 +44,18 @@ expect fun preferencesModule(): Module
 expect fun widgetModule(): Module
 
 val viewModelModule = module {
-    factoryOf(::GetSelectedStationUseCase)
-    factoryOf(::SetFavouriteStationUseCase)
+    factoryOf(::GetSelectedStopUseCase)
+    factoryOf(::SetFavouriteStopUseCase)
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
-    viewModelOf(::StationsViewModel)
+    viewModelOf(::StopsViewModel)
     viewModel { params ->
-        StationsViewModel(
-            getSelectedStationUseCase = get<GetSelectedStationUseCase>(),
-            setFavouriteStationUseCase = get<SetFavouriteStationUseCase>(),
+        StopsViewModel(
+            getSelectedStopUseCase = get<GetSelectedStopUseCase>(),
+            setFavouriteStopUseCase = get<SetFavouriteStopUseCase>(),
             goTrainDataSource = get<IGoTrainDataSource>(),
             preferencesRepository = get<IPreferencesRepository>(),
-            selectedStationCode = params.getOrNull(String::class),
+            selectedStopCode = params.getOrNull(String::class),
         )
     }
     viewModel { params ->

@@ -3,13 +3,13 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
-import com.jsontextfield.departurescreen.core.data.FAVOURITE_STATIONS_KEY
+import com.jsontextfield.departurescreen.core.data.FAVOURITE_STOPS_KEY
 import com.jsontextfield.departurescreen.core.data.HIDDEN_TRAINS_KEY
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.data.SELECTED_STATION_CODE_KEY
+import com.jsontextfield.departurescreen.core.data.SELECTED_STOP_CODE_KEY
 import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -28,9 +28,9 @@ actual fun preferencesModule(): Module {
             val appGroupId = "group.com.jsontextfield.godepartures"
             DataStorePreferencesRepository(
                 dataStore = createDataStore(),
-                onSetStation = { stationCode: String ->
+                onSetStop = { stopCode: String ->
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setObject(stationCode, forKey = SELECTED_STATION_CODE_KEY)
+                    userDefaults.setObject(stopCode, forKey = SELECTED_STOP_CODE_KEY)
                 },
                 onSetSortMode = { sortMode ->
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
@@ -40,9 +40,9 @@ actual fun preferencesModule(): Module {
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
                     userDefaults.setObject(visibleTrains.joinToString(","), forKey = HIDDEN_TRAINS_KEY)
                 },
-                onSetFavouriteStations = { favouriteStations ->
+                onSetFavouriteStops = { favouriteStops ->
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setObject(favouriteStations.joinToString(","), forKey = FAVOURITE_STATIONS_KEY)
+                    userDefaults.setObject(favouriteStops.joinToString(","), forKey = FAVOURITE_STOPS_KEY)
                 }
             )
         }
@@ -72,7 +72,7 @@ fun createDataStore(): DataStore<Preferences> = createDataStore(
 class WidgetHelper : KoinComponent {
     val preferencesRepository: IPreferencesRepository by inject()
     val goTrainDataSource: IGoTrainDataSource by inject()
-    val getSelectedStationUseCase = GetSelectedStationUseCase(
+    val getSelectedStopUseCase = GetSelectedStopUseCase(
         goTrainDataSource = goTrainDataSource,
         preferencesRepository = preferencesRepository,
     )

@@ -2,9 +2,9 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
+import com.jsontextfield.departurescreen.core.entities.Stop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -19,14 +19,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StationsViewModelTest {
+class StopsViewModelTest {
 
     lateinit var preferencesRepository: FakePreferencesRepository
     lateinit var goTrainDataSource: FakeGoTrainDataSource
-    lateinit var getSelectedStationUseCase: GetSelectedStationUseCase
+    lateinit var getSelectedStopUseCase: GetSelectedStopUseCase
 
-    lateinit var setFavouriteStationUseCase: SetFavouriteStationUseCase
-    lateinit var stationsViewModel: StationsViewModel
+    lateinit var setFavouriteStopUseCase: SetFavouriteStopUseCase
+    lateinit var stopsViewModel: StopsViewModel
     val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -34,18 +34,18 @@ class StationsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         preferencesRepository = FakePreferencesRepository()
         goTrainDataSource = FakeGoTrainDataSource()
-        getSelectedStationUseCase = GetSelectedStationUseCase(
+        getSelectedStopUseCase = GetSelectedStopUseCase(
             preferencesRepository,
             goTrainDataSource,
         )
-        setFavouriteStationUseCase = SetFavouriteStationUseCase(
+        setFavouriteStopUseCase = SetFavouriteStopUseCase(
             preferencesRepository,
         )
-        stationsViewModel = StationsViewModel(
-            getSelectedStationUseCase = getSelectedStationUseCase,
+        stopsViewModel = StopsViewModel(
+            getSelectedStopUseCase = getSelectedStopUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            setFavouriteStationUseCase = setFavouriteStationUseCase,
+            setFavouriteStopUseCase = setFavouriteStopUseCase,
         )
     }
 
@@ -55,36 +55,36 @@ class StationsViewModelTest {
     }
 
     @Test
-    fun testSetSelectedStation() = runTest(testDispatcher) {
-        val station = Station(
+    fun testSetSelectedStop() = runTest(testDispatcher) {
+        val stop = Stop(
             name = "Test",
             code = "TST",
         )
-        goTrainDataSource.stations = listOf(
-            Station(
+        goTrainDataSource.stops = listOf(
+            Stop(
                 name = "Union Station",
                 code = "UN",
             ),
-            Station(
+            Stop(
                 name = "Test",
                 code = "TST",
             )
         )
         advanceUntilIdle()
-        assertEquals(true, goTrainDataSource.stations.isNotEmpty())
-        assertEquals(true, "UN" in (stationsViewModel.uiState.value.selectedStation?.code ?: ""))
-        stationsViewModel.setSelectedStation(station)
+        assertEquals(true, goTrainDataSource.stops.isNotEmpty())
+        assertEquals(true, "UN" in (stopsViewModel.uiState.value.selectedStop?.code ?: ""))
+        stopsViewModel.setSelectedStop(stop)
         advanceUntilIdle()
-        assertEquals(station.code.split(",").first(), preferencesRepository.getSelectedStationCode().first())
-        assertEquals(station, getSelectedStationUseCase().first())
-        stationsViewModel = StationsViewModel(
-            getSelectedStationUseCase = getSelectedStationUseCase,
-            setFavouriteStationUseCase = setFavouriteStationUseCase,
+        assertEquals(stop.code.split(",").first(), preferencesRepository.getSelectedStopCode().first())
+        assertEquals(stop, getSelectedStopUseCase().first())
+        stopsViewModel = StopsViewModel(
+            getSelectedStopUseCase = getSelectedStopUseCase,
+            setFavouriteStopUseCase = setFavouriteStopUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )
         advanceUntilIdle()
-        val selectedStation = stationsViewModel.uiState.value.selectedStation
-        assertEquals(station, selectedStation)
+        val selectedStop = stopsViewModel.uiState.value.selectedStop
+        assertEquals(stop, selectedStop)
     }
 }

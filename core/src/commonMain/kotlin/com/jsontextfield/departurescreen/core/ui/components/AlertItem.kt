@@ -67,7 +67,7 @@ fun AlertItem(
             ) {
                 Row(verticalAlignment = Alignment.Top) {
                     Text(
-                        text = alert.affectedStations.takeIf { it.isNotEmpty() }
+                        text = alert.affectedStops.takeIf { it.isNotEmpty() }
                             ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
                         modifier = Modifier
                             .weight(10 / 12f)

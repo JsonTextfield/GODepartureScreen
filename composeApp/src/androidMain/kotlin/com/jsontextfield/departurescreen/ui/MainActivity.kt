@@ -48,19 +48,19 @@ class MainActivity : ComponentActivity() {
             val view = LocalView.current
             var isIntentProcessed by rememberSaveable { mutableStateOf(false) }
             LaunchedEffect(Unit) {
-                intent.extras?.getString("selectedStation")?.let { stationCode ->
+                intent.extras?.getString("selectedStop")?.let { stopCode ->
                     // called when launching from a widget for the first time
                     if (!isIntentProcessed) {
                         isIntentProcessed = true
-                        mainViewModel.setSelectedStation(stationCode)
+                        mainViewModel.setSelectedStop(stopCode)
                     }
                 }
             }
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
-                    intent.extras?.getString("selectedStation")?.let { stationCode ->
+                    intent.extras?.getString("selectedStop")?.let { stopCode ->
                         // called when launching from a widget while the activity is already running
-                        mainViewModel.setSelectedStation(stationCode)
+                        mainViewModel.setSelectedStop(stopCode)
                     }
                     setIntent(intent)
                 }

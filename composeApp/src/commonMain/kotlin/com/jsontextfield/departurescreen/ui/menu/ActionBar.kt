@@ -95,15 +95,15 @@ fun getActions(
 ): List<Action> {
     val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
-        icon = if (uiState.selectedStation?.isFavourite == true) {
+        icon = if (uiState.selectedStop?.isFavourite == true) {
             Res.drawable.round_star_24
         } else {
             Res.drawable.round_star_border_24
         },
         tooltip = stringResource(Res.string.favourite),
-        isVisible = uiState.selectedStation != null,
+        isVisible = uiState.selectedStop != null,
         onClick = {
-            uiState.selectedStation?.let(mainViewModel::setFavouriteStations)
+            uiState.selectedStop?.let(mainViewModel::setFavouriteStops)
         },
     )
 

@@ -43,7 +43,7 @@ class TripDetailsViewModel(
                     destination = destination,
                 )
             }
-            val allStations = goTrainDataSource.getAllStations().associate {
+            val allStops = goTrainDataSource.getAllStops().associate {
                 it.code to it.name
             }
             val result = goTrainDataSource.getTripDetails(tripId)
@@ -51,8 +51,8 @@ class TripDetailsViewModel(
                 it.copy(
                     status = Status.LOADED,
                     stops = result?.stops?.map { stop ->
-                        allStations[stop]
-                            ?: allStations.firstNotNullOfOrNull { (code, name) -> if (stop in code) name else null }
+                        allStops[stop]
+                            ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop in code) name else null }
                             ?: stop
                     }.orEmpty(),
                 )
@@ -67,7 +67,7 @@ class TripDetailsViewModel(
                             .map { it.copy(isRead = true) }
                             .filter { alert ->
                                 alert.affectedLines.any { line -> line == lineCode } ||
-                                        alert.affectedStations.any { station -> station == selectedStop }
+                                        alert.affectedStops.any { stop -> stop == selectedStop }
                             }
                     )
                 }

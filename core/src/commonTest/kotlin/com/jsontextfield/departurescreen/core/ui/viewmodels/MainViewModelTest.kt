@@ -1,9 +1,11 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
@@ -18,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,11 +62,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -114,11 +117,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -163,11 +166,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )
@@ -198,11 +201,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )
@@ -223,11 +226,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )

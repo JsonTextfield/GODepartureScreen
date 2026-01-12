@@ -20,7 +20,7 @@
     <string name="departure">Départ</string>
     <string name="destination">Destination</string>
     <string name="sort_by">Trier par…</string>
-    <string name="station">Station</string>
+    <string name="stop">Arrêts</string>
     <string name="widget_settings">Paramètres du widget</string>
     <string name="loading">Chargement…</string>
     <plurals name="number_of_cars">

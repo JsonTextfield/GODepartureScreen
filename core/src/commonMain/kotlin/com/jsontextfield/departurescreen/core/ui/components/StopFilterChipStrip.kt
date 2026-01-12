@@ -23,16 +23,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jsontextfield.departurescreen.core.ui.StationType
+import com.jsontextfield.departurescreen.core.ui.StopType
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.all
 import departure_screen.core.generated.resources.filter
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun StationFilterChipStrip(
-    stationType: StationType?,
-    onSelectionChanged: (StationType?) -> Unit,
+fun StopFilterChipStrip(
+    stopType: StopType?,
+    onSelectionChanged: (StopType?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val filter = stringResource(Res.string.filter)
@@ -52,7 +52,7 @@ fun StationFilterChipStrip(
     ) {
         item {
             FilterChip(
-                selected = stationType == null,
+                selected = stopType == null,
                 onClick = {
                     onSelectionChanged(null)
                 },
@@ -77,9 +77,9 @@ fun StationFilterChipStrip(
             )
         }
 
-        itemsIndexed(StationType.entries, key = { _, type -> type.name }) { index, type ->
+        itemsIndexed(StopType.entries, key = { _, type -> type.name }) { index, type ->
             FilterChip(
-                selected = type == stationType,
+                selected = type == stopType,
                 onClick = {
                     onSelectionChanged(type)
                 },

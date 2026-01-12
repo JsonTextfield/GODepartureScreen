@@ -54,7 +54,7 @@ fun WidgetConfigPreview(
                 )
                 .padding(12.dp)
         ) {
-            Text(widgetConfig.selectedStation?.name.orEmpty())
+            Text(widgetConfig.selectedStop?.name.orEmpty())
             LazyColumn(
                 userScrollEnabled = true,
                 modifier = Modifier.weight(1f),

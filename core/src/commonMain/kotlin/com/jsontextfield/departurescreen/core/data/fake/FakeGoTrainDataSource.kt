@@ -4,10 +4,10 @@ package com.jsontextfield.departurescreen.core.data.fake
 
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
-import com.jsontextfield.departurescreen.core.ui.StationType
+import com.jsontextfield.departurescreen.core.ui.StopType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.ExperimentalTime
@@ -16,11 +16,11 @@ import kotlin.uuid.Uuid
 
 class FakeGoTrainDataSource : IGoTrainDataSource {
 
-    var stations: List<Station> = listOf(
-        Station(
+    var stops: List<Stop> = listOf(
+        Stop(
             code = "UN",
             name = "Union Station",
-            types = setOf(StationType.TRAIN),
+            types = setOf(StopType.TRAIN),
         )
     )
     var trips: List<Trip> = listOf(
@@ -64,7 +64,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
     var informationAlerts: List<Alert> = emptyList()
 
 
-    override suspend fun getTrips(stationCode: String): List<Trip> {
+    override suspend fun getTrips(stopCode: String): List<Trip> {
         return trips
     }
 
@@ -84,7 +84,7 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAllStations(): List<Station> {
-        return stations
+    override suspend fun getAllStops(): List<Stop> {
+        return stops
     }
 }
