@@ -15,5 +15,7 @@ interface IGoTrainDataSource {
 
     fun getInformationAlerts(): Flow<List<Alert>>
 
+    fun getMarketingAlerts(): Flow<List<Alert>>
+
     suspend fun getAllStations(): List<Station>
 }

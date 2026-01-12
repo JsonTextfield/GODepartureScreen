@@ -80,6 +80,10 @@ class FakeGoTrainDataSource : IGoTrainDataSource {
         return flowOf(informationAlerts)
     }
 
+    override fun getMarketingAlerts(): Flow<List<Alert>> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getAllStations(): List<Station> {
         return stations
     }

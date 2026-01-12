@@ -28,7 +28,7 @@ import kotlinx.datetime.parse
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -36,8 +36,8 @@ import kotlin.time.Instant
 class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
-    private var stations : List<Station> = emptyList()
-    private var serviceAlerts : List<Alert> = emptyList()
+    private var stations: List<Station> = emptyList()
+    private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
 
     private var lastUpdated: Long = 0L
@@ -99,7 +99,7 @@ class GoTrainDataSource(
         }
     }
 
-    override suspend fun getTripDetails(tripNumber: String) : TripDetails? {
+    override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         val response = departureScreenAPI.getTrip(tripNumber).trips
         return response.map {
             TripDetails(
@@ -119,7 +119,7 @@ class GoTrainDataSource(
                 Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
                 emit(serviceAlerts)
             }
-            delay(1.minutes)
+            delay(60.seconds)
         }
     }
 
@@ -133,7 +133,21 @@ class GoTrainDataSource(
                 Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
                 emit(informationAlerts)
             }
-            delay(1.minutes)
+            delay(60.seconds)
+        }
+    }
+
+    override fun getMarketingAlerts(): Flow<List<Alert>> = flow {
+        while (currentCoroutineContext().isActive) {
+            try {
+                informationAlerts = processAlerts(departureScreenAPI.getMarketingAlerts()).also {
+                    emit(it)
+                }
+            } catch (exception: Exception) {
+                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+                emit(informationAlerts)
+            }
+            delay(60.seconds)
         }
     }
 
