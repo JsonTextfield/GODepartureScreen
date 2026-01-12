@@ -13,6 +13,8 @@ data class StationsRoute(val selectedStationCode: String? = null)
 
 @Serializable
 data class TripDetailsRoute(
-    val stopId: String? = null,
-    val tripId: String? = null,
+    val selectedStop: String,
+    val tripId: String,
+    val lineCode: String,
+    val destination: String,
 )

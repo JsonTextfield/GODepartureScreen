@@ -61,8 +61,10 @@ val viewModelModule = module {
     viewModel { params ->
         TripDetailsViewModel(
             goTrainDataSource = get<IGoTrainDataSource>(),
-            stopId = params[0],
+            selectedStop = params[0],
             tripId = params[1],
+            lineCode = params[2],
+            destination = params[3],
         )
     }
 }

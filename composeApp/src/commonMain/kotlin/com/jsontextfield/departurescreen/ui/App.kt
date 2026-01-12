@@ -70,11 +70,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                     launchSingleTop = true
                                 }
                             },
-                            onShowTripDetails = { tripId ->
+                            onShowTripDetails = { trip ->
                                 navController.navigate(
                                     TripDetailsRoute(
-                                        stopId = uiState.selectedStation?.code,
-                                        tripId = tripId,
+                                        selectedStop = uiState.selectedStation?.name.orEmpty(),
+                                        tripId = trip.id,
+                                        lineCode = trip.code,
+                                        destination = trip.destination,
                                     )
                                 ) {
                                     launchSingleTop = true
@@ -117,10 +119,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     enterTransition = { slideInHorizontally { it } },
                     exitTransition = { slideOutHorizontally { it } },
                 ) {
+                    val route = it.toRoute<TripDetailsRoute>()
                     val tripDetailsViewModel = koinViewModel<TripDetailsViewModel> {
                         parametersOf(
-                            it.toRoute<TripDetailsRoute>().stopId,
-                            it.toRoute<TripDetailsRoute>().tripId,
+                            route.selectedStop,
+                            route.tripId,
+                            route.lineCode,
+                            route.destination,
                         )
                     }
                     TripDetailsScreen(

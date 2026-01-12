@@ -31,7 +31,7 @@ import kotlin.math.ceil
 @Composable
 fun TrainList(
     trips: List<Trip>,
-    onItemClick: (String) -> Unit,
+    onItemClick: (Trip) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -90,7 +90,10 @@ fun TrainList(
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
-                        .clickable(onClick = { onItemClick(trip.id) })
+                        .clickable(
+                            enabled = false,
+                            onClick = { onItemClick(trip) },
+                        )
                         .padding(8.dp)
                         .padding(
                             start = WindowInsets.safeDrawing.asPaddingValues()

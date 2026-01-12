@@ -164,7 +164,7 @@ class DepartureScreenAPI() {
     }
     @OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
     suspend fun getTrip(tripNumber: String): TripResponse {
-        val date = (Clock.System.now() - 6.hours).format(
+        val date = (Clock.System.now() - 8.hours).format(
             DateTimeComponents.Format {
                 byUnicodePattern("yyyyMMdd")
             }

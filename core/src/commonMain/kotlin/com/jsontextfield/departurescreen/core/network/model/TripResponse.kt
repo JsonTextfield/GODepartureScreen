@@ -14,7 +14,7 @@ data class TripResponse(
     @Serializable
     data class Trip(
         @JsonNames("TripNumber") val tripNumber: String = "",
-        @JsonNames("Destination") val destination: String = "",
+        @JsonNames("Destination") val destination: String? = "",
         @JsonNames("Status") val status: String = "",
         @JsonNames("TimeStamp") val time: String = "",
         @JsonNames("Stops") val stops: List<Stop> = emptyList(),

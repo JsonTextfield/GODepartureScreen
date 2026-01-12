@@ -26,7 +26,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -34,10 +36,10 @@ import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
+import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
-import departure_screen.composeapp.generated.resources.more_trips
 import departure_screen.composeapp.generated.resources.stops
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,19 +54,17 @@ fun TripDetailsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    uiState.trip?.let { trip ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            TripCodeBox(
-                                tripCode = trip.code,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(color = trip.color, shape = SquircleShape)
-                            )
-                            Text(text = trip.destination)
-                        }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TripCodeBox(
+                            tripCode = uiState.lineCode,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(color = lineColours[uiState.lineCode] ?: Color.Gray, shape = SquircleShape)
+                        )
+                        Text(text = uiState.destination)
                     }
                 },
                 navigationIcon = {
@@ -89,10 +89,10 @@ fun TripDetailsScreen(
             }
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    uiState.stops.forEach { stop ->
+                    uiState.stops.forEachIndexed { index, stop ->
                         Text(
                             text = stop,
-                            style = if (stop == uiState.currentStop?.name) {
+                            style = if (stop == uiState.selectedStop) {
                                 MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
@@ -100,17 +100,20 @@ fun TripDetailsScreen(
                             } else {
                                 MaterialTheme.typography.bodyMedium
                             },
+                            modifier = Modifier.alpha(
+                                if (index < uiState.stops.indexOf(uiState.selectedStop)) 0.5f else 1f
+                            ),
                         )
                     }
                 }
             }
-            item {
-                Text(
-                    text = stringResource(Res.string.more_trips),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(12.dp),
-                )
-            }
+//            item {
+//                Text(
+//                    text = stringResource(Res.string.more_trips),
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    modifier = Modifier.padding(12.dp),
+//                )
+//            }
             if (uiState.alerts.isNotEmpty()) {
                 item {
                     Text(
