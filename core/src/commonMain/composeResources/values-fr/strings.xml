@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Départs GO</string>
     <string name="express">Express</string>
-    <string name="cancelled">Annullée</string>
+    <string name="cancelled">Annulée</string>
     <string name="platform_number">Quai %1$s</string>
     <string name="platform">Quai</string>
     <string name="filter">Filtrer</string>

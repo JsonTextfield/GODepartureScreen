@@ -4,7 +4,7 @@
     <string name="complication_label">Example complication</string>
     <string name="app_name">Départs GO</string>
     <string name="express">Express</string>
-    <string name="cancelled">Annullée</string>
+    <string name="cancelled">Annulée</string>
     <string name="platform">Quai %1$s</string>
     <string name="filter">Filtrer</string>
     <string name="sort">Trier</string>
