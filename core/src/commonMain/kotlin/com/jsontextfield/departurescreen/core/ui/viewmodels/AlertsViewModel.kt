@@ -61,18 +61,14 @@ class AlertsViewModel(
                 .flatMap { it.affectedLines }
                 .distinct()
                 .sorted()
-            val allServiceAlerts = serviceAlerts.map {
+            val allAlerts = (serviceAlerts + informationAlerts).map {
                 it.copy(isRead = it.id in readAlerts)
-            }
-            val allInformationAlerts = informationAlerts.map {
-                it.copy(isRead = it.id in readAlerts)
-            }
+            }.sortedByDescending { it.date }
             _uiState.update { uiState ->
                 uiState.copy(
                     status = Status.LOADED,
                     isRefreshing = false,
-                    allServiceAlerts = allServiceAlerts,
-                    allInformationAlerts = allInformationAlerts,
+                    allAlerts = allAlerts,
                     allLines = allLines,
                 )
             }
@@ -105,8 +101,7 @@ class AlertsViewModel(
 
 data class AlertsUIState(
     val status: Status = Status.LOADING,
-    val allInformationAlerts: List<Alert> = emptyList(),
-    val allServiceAlerts: List<Alert> = emptyList(),
+    val allAlerts: List<Alert> = emptyList(),
     val allLines: List<String> = emptyList(),
     val selectedLines: Set<String> = emptySet(),
     val isUnreadSelected: Boolean = false,
@@ -117,6 +112,5 @@ data class AlertsUIState(
             lineCode in selectedLines
         })
     }
-    val serviceAlerts: List<Alert> = allServiceAlerts.filter(filterPredicate)
-    val informationAlerts: List<Alert> = allInformationAlerts.filter(filterPredicate)
+    val alerts: List<Alert> = allAlerts.filter(filterPredicate)
 }

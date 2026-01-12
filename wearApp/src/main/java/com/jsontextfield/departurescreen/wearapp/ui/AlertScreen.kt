@@ -1,19 +1,15 @@
 package com.jsontextfield.departurescreen.wearapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -22,22 +18,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Scaffold
-import androidx.wear.compose.material3.MaterialTheme
-import androidx.wear.compose.material3.Text
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
-import com.jsontextfield.departurescreen.wearapp.R
 
 @Composable
 fun AlertsScreen(
@@ -47,8 +38,7 @@ fun AlertsScreen(
     val uiState by alertsViewModel.uiState.collectAsState()
     AlertScreen(
         isRefreshing = uiState.isRefreshing,
-        informationAlerts = uiState.informationAlerts,
-        serviceAlerts = uiState.serviceAlerts,
+        alerts = uiState.alerts,
         onBackPressed = onBackPressed,
         onRefresh = alertsViewModel::refresh,
     )
@@ -56,8 +46,7 @@ fun AlertsScreen(
 
 @Composable
 fun AlertScreen(
-    informationAlerts: List<Alert>,
-    serviceAlerts: List<Alert>,
+    alerts: List<Alert>,
     onBackPressed: () -> Unit = {},
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
@@ -81,7 +70,7 @@ fun AlertScreen(
                 )
                 .semantics {
                     collectionInfo = CollectionInfo(
-                        rowCount = informationAlerts.size + serviceAlerts.size,
+                        rowCount = alerts.size,
                         columnCount = columns,
                     )
                 },
@@ -90,62 +79,20 @@ fun AlertScreen(
             contentPadding = PaddingValues(16.dp) + PaddingValues(bottom = 100.dp),
             columns = GridCells.Adaptive(240.dp),
         ) {
-            if (serviceAlerts.isNotEmpty()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        stringResource(R.string.service_alerts),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics {
-                            heading()
-                        },
-                    )
-                }
-                itemsIndexed(serviceAlerts, key = { _, item -> item.id }) { index, alert ->
-                    AlertItem(
-                        alert,
-                        modifier = Modifier
-                            .semantics {
-                                collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = index / columns,
-                                    columnIndex = index % columns,
-                                    rowSpan = 1,
-                                    columnSpan = 1,
-                                )
-                            }
-                            .animateItem()
-                    )
-                }
-            }
-            if (informationAlerts.isNotEmpty()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        if (serviceAlerts.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(24.dp))
+            itemsIndexed(alerts, key = { _, item -> item.id }) { index, alert ->
+                AlertItem(
+                    alert,
+                    modifier = Modifier
+                        .semantics {
+                            collectionItemInfo = CollectionItemInfo(
+                                rowIndex = index / columns,
+                                columnIndex = index % columns,
+                                rowSpan = 1,
+                                columnSpan = 1,
+                            )
                         }
-                        Text(
-                            stringResource(R.string.information_alerts),
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.semantics {
-                                heading()
-                            },
-                        )
-                    }
-                }
-                itemsIndexed(informationAlerts, key = { _, item -> item.id }) { index, alert ->
-                    AlertItem(
-                        alert,
-                        modifier = Modifier
-                            .semantics {
-                                collectionItemInfo = CollectionItemInfo(
-                                    rowIndex = (serviceAlerts.size + index) / columns,
-                                    columnIndex = (serviceAlerts.size + index) % columns,
-                                    rowSpan = 1,
-                                    columnSpan = 1,
-                                )
-                            }
-                            .animateItem()
-                    )
-                }
+                        .animateItem()
+                )
             }
         }
     }
