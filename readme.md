@@ -7,15 +7,7 @@ A multiplatform application that displays GO Transit bus and train schedules and
   <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1745280000" alt="Download on the App Store" height="100" width="300"/>
 </a>
 
-## Screenshots
-<table>
-<td>
-<img src="screenshots/Screenshot_1740538639.png" alt="drawing" width="300"/>
-<img src="screenshots/Screenshot_1740538674.png" alt="drawing" width="300"/>
-<img src="screenshots/Screenshot_1740538647.png" alt="drawing" width="800"/>
-</td>
-</table>
+<img src="screenshots/Screenshot_01-11_19-10-40.png" alt="drawing" width="600"/>
 
 ## Privacy Policy
-
 This app does not collect, store, nor share any personally identifiable information nor user data. 
