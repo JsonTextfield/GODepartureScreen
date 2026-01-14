@@ -36,7 +36,7 @@ struct StopQuery: EntityQuery {
 
     func suggestedEntities() async throws -> [StopDetail] {
         let userDefaults = UserDefaults(suiteName: "group.com.jsontextfield.godepartures")
-        let favourites = userDefaults?.object(forKey: "favouriteStops") as? String ?? ""
+        let favourites = userDefaults?.object(forKey: "favouriteStops") as? String ?? userDefaults?.object(forKey: "favouriteStations") as? String ?? ""
         let descriptors: [SortDescriptor<CoreStop>] = [
             .transform({ trip in
                 let codes: [String] = trip.code.components(separatedBy: ",")

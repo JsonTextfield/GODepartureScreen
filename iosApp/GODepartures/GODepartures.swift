@@ -25,21 +25,24 @@ struct Provider: AppIntentTimelineProvider {
     func snapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> SimpleEntry {
+        ) async -> SimpleEntry {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
         let selectedStopCode =
             configuration.selectedStop?.id
-            ?? userDefaults?.object(
+                ?? userDefaults?.object(
                 forKey: "selectedStopCode"
             ) as? String
-            ?? "UN"
+                ?? userDefaults?.object(
+                forKey: "selectedStationCode"
+            ) as? String
+                ?? "UN"
 
         do {
             let allStops = try await goTrainDataSource.getAllStops()
             if let stop =
-                allStops
+            allStops
                 .first(where: {
                     $0.code.contains(selectedStopCode)
                 })
@@ -47,20 +50,21 @@ struct Provider: AppIntentTimelineProvider {
                 .first(where: {
                     $0.code.contains("UN")
                 })
-                ?? allStops.first
-            {
+                ?? allStops.first {
                 let trips: [CoreTrip]
                 let sortMode = CoreSortMode.entries[
                     userDefaults?.integer(forKey: "sortMode") ?? 0
-                ]
+                    ]
                 let visibleTrains: String =
                     userDefaults?.object(forKey: "hiddenTrains")
-                    as? String ?? ""
+                        as? String ?? ""
 
                 // Parse comma-separated stop codes
                 let codes: [String] = stop.code
                     .split(separator: ",")
-                    .map { String($0) }
+                    .map {
+                        String($0)
+                    }
 
                 // Fetch trips per code (sequentially; safe for widgets)
                 var fetchedTrips: [CoreTrip] = []
@@ -74,7 +78,8 @@ struct Provider: AppIntentTimelineProvider {
                 trips = fetchedTrips.filter { trip in
                     visibleTrains.isEmpty
                         || visibleTrains.contains(trip.code)
-                }.sorted(by: {
+                }
+                .sorted(by: {
                     switch configuration.sortMode {
                     case .time:
                         return $0.departureTime.toEpochMilliseconds()
@@ -107,7 +112,7 @@ struct Provider: AppIntentTimelineProvider {
     func timeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> Timeline<SimpleEntry> {
+        ) async -> Timeline<SimpleEntry> {
         let entry = await snapshot(for: configuration, in: context)
         return Timeline(entries: [entry], policy: .atEnd)
     }
@@ -135,7 +140,7 @@ struct Provider: AppIntentTimelineProvider {
                     isBus: true,
                     cars: nil,
                     busType: nil,
-                )
+                    )
             ]
         )
     }
@@ -169,8 +174,8 @@ struct GODepartures: Widget {
         .configurationDisplayName("GO Departures")
         .description("Shows departure information for a stop")
         .supportedFamilies([
-            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
-        ]).contentMarginsDisabled()
+                               .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
+                           ]).contentMarginsDisabled()
     }
 
     init() {

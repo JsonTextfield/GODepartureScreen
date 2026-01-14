@@ -48,7 +48,7 @@ class DataStorePreferencesRepository(
 
     override fun getSelectedStopCode(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "UN"
         }
     }
 
@@ -81,6 +81,12 @@ class DataStorePreferencesRepository(
         onSetFavouriteStops(favouriteStops)
     }
 
+    override fun getFavouriteStops(): Flow<Set<String>> {
+        return dataStore.data.map { preferences ->
+            preferences[stringSetPreferencesKey(FAVOURITE_STOPS_KEY)] ?: preferences[stringSetPreferencesKey(OLD_FAVOURITE_STOPS_KEY)] ?: emptySet()
+        }
+    }
+
     override fun getReadAlerts(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
             preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
@@ -91,12 +97,6 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             val readAlerts = preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
             preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] = readAlerts + id
-        }
-    }
-
-    override fun getFavouriteStops(): Flow<Set<String>> {
-        return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey(FAVOURITE_STOPS_KEY)] ?: emptySet()
         }
     }
 }
