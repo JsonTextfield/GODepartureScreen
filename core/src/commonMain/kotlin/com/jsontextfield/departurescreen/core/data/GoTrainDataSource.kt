@@ -40,6 +40,7 @@ class GoTrainDataSource(
     private var stops: List<Stop> = emptyList()
     private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
+    private var marketingAlerts: List<Alert> = emptyList()
 
     private var lastUpdated: Long = 0L
     private var serviceAtAGlanceTrains: Map<String, ServiceAtAGlanceTrainsResponse.Trips.Trip>? = null
@@ -132,43 +133,37 @@ class GoTrainDataSource(
         }.firstOrNull()
     }
 
-    override fun getServiceAlerts(): Flow<List<Alert>> = flow {
-        while (currentCoroutineContext().isActive) {
-            try {
-                serviceAlerts = processAlerts(departureScreenAPI.getServiceAlerts()).also {
-                    emit(it)
-                }
-            } catch (exception: Exception) {
-                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
-                emit(serviceAlerts)
-            }
-            delay(60.seconds)
-        }
-    }
+    override fun getServiceAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getServiceAlerts() },
+        getCache = { serviceAlerts },
+        updateCache = { serviceAlerts = it }
+    )
 
-    override fun getInformationAlerts(): Flow<List<Alert>> = flow {
-        while (currentCoroutineContext().isActive) {
-            try {
-                informationAlerts = processAlerts(departureScreenAPI.getInformationAlerts()).also {
-                    emit(it)
-                }
-            } catch (exception: Exception) {
-                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
-                emit(informationAlerts)
-            }
-            delay(60.seconds)
-        }
-    }
+    override fun getInformationAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getInformationAlerts() },
+        getCache = { informationAlerts },
+        updateCache = { informationAlerts = it }
+    )
 
-    override fun getMarketingAlerts(): Flow<List<Alert>> = flow {
+    override fun getMarketingAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getMarketingAlerts() },
+        getCache = { marketingAlerts },
+        updateCache = { marketingAlerts = it }
+    )
+
+    private fun pollAlerts(
+        apiCall: suspend () -> Alerts,
+        getCache: () -> List<Alert>,
+        updateCache: (List<Alert>) -> Unit
+    ): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                informationAlerts = processAlerts(departureScreenAPI.getMarketingAlerts()).also {
-                    emit(it)
-                }
+                updateCache(
+                    processAlerts(apiCall()).also { emit(it) }
+                )
             } catch (exception: Exception) {
                 Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
-                emit(informationAlerts)
+                emit(getCache())
             }
             delay(60.seconds)
         }
@@ -183,12 +178,11 @@ class GoTrainDataSource(
                 it.locationName
             }?.map { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
                 val types = buildSet {
-                    stops.forEach {
-                        if ("Bus" in it.locationType) {
-                            add(StopType.BUS)
-                        }
-                        if ("Train" in it.locationType) {
-                            add(StopType.TRAIN)
+                    for (stop in stops) {
+                        for (stopType in StopType.entries) {
+                            if (stopType.typeString in stop.locationType) {
+                                add(stopType)
+                            }
                         }
                     }
                 }
