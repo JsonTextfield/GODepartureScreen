@@ -6,7 +6,7 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
 import kotlinx.coroutines.flow.Flow
 
-interface IGoTrainDataSource {
+interface ITransitRepository {
     suspend fun getTrips(stopCode: String): List<Trip>
 
     suspend fun getTripDetails(tripNumber: String) : TripDetails?

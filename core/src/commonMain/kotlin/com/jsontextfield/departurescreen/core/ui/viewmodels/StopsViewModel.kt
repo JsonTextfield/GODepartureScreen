@@ -2,8 +2,8 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class StopsViewModel(
     private val getSelectedStopUseCase: GetSelectedStopUseCase,
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     selectedStopCode: String? = null,
 ) : ViewModel() {

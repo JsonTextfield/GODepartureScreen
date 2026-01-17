@@ -34,9 +34,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalSerializationApi::class)
-class GoTrainDataSource(
+class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
-) : IGoTrainDataSource {
+) : ITransitRepository {
     private var stops: List<Stop> = emptyList()
     private val upExpressStops: List<String> = listOf("UN", "BL", "MD", "WE", "PA")
     private var serviceAlerts: List<Alert> = emptyList()
@@ -164,7 +164,7 @@ class GoTrainDataSource(
                     processAlerts(apiCall()).also { emit(it) }
                 )
             } catch (exception: Exception) {
-                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+                Logger.withTag(TransitRepository::class.simpleName.toString()).e { exception.message.toString() }
                 emit(getCache())
             }
             delay(60.seconds)

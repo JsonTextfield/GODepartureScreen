@@ -4,8 +4,8 @@ package com.jsontextfield.departurescreen.widget.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -34,7 +34,7 @@ import kotlin.time.ExperimentalTime
 
 class WidgetViewModel(
     private val getSelectedStopUseCase: GetSelectedStopUseCase,
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     private val configDataStore: WidgetConfigDataStore,
 ) : ViewModel() {

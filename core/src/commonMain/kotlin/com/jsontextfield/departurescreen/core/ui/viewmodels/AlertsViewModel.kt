@@ -4,8 +4,8 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.delay
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 class AlertsViewModel(
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())

@@ -2,8 +2,8 @@
 
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -40,7 +40,7 @@ class MainViewModelTest {
 
     @Test
     fun testSortByTime() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 departureTime = Instant.Companion.fromEpochMilliseconds(9000),
@@ -95,7 +95,7 @@ class MainViewModelTest {
 
     @Test
     fun testSortByLine() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "NY",
@@ -150,7 +150,7 @@ class MainViewModelTest {
 
     @Test
     fun testSetVisibleTrainsWhenTrainDeparts() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "LW",
@@ -185,7 +185,7 @@ class MainViewModelTest {
 
     @Test
     fun testSetVisibleTrainsWhenTrainsHaveNotYetDeparted() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "LW",
@@ -220,7 +220,7 @@ class MainViewModelTest {
 
     @Test
     fun testSetTheme() = runTest {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
 
         val mainViewModel = MainViewModel(

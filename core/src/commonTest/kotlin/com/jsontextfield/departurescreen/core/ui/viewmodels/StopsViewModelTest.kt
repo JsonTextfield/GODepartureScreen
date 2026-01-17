@@ -1,7 +1,7 @@
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 class StopsViewModelTest {
 
     lateinit var preferencesRepository: FakePreferencesRepository
-    lateinit var goTrainDataSource: FakeGoTrainDataSource
+    lateinit var goTrainDataSource: FakeTransitRepository
     lateinit var getSelectedStopUseCase: GetSelectedStopUseCase
 
     lateinit var setFavouriteStopUseCase: SetFavouriteStopUseCase
@@ -33,7 +33,7 @@ class StopsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         preferencesRepository = FakePreferencesRepository()
-        goTrainDataSource = FakeGoTrainDataSource()
+        goTrainDataSource = FakeTransitRepository()
         getSelectedStopUseCase = GetSelectedStopUseCase(
             preferencesRepository,
             goTrainDataSource,

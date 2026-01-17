@@ -3,10 +3,10 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
+import com.jsontextfield.departurescreen.core.data.TransitRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
@@ -29,12 +29,12 @@ val networkModule = module {
 }
 
 val dataModule = module {
-    single<IGoTrainDataSource> {
+    single<ITransitRepository> {
         val useFake = false
         if (useFake) {
-            FakeGoTrainDataSource()
+            FakeTransitRepository()
         } else {
-            GoTrainDataSource(get<DepartureScreenAPI>())
+            TransitRepository(get<DepartureScreenAPI>())
         }
     }
 }
@@ -53,14 +53,14 @@ val viewModelModule = module {
         StopsViewModel(
             getSelectedStopUseCase = get<GetSelectedStopUseCase>(),
             setFavouriteStopUseCase = get<SetFavouriteStopUseCase>(),
-            goTrainDataSource = get<IGoTrainDataSource>(),
+            goTrainDataSource = get<ITransitRepository>(),
             preferencesRepository = get<IPreferencesRepository>(),
             selectedStopCode = params.getOrNull(String::class),
         )
     }
     viewModel { params ->
         TripDetailsViewModel(
-            goTrainDataSource = get<IGoTrainDataSource>(),
+            goTrainDataSource = get<ITransitRepository>(),
             selectedStop = params[0],
             tripId = params[1],
             lineCode = params[2],

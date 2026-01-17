@@ -1,7 +1,7 @@
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +33,7 @@ class AlertsViewModelTest {
 
     @Test
     fun testRefresh() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
             goTrainDataSource,
@@ -53,7 +53,7 @@ class AlertsViewModelTest {
 
     @Test
     fun testLoadData() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
             goTrainDataSource = goTrainDataSource,

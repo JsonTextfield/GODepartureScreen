@@ -2,7 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.data.fake
 
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -14,7 +14,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class FakeGoTrainDataSource : IGoTrainDataSource {
+class FakeTransitRepository : ITransitRepository {
 
     var stops: List<Stop> = listOf(
         Stop(

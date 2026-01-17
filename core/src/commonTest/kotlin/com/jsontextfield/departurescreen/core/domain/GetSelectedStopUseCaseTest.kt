@@ -2,8 +2,8 @@
 
 package com.jsontextfield.departurescreen.core.domain
 
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.entities.Stop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,14 +19,14 @@ import kotlin.test.assertEquals
 
 class GetSelectedStopUseCaseTest {
 
-    private lateinit var fakeGoTrainDataSource: FakeGoTrainDataSource
+    private lateinit var fakeGoTrainDataSource: FakeTransitRepository
     private lateinit var fakePreferencesRepository: FakePreferencesRepository
     private lateinit var getSelectedStopUseCase: GetSelectedStopUseCase
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
-        fakeGoTrainDataSource = FakeGoTrainDataSource()
+        fakeGoTrainDataSource = FakeTransitRepository()
         fakePreferencesRepository = FakePreferencesRepository()
         getSelectedStopUseCase = GetSelectedStopUseCase(
             preferencesRepository = fakePreferencesRepository,

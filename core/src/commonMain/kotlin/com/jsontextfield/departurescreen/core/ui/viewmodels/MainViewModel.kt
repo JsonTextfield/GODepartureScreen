@@ -5,8 +5,8 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
@@ -33,7 +33,7 @@ import kotlin.time.ExperimentalTime
 class MainViewModel(
     private val getSelectedStopUseCase: GetSelectedStopUseCase,
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())

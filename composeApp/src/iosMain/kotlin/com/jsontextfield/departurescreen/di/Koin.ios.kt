@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
 import com.jsontextfield.departurescreen.core.data.FAVOURITE_STOPS_KEY
 import com.jsontextfield.departurescreen.core.data.HIDDEN_TRAINS_KEY
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.data.SELECTED_STOP_CODE_KEY
 import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
@@ -71,7 +71,7 @@ fun createDataStore(): DataStore<Preferences> = createDataStore(
 
 class WidgetHelper : KoinComponent {
     val preferencesRepository: IPreferencesRepository by inject()
-    val goTrainDataSource: IGoTrainDataSource by inject()
+    val goTrainDataSource: ITransitRepository by inject()
     val getSelectedStopUseCase = GetSelectedStopUseCase(
         goTrainDataSource = goTrainDataSource,
         preferencesRepository = preferencesRepository,

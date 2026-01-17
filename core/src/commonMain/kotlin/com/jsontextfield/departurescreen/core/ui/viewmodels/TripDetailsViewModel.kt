@@ -2,7 +2,7 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 class TripDetailsViewModel(
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val selectedStop: String,
     private val tripId: String,
     private val lineCode: String,

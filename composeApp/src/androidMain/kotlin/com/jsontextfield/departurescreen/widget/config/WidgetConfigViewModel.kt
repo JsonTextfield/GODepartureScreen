@@ -2,8 +2,8 @@ package com.jsontextfield.departurescreen.widget.config
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WidgetConfigViewModel(
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     private val widgetConfigDataStore: WidgetConfigDataStore,
     private val widgetId: Int? = null,
