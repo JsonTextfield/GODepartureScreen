@@ -98,7 +98,7 @@ fun AlertItem(
                     }
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    alert.affectedLines.forEach { line ->
+                    for (line in alert.affectedLines) {
                         TripCodeBox(
                             tripCode = line,
                             modifier = Modifier

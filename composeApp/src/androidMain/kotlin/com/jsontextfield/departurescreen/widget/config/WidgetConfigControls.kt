@@ -59,19 +59,19 @@ fun WidgetConfigControls(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = stringResource(R.string.sort_by), modifier = Modifier.weight(1f))
-            SortMode.entries.forEach { mode ->
+            for (sortMode in SortMode.entries) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable {
-                        onSortModeChanged(mode)
+                        onSortModeChanged(sortMode)
                     },
                 ) {
                     RadioButton(
-                        selected = mode == widgetConfig.sortMode,
-                        onClick = { onSortModeChanged(mode) },
+                        selected = sortMode == widgetConfig.sortMode,
+                        onClick = { onSortModeChanged(sortMode) },
                     )
                     Text(
-                        stringResource(if (mode == SortMode.TIME) R.string.time else R.string.line),
+                        stringResource(if (sortMode == SortMode.TIME) R.string.time else R.string.line),
                         modifier = Modifier.padding(end = 10.dp),
                     )
                 }

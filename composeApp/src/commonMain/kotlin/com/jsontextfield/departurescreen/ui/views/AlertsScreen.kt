@@ -146,7 +146,7 @@ fun AlertsScreen(
                     }
                 }
                 LaunchedEffect(visibleItems) {
-                    visibleItems.forEach { item ->
+                    for (item in visibleItems) {
                         val alert = if (item.key in uiState.alerts.map { it.id }) {
                             uiState.alerts.firstOrNull { it.id == item.key }
                         } else {

@@ -44,9 +44,9 @@ fun StopListItem(
                 overflow = TextOverflow.Ellipsis,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                stop.types.forEach {
+                for (type in stop.types) {
                     Text(
-                        text = stringResource(it.stringResId),
+                        text = stringResource(type.stringResId),
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.background(
                             color = MaterialTheme.colorScheme.secondaryContainer,

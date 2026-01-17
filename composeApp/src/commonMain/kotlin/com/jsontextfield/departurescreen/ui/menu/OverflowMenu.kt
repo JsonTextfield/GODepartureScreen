@@ -14,7 +14,7 @@ fun OverflowMenu(
         expanded = isExpanded,
         onDismissRequest = onDismissRequest
     ) {
-        actions.forEach { action ->
+        for (action in actions) {
             // DECIDE WHICH MENU ITEM TO USE
             if (action.menuContent == null) {
                 // This is a simple action with an onClick

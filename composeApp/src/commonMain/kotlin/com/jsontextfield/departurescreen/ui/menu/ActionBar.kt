@@ -119,7 +119,7 @@ fun getActions(
         tooltip = stringResource(Res.string.sort),
         isVisible = uiState.allTrips.isNotEmpty(),
         menuContent = { onDismiss ->
-            SortMode.entries.forEach { sortMode ->
+            for (sortMode in SortMode.entries) {
                 RadioMenuItem(
                     title = stringResource(sortMode.key),
                     isSelected = uiState.sortMode == sortMode,
@@ -136,7 +136,7 @@ fun getActions(
         icon = Res.drawable.rounded_brightness_4_24,
         tooltip = stringResource(Res.string.theme),
         menuContent = { onDismiss ->
-            ThemeMode.entries.forEach { themeMode ->
+            for (themeMode in ThemeMode.entries) {
                 RadioMenuItem(
                     title = stringResource(themeMode.key),
                     isSelected = uiState.theme == themeMode,
