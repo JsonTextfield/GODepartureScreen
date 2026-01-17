@@ -17,7 +17,9 @@ import departure_screen.composeapp.generated.resources.add_widget
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.favourite
 import departure_screen.composeapp.generated.resources.more
+import departure_screen.composeapp.generated.resources.rate_app
 import departure_screen.composeapp.generated.resources.round_bus_alert_24
+import departure_screen.composeapp.generated.resources.round_rate_review_24
 import departure_screen.composeapp.generated.resources.round_star_24
 import departure_screen.composeapp.generated.resources.round_star_border_24
 import departure_screen.composeapp.generated.resources.rounded_add_24
@@ -86,7 +88,12 @@ fun ActionBar(
 }
 
 expect fun addWidgetAction()
+
+expect fun rateAppAction()
+
 expect fun isAddWidgetActionVisible() : Boolean
+
+expect fun isRateAppActionVisible() : Boolean
 
 @Composable
 fun getActions(
@@ -157,11 +164,20 @@ fun getActions(
         isVisible = isAddWidgetActionVisible(),
     )
 
+    val rate = Action(
+        icon = Res.drawable.round_rate_review_24,
+        tooltip = stringResource(Res.string.rate_app),
+        onClick = { rateAppAction() },
+        menuContent = null,
+        isVisible = isRateAppActionVisible(),
+    )
+
     return listOf(
         favourite,
         sort,
         alerts,
         theme,
+        rate,
         addWidget,
     ).filter { it.isVisible }
 }
