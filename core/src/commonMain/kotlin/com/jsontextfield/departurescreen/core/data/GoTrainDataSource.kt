@@ -28,6 +28,7 @@ import kotlinx.datetime.parse
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -65,7 +66,28 @@ class GoTrainDataSource(
                 emptyMap()
             }
 
-            lines?.map { line ->
+            val upExpressTrips: List<Trip> = if (stopCode in listOf("UN", "BL", "MD", "WE", "PA")) {
+                departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull {
+                    it.tripUpdate?.stopTimeUpdate?.dropLast(1)?.firstOrNull { it.stopId == stopCode }?.departure?.time?.let { departureTimeString ->
+                        val departureTime = Instant.fromEpochSeconds(departureTimeString) - 5.hours
+                        Trip(
+                            id = it.id,
+                            code = "UP",
+                            name = "UP Express",
+                            destination = it.tripUpdate.vehicle?.label?.split(" - ")?.last().orEmpty(),
+                            color = lineColours["UP"] ?: Color.Gray,
+                            lastUpdated = lastUpdated,
+                            isCancelled = it.id in cancelledTrips,
+                            departureTime = departureTime,
+                            platform = "-",
+                        )
+                    }
+                }
+            } else {
+                emptyList()
+            }
+
+            val trips = lines?.map { line ->
                 val trip = tripsMap[line.tripNumber]
                 val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
                     Instant.parseOrNull(it, inFormatter)
@@ -91,7 +113,8 @@ class GoTrainDataSource(
                     cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
                     //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
                 )
-            }?.sortedBy { it.departureTime } ?: emptyList()
+            } ?: emptyList()
+            (upExpressTrips + trips).sortedBy { it.departureTime }
         } catch (exception: IOException) {
             throw exception
         } catch (_: Exception) {

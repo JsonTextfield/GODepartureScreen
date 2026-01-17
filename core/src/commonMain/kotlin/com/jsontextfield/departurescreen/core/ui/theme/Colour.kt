@@ -51,7 +51,8 @@ val lineColours = mapOf(
     "ST" to Color(0xFF794500),
     "RH" to Color(0xFF0099C7),
     "BR" to Color(0xFF003767),
-    "MI" to Color(0xFFF57F25)
+    "MI" to Color(0xFFF57F25),
+    "UP" to Color(0xFF0075D2),
 )
 
 val primaryLight = Color(0xFF3F6837)

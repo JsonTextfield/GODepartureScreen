@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,8 @@ class TripDetailsViewModel(
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
+
+    private val upExpressStations = listOf("UN", "BL", "MD", "WE", "PA")
 
     init {
         loadData()
@@ -46,7 +49,18 @@ class TripDetailsViewModel(
             val allStops = goTrainDataSource.getAllStops().associate {
                 it.code to it.name
             }
-            val result = goTrainDataSource.getTripDetails(tripId)
+            val result = if (lineCode == "UP") {
+                TripDetails(
+                    id = tripId,
+                    stops = if (destination == "Union Station") {
+                        upExpressStations.reversed()
+                    } else {
+                        upExpressStations
+                    }
+                )
+            } else {
+                goTrainDataSource.getTripDetails(tripId)
+            }
             _uiState.update {
                 it.copy(
                     status = Status.LOADED,

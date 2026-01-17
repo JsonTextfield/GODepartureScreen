@@ -7,6 +7,7 @@ import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBuse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.TripResponse
+import com.jsontextfield.departurescreen.core.network.model.TripUpdatesResponse
 import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -73,7 +74,7 @@ class DepartureScreenAPI() {
         return client.get("UP/Gtfs/Feed/Alerts").body()
     }
 
-    suspend fun getUpGtfsTripUpdates(): String {
+    suspend fun getUpGtfsTripUpdates(): TripUpdatesResponse {
         return client.get("UP/Gtfs/Feed/TripUpdates").body()
     }
 
