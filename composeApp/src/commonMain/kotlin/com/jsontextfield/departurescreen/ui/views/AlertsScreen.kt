@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
@@ -41,6 +42,7 @@ import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
@@ -88,6 +90,8 @@ fun AlertsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val gridState = rememberLazyStaggeredGridState()
+    val uriHandler = LocalUriHandler.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -206,7 +210,14 @@ fun AlertsScreen(
                                             rowSpan = 1,
                                             columnSpan = 1,
                                         )
-                                    }.animateItem()
+                                    }.animateItem(),
+                                    onClick = {
+                                        if ("fr" in Locale.current.language) {
+                                            alert.urlFr
+                                        } else {
+                                            alert.urlEn
+                                        }?.let(uriHandler::openUri)
+                                    }
                                 )
                             }
                             item {

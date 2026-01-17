@@ -38,6 +38,7 @@ class GoTrainDataSource(
     private val departureScreenAPI: DepartureScreenAPI
 ) : IGoTrainDataSource {
     private var stops: List<Stop> = emptyList()
+    private val upExpressStops: List<String> = listOf("UN", "BL", "MD", "WE", "PA")
     private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
     private var marketingAlerts: List<Alert> = emptyList()
@@ -67,9 +68,10 @@ class GoTrainDataSource(
                 emptyMap()
             }
 
-            val upExpressTrips: List<Trip> = if (stopCode in listOf("UN", "BL", "MD", "WE", "PA")) {
+            val upExpressTrips: List<Trip> = if (stopCode in upExpressStops) {
                 departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull {
-                    it.tripUpdate?.stopTimeUpdate?.dropLast(1)?.firstOrNull { it.stopId == stopCode }?.departure?.time?.let { departureTimeString ->
+                    it.tripUpdate?.stopTimeUpdate?.dropLast(1)
+                        ?.firstOrNull { it.stopId == stopCode }?.departure?.time?.let { departureTimeString ->
                         val departureTime = Instant.fromEpochSeconds(departureTimeString) - 5.hours
                         Trip(
                             id = it.id,
@@ -207,6 +209,9 @@ class GoTrainDataSource(
         }
         return try {
             alerts.messages?.message?.map { message ->
+                val bodyEn = message.bodyEnglish.orEmpty().trim()
+                val bodyFr = message.bodyFrench.orEmpty().trim()
+
                 Alert(
                     id = message.code,
                     date = Instant.parse(message.postedDateTime, inFormatter),
@@ -220,8 +225,18 @@ class GoTrainDataSource(
                     },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
-                    bodyEn = message.bodyEnglish.orEmpty().trim(),
-                    bodyFr = message.bodyFrench.orEmpty().trim(),
+                    bodyEn = bodyEn,
+                    bodyFr = bodyFr,
+                    urlEn = if ("Sign up for On The GO alerts" in bodyEn) {
+                        "https://www.gotransit.com/en/service-updates/sign-up-for-on-the-go-alerts"
+                    } else {
+                        null
+                    },
+                    urlFr = if ("Inscrivez-vous aux alertes On the GO" in bodyFr) {
+                        "https://www.gotransit.com/fr/mises-a-jour-des-services/inscrivez-vous-aux-alertes-on-the-go"
+                    } else {
+                        null
+                    },
                 )
             }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {

@@ -21,6 +21,8 @@ data class Alert(
     private val bodyEn: String = "",
     private val bodyFr: String = "",
     val isRead: Boolean = false,
+    val urlEn: String? = null,
+    val urlFr: String? = null,
 ) {
     @OptIn(FormatStringsInDatetimeFormats::class)
     val dateDifference: Duration =

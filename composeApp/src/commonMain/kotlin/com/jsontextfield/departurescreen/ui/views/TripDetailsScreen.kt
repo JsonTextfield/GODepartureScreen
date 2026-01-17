@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
@@ -49,6 +53,7 @@ fun TripDetailsScreen(
     onBackPressed: () -> Unit
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
+    val uriHandler = LocalUriHandler.current
 
     Scaffold(
         topBar = {
@@ -75,7 +80,7 @@ fun TripDetailsScreen(
         },
     ) {
         LazyColumn(
-            modifier = Modifier.padding(it), contentPadding = PaddingValues(
+            modifier = Modifier.fillMaxSize().padding(it), contentPadding = PaddingValues(
                 start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr),
                 end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
                 bottom = 100.dp,
@@ -124,7 +129,16 @@ fun TripDetailsScreen(
                     )
                 }
                 items(uiState.alerts) { alert ->
-                    AlertItem(alert = alert, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                    AlertItem(
+                        alert = alert,
+                        modifier = Modifier.widthIn(max = 360.dp).padding(horizontal = 8.dp, vertical = 4.dp),
+                        onClick = {
+                            if ("fr" in Locale.current.language) {
+                                alert.urlFr
+                            } else {
+                                alert.urlEn
+                            }?.let(uriHandler::openUri)
+                        })
                 }
             }
         }
