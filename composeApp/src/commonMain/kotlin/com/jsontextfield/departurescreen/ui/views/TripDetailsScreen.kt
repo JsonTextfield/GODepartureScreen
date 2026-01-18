@@ -7,17 +7,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -66,10 +68,10 @@ fun TripDetailsScreen(
                         TripCodeBox(
                             tripCode = uiState.lineCode,
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(32.dp)
                                 .background(color = lineColours[uiState.lineCode] ?: Color.Gray, shape = SquircleShape)
                         )
-                        Text(text = uiState.destination, style = MaterialTheme.typography.titleMedium)
+                        Text(text = uiState.destination)
                     }
                 },
                 navigationIcon = {
@@ -80,58 +82,57 @@ fun TripDetailsScreen(
         },
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(it), contentPadding = PaddingValues(
-                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr),
-                end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(
+                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
                 bottom = 100.dp,
             )
         ) {
-            item {
-                Text(
-                    text = stringResource(Res.string.stops),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(12.dp),
-                )
-            }
-            item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    uiState.stops.forEachIndexed { index, stop ->
+            if (uiState.stops.isNotEmpty()) {
+                item {
+                    Column(modifier = Modifier.animateItem()) {
                         Text(
-                            text = stop,
-                            style = if (stop == uiState.selectedStop) {
-                                MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            } else {
-                                MaterialTheme.typography.bodyMedium
-                            },
-                            modifier = Modifier.alpha(
-                                if (index < uiState.stops.indexOf(uiState.selectedStop)) 0.5f else 1f
-                            ),
+                            text = stringResource(Res.string.stops),
+                            style = MaterialTheme.typography.headlineMedium,
                         )
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            uiState.stops.forEachIndexed { index, stop ->
+                                Text(
+                                    text = stop,
+                                    style = if (stop == uiState.selectedStop) {
+                                        MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary,
+                                        )
+                                    } else {
+                                        MaterialTheme.typography.bodyMedium
+                                    },
+                                    modifier = Modifier
+                                        .alpha(if (index < uiState.stops.indexOf(uiState.selectedStop)) 0.5f else 1f)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
-//            item {
-//                Text(
-//                    text = stringResource(Res.string.more_trips),
-//                    style = MaterialTheme.typography.headlineMedium,
-//                    modifier = Modifier.padding(12.dp),
-//                )
-//            }
             if (uiState.alerts.isNotEmpty()) {
                 item {
                     Text(
                         text = stringResource(Res.string.alerts),
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(12.dp),
                     )
                 }
-                items(uiState.alerts) { alert ->
+                itemsIndexed(items = uiState.alerts, key = { index, alert -> alert.id }) { index, alert ->
                     AlertItem(
                         alert = alert,
-                        modifier = Modifier.widthIn(max = 360.dp).padding(horizontal = 8.dp, vertical = 4.dp),
+                        modifier = Modifier
+                            .widthIn(max = 400.dp)
+                            .animateItem(),
                         onClick = {
                             if ("fr" in Locale.current.language) {
                                 alert.urlFr

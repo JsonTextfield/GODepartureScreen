@@ -52,7 +52,7 @@ fun AlertItem(
     val fontScale = LocalDensity.current.fontScale
     Card(
         modifier = modifier.clickable(
-            enabled = alert.urlEn != null || alert.urlFr != null,
+            enabled = false, // alert.urlEn != null || alert.urlFr != null,
             onClick = onClick,
         ),
         shape = RoundedCornerShape(8.dp),
