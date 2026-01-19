@@ -14,11 +14,11 @@ import coreKit
 
 struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
-    let goTrainDataSource: CoreIGoTrainDataSource
+    let transitRepository: CoreITransitRepository
     let departureScreenUseCase: CoreGetSelectedStopUseCase
 
     init() {
-        goTrainDataSource = widgetHelper.goTrainDataSource
+        transitRepository = widgetHelper.goTrainDataSource
         departureScreenUseCase = widgetHelper.getSelectedStopUseCase
     }
 
@@ -40,7 +40,7 @@ struct Provider: AppIntentTimelineProvider {
                 ?? "UN"
 
         do {
-            let allStops = try await goTrainDataSource.getAllStops()
+            let allStops = try await transitRepository.getAllStops()
             if let stop =
             allStops
                 .first(where: {
@@ -69,7 +69,7 @@ struct Provider: AppIntentTimelineProvider {
                 // Fetch trips per code (sequentially; safe for widgets)
                 var fetchedTrips: [CoreTrip] = []
                 for code in codes {
-                    let result = try await goTrainDataSource.getTrips(
+                    let result = try await transitRepository.getTrips(
                         stopCode: code
                     )
                     fetchedTrips.append(contentsOf: result)
