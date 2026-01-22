@@ -20,10 +20,10 @@ class FakePreferencesRepository : IPreferencesRepository {
         sortModeFlow.value = sortMode
     }
 
-    private val selectedStationCodeFlow = MutableStateFlow("UN")
-    override fun getSelectedStationCode(): Flow<String> = selectedStationCodeFlow
-    override suspend fun setSelectedStationCode(stationCode: String) {
-        selectedStationCodeFlow.value = stationCode
+    private val selectedStopCodeFlow = MutableStateFlow("UN")
+    override fun getSelectedStopCode(): Flow<String> = selectedStopCodeFlow
+    override suspend fun setSelectedStopCode(stopCode: String) {
+        selectedStopCodeFlow.value = stopCode
     }
 
     private val themeFlow = MutableStateFlow(ThemeMode.DEFAULT)
@@ -32,10 +32,10 @@ class FakePreferencesRepository : IPreferencesRepository {
         themeFlow.value = theme
     }
 
-    private val favouriteStationsFlow = MutableStateFlow(emptySet<String>())
-    override fun getFavouriteStations(): Flow<Set<String>> = favouriteStationsFlow
-    override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
-        favouriteStationsFlow.value = favouriteStations
+    private val favouriteStopsFlow = MutableStateFlow(emptySet<String>())
+    override fun getFavouriteStops(): Flow<Set<String>> = favouriteStopsFlow
+    override suspend fun setFavouriteStops(favouriteStops: Set<String>) {
+        favouriteStopsFlow.value = favouriteStops
     }
 
     private val readAlertsFlow = MutableStateFlow(emptySet<String>())

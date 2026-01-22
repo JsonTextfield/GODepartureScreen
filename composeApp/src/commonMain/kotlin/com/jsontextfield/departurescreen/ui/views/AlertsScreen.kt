@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -35,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
@@ -56,8 +57,6 @@ import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
-import departure_screen.composeapp.generated.resources.information_alerts
-import departure_screen.composeapp.generated.resources.service_alerts
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -91,6 +90,8 @@ fun AlertsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val gridState = rememberLazyStaggeredGridState()
+    val uriHandler = LocalUriHandler.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -149,15 +150,12 @@ fun AlertsScreen(
                     }
                 }
                 LaunchedEffect(visibleItems) {
-                    visibleItems.forEach { item ->
-                        val alert = if (item.key == "service_alerts" || item.key == "information_alerts") {
-                            null
-                        } else if (item.key in uiState.serviceAlerts.map { it.id }) {
-                            uiState.serviceAlerts.firstOrNull { it.id == item.key }
+                    for (item in visibleItems) {
+                        val alert = if (item.key in uiState.alerts.map { it.id }) {
+                            uiState.alerts.firstOrNull { it.id == item.key }
                         } else {
-                            uiState.informationAlerts.firstOrNull { it.id == item.key }
+                            null
                         }
-
                         if (alert?.isRead == false) {
                             onReadAlert(alert.id)
                         }
@@ -181,7 +179,7 @@ fun AlertsScreen(
                                 .fillMaxSize()
                                 .semantics {
                                     collectionInfo = CollectionInfo(
-                                        rowCount = uiState.informationAlerts.size + uiState.serviceAlerts.size,
+                                        rowCount = uiState.alerts.size,
                                         columnCount = columns,
                                     )
                                 },
@@ -197,76 +195,30 @@ fun AlertsScreen(
                             ),
                             columns = StaggeredGridCells.Fixed(columns),
                         ) {
-                            if (uiState.serviceAlerts.isNotEmpty()) {
-                                item(
-                                    span = StaggeredGridItemSpan.FullLine,
-                                    key = "service_alerts",
-                                    contentType = String::class,
-                                ) {
-                                    Text(
-                                        text = stringResource(Res.string.service_alerts),
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        modifier = Modifier.semantics {
-                                            heading()
-                                        }.animateItem(),
-                                    )
-                                }
-                                itemsIndexed(
-                                    items = uiState.serviceAlerts,
-                                    span = { _, _ -> StaggeredGridItemSpan.SingleLane },
-                                    key = { _, item -> item.id },
-                                    contentType = { _, _ -> Alert::class },
-                                ) { index, alert ->
-                                    AlertItem(
-                                        alert,
-                                        modifier = Modifier.semantics {
-                                            collectionItemInfo = CollectionItemInfo(
-                                                rowIndex = index / columns,
-                                                columnIndex = index % columns,
-                                                rowSpan = 1,
-                                                columnSpan = 1,
-                                            )
-                                        }.animateItem()
-                                    )
-                                }
-                            }
-                            if (uiState.informationAlerts.isNotEmpty()) {
-                                item(
-                                    span = StaggeredGridItemSpan.FullLine,
-                                    key = "information_alerts",
-                                    contentType = String::class,
-                                ) {
-                                    Column {
-                                        if (uiState.serviceAlerts.isNotEmpty()) {
-                                            Spacer(modifier = Modifier.height(24.dp))
-                                        }
-                                        Text(
-                                            text = stringResource(Res.string.information_alerts),
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            modifier = Modifier.semantics {
-                                                heading()
-                                            }.animateItem(),
+                            itemsIndexed(
+                                items = uiState.alerts,
+                                span = { _, _ -> StaggeredGridItemSpan.SingleLane },
+                                key = { _, item -> item.id },
+                                contentType = { _, _ -> Alert::class },
+                            ) { index, alert ->
+                                AlertItem(
+                                    alert,
+                                    modifier = Modifier.semantics {
+                                        collectionItemInfo = CollectionItemInfo(
+                                            rowIndex = index / columns,
+                                            columnIndex = index % columns,
+                                            rowSpan = 1,
+                                            columnSpan = 1,
                                         )
+                                    }.animateItem(),
+                                    onClick = {
+                                        if ("fr" in Locale.current.language) {
+                                            alert.urlFr
+                                        } else {
+                                            alert.urlEn
+                                        }?.let(uriHandler::openUri)
                                     }
-                                }
-                                itemsIndexed(
-                                    items = uiState.informationAlerts,
-                                    span = { _, _ -> StaggeredGridItemSpan.SingleLane },
-                                    key = { _, item -> item.id },
-                                    contentType = { _, _ -> Alert::class },
-                                ) { index, alert ->
-                                    AlertItem(
-                                        alert,
-                                        modifier = Modifier.semantics {
-                                            collectionItemInfo = CollectionItemInfo(
-                                                rowIndex = (uiState.serviceAlerts.size + index) / columns,
-                                                columnIndex = (uiState.serviceAlerts.size + index) % columns,
-                                                rowSpan = 1,
-                                                columnSpan = 1,
-                                            )
-                                        }.animateItem()
-                                    )
-                                }
+                                )
                             }
                             item {
                                 Spacer(modifier = Modifier.height(100.dp))

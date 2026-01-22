@@ -112,12 +112,12 @@
         }
       }
     },
-    "Shows departure information for a station" : {
+    "Shows departure information for a stop" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche les informations de départ pour une station"
+            "value" : "Affiche les informations de départ pour un arrêt"
           }
         }
       }
@@ -135,7 +135,7 @@
     "Sort mode" : {
 
     },
-    "Station" : {
+    "Stop" : {
 
     },
     "Time" : {

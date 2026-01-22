@@ -1,5 +1,5 @@
 //
-//  StationDetail.swift
+//  StopDetail.swift
 //  GODeparturesExtension
 //
 //  Created by Jason Bromfield on 2025-11-09.
@@ -12,32 +12,32 @@ import Foundation
 import WidgetKit
 import coreKit
 
-struct StationDetail: AppEntity {
+struct StopDetail: AppEntity {
 
     let id: String
     let name: String
 
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Station"
-    static var defaultQuery = StationQuery()
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Stop"
+    static var defaultQuery = StopQuery()
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
     }
 
-    static var allStations: [StationDetail] = []
+    static var allStops: [StopDetail] = []
 }
 
-struct StationQuery: EntityQuery {
-    func entities(for identifiers: [StationDetail.ID]) async throws
-        -> [StationDetail]
+struct StopQuery: EntityQuery {
+    func entities(for identifiers: [StopDetail.ID]) async throws
+        -> [StopDetail]
     {
-        return StationDetail.allStations.filter { identifiers.contains($0.id) }
+        return StopDetail.allStops.filter { identifiers.contains($0.id) }
     }
 
-    func suggestedEntities() async throws -> [StationDetail] {
+    func suggestedEntities() async throws -> [StopDetail] {
         let userDefaults = UserDefaults(suiteName: "group.com.jsontextfield.godepartures")
-        let favourites = userDefaults?.object(forKey: "favouriteStations") as? String ?? ""
-        let descriptors: [SortDescriptor<CoreStation>] = [
+        let favourites = userDefaults?.object(forKey: "favouriteStops") as? String ?? userDefaults?.object(forKey: "favouriteStations") as? String ?? ""
+        let descriptors: [SortDescriptor<CoreStop>] = [
             .transform({ trip in
                 let codes: [String] = trip.code.components(separatedBy: ",")
                 return codes.contains(where: { code in
@@ -51,16 +51,16 @@ struct StationQuery: EntityQuery {
         ]
         
         let widgetHelper = WidgetHelper()
-        StationDetail.allStations =
-        try await widgetHelper.goTrainDataSource.getAllStations()
+        StopDetail.allStops =
+        try await widgetHelper.goTrainDataSource.getAllStops()
             .sorted(using: descriptors)
-            .map { station in
-                StationDetail(id: station.code, name: station.name)
+            .map { stop in
+                StopDetail(id: stop.code, name: stop.name)
             }
-        return StationDetail.allStations
+        return StopDetail.allStops
     }
 
-    func defaultResult() async -> StationDetail? {
+    func defaultResult() async -> StopDetail? {
         try? await suggestedEntities().first(where: { $0.id.contains("UN") })
     }
 }

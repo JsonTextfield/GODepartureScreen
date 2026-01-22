@@ -15,12 +15,14 @@ data class Alert(
     val id: String,
     val date: Instant = Instant.fromEpochMilliseconds(0),
     val affectedLines: List<String> = emptyList(),
-    val affectedStations: List<String> = emptyList(),
+    val affectedStops: List<String> = emptyList(),
     private val subjectEn: String = "",
     private val subjectFr: String = "",
     private val bodyEn: String = "",
     private val bodyFr: String = "",
     val isRead: Boolean = false,
+    val urlEn: String? = null,
+    val urlFr: String? = null,
 ) {
     @OptIn(FormatStringsInDatetimeFormats::class)
     val dateDifference: Duration =

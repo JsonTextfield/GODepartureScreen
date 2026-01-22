@@ -17,7 +17,9 @@ import departure_screen.composeapp.generated.resources.add_widget
 import departure_screen.composeapp.generated.resources.alerts
 import departure_screen.composeapp.generated.resources.favourite
 import departure_screen.composeapp.generated.resources.more
+import departure_screen.composeapp.generated.resources.rate_app
 import departure_screen.composeapp.generated.resources.round_bus_alert_24
+import departure_screen.composeapp.generated.resources.round_rate_review_24
 import departure_screen.composeapp.generated.resources.round_star_24
 import departure_screen.composeapp.generated.resources.round_star_border_24
 import departure_screen.composeapp.generated.resources.rounded_add_24
@@ -86,7 +88,12 @@ fun ActionBar(
 }
 
 expect fun addWidgetAction()
+
+expect fun rateAppAction()
+
 expect fun isAddWidgetActionVisible() : Boolean
+
+expect fun isRateAppActionVisible() : Boolean
 
 @Composable
 fun getActions(
@@ -95,15 +102,15 @@ fun getActions(
 ): List<Action> {
     val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
-        icon = if (uiState.selectedStation?.isFavourite == true) {
+        icon = if (uiState.selectedStop?.isFavourite == true) {
             Res.drawable.round_star_24
         } else {
             Res.drawable.round_star_border_24
         },
         tooltip = stringResource(Res.string.favourite),
-        isVisible = uiState.selectedStation != null,
+        isVisible = uiState.selectedStop != null,
         onClick = {
-            uiState.selectedStation?.let(mainViewModel::setFavouriteStations)
+            uiState.selectedStop?.let(mainViewModel::setFavouriteStops)
         },
     )
 
@@ -112,7 +119,7 @@ fun getActions(
         tooltip = stringResource(Res.string.sort),
         isVisible = uiState.allTrips.isNotEmpty(),
         menuContent = { onDismiss ->
-            SortMode.entries.forEach { sortMode ->
+            for (sortMode in SortMode.entries) {
                 RadioMenuItem(
                     title = stringResource(sortMode.key),
                     isSelected = uiState.sortMode == sortMode,
@@ -129,7 +136,7 @@ fun getActions(
         icon = Res.drawable.rounded_brightness_4_24,
         tooltip = stringResource(Res.string.theme),
         menuContent = { onDismiss ->
-            ThemeMode.entries.forEach { themeMode ->
+            for (themeMode in ThemeMode.entries) {
                 RadioMenuItem(
                     title = stringResource(themeMode.key),
                     isSelected = uiState.theme == themeMode,
@@ -157,11 +164,20 @@ fun getActions(
         isVisible = isAddWidgetActionVisible(),
     )
 
+    val rate = Action(
+        icon = Res.drawable.round_rate_review_24,
+        tooltip = stringResource(Res.string.rate_app),
+        onClick = { rateAppAction() },
+        menuContent = null,
+        isVisible = isRateAppActionVisible(),
+    )
+
     return listOf(
         favourite,
         sort,
         alerts,
         theme,
+        rate,
         addWidget,
     ).filter { it.isVisible }
 }

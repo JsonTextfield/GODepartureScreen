@@ -32,8 +32,8 @@ import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.components.CountdownTimer
 import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
-import com.jsontextfield.departurescreen.core.ui.components.TrainList
 import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
+import com.jsontextfield.departurescreen.core.ui.components.TripList
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
@@ -77,11 +77,11 @@ fun MainScreen(
                 TopAppBar(
                     title = {
                         FilledTonalButton(
-                            onClick = navigationActions.onShowStations,
+                            onClick = navigationActions.onShowStops,
                             contentPadding = PaddingValues(horizontal = 8.dp),
                         ) {
                             Text(
-                                text = uiState.selectedStation?.name.orEmpty(),
+                                text = uiState.selectedStop?.name.orEmpty(),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .widthIn(max = 400.dp)
@@ -156,7 +156,10 @@ fun MainScreen(
                                     )
                                 }
                             }
-                            TrainList(trips = uiState.allTrips.filter { it.isVisible })
+                            TripList(
+                                trips = uiState.allTrips.filter { it.isVisible },
+                                onItemClick = navigationActions.onShowTripDetails,
+                            )
                         }
                     }
                 }

@@ -23,7 +23,7 @@ fun WidgetConfigScreen(
     widgetConfig: WidgetConfig,
     onSortModeChanged: (SortMode) -> Unit,
     onOpacityChanged: (Float) -> Unit,
-    onStationButtonClicked: () -> Unit,
+    onStopButtonClicked: () -> Unit,
     onCancel: () -> Unit,
     onDone: () -> Unit,
 ) {
@@ -55,7 +55,7 @@ fun WidgetConfigScreen(
                     widgetConfig = widgetConfig,
                     onSortModeChanged = onSortModeChanged,
                     onOpacityChanged = onOpacityChanged,
-                    onStationButtonClicked = onStationButtonClicked,
+                    onStopButtonClicked = onStopButtonClicked,
                     onCancel = onCancel,
                     onDone = onDone,
                 )

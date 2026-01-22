@@ -4,8 +4,8 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.delay
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 class AlertsViewModel(
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())
@@ -61,18 +61,14 @@ class AlertsViewModel(
                 .flatMap { it.affectedLines }
                 .distinct()
                 .sorted()
-            val allServiceAlerts = serviceAlerts.map {
+            val allAlerts = (serviceAlerts + informationAlerts).map {
                 it.copy(isRead = it.id in readAlerts)
-            }
-            val allInformationAlerts = informationAlerts.map {
-                it.copy(isRead = it.id in readAlerts)
-            }
+            }.sortedByDescending { it.date }
             _uiState.update { uiState ->
                 uiState.copy(
                     status = Status.LOADED,
                     isRefreshing = false,
-                    allServiceAlerts = allServiceAlerts,
-                    allInformationAlerts = allInformationAlerts,
+                    allAlerts = allAlerts,
                     allLines = allLines,
                 )
             }
@@ -105,8 +101,7 @@ class AlertsViewModel(
 
 data class AlertsUIState(
     val status: Status = Status.LOADING,
-    val allInformationAlerts: List<Alert> = emptyList(),
-    val allServiceAlerts: List<Alert> = emptyList(),
+    val allAlerts: List<Alert> = emptyList(),
     val allLines: List<String> = emptyList(),
     val selectedLines: Set<String> = emptySet(),
     val isUnreadSelected: Boolean = false,
@@ -117,6 +112,5 @@ data class AlertsUIState(
             lineCode in selectedLines
         })
     }
-    val serviceAlerts: List<Alert> = allServiceAlerts.filter(filterPredicate)
-    val informationAlerts: List<Alert> = allInformationAlerts.filter(filterPredicate)
+    val alerts: List<Alert> = allAlerts.filter(filterPredicate)
 }

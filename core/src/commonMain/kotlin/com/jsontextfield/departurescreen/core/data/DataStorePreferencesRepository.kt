@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.map
 
 class DataStorePreferencesRepository(
     private val dataStore: DataStore<Preferences>,
-    private val onSetStation: (String) -> Unit = {},
+    private val onSetStop: (String) -> Unit = {},
     private val onSetSortMode: (SortMode) -> Unit = {},
     private val onSetVisibleTrains: (Set<String>) -> Unit = {},
-    private val onSetFavouriteStations: (Set<String>) -> Unit = {},
+    private val onSetFavouriteStops: (Set<String>) -> Unit = {},
 ) : IPreferencesRepository {
     override fun getVisibleTrains(): Flow<Set<String>> {
         return dataStore.data.map { preferences ->
@@ -46,17 +46,17 @@ class DataStorePreferencesRepository(
         onSetSortMode(sortMode)
     }
 
-    override fun getSelectedStationCode(): Flow<String> {
+    override fun getSelectedStopCode(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "UN"
         }
     }
 
-    override suspend fun setSelectedStationCode(stationCode: String) {
+    override suspend fun setSelectedStopCode(stopCode: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STATION_CODE_KEY)] = stationCode
+            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] = stopCode
         }
-        onSetStation(stationCode)
+        onSetStop(stopCode)
     }
 
     override suspend fun setTheme(theme: ThemeMode) {
@@ -74,11 +74,17 @@ class DataStorePreferencesRepository(
         }
     }
 
-    override suspend fun setFavouriteStations(favouriteStations: Set<String>) {
+    override suspend fun setFavouriteStops(favouriteStops: Set<String>) {
         dataStore.edit { preferences ->
-            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] = favouriteStations
+            preferences[stringSetPreferencesKey(FAVOURITE_STOPS_KEY)] = favouriteStops
         }
-        onSetFavouriteStations(favouriteStations)
+        onSetFavouriteStops(favouriteStops)
+    }
+
+    override fun getFavouriteStops(): Flow<Set<String>> {
+        return dataStore.data.map { preferences ->
+            preferences[stringSetPreferencesKey(FAVOURITE_STOPS_KEY)] ?: preferences[stringSetPreferencesKey(OLD_FAVOURITE_STOPS_KEY)] ?: emptySet()
+        }
     }
 
     override fun getReadAlerts(): Flow<Set<String>> {
@@ -91,12 +97,6 @@ class DataStorePreferencesRepository(
         dataStore.edit { preferences ->
             val readAlerts = preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] ?: emptySet()
             preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] = readAlerts + id
-        }
-    }
-
-    override fun getFavouriteStations(): Flow<Set<String>> {
-        return dataStore.data.map { preferences ->
-            preferences[stringSetPreferencesKey(FAVOURITE_STATIONS_KEY)] ?: emptySet()
         }
     }
 }

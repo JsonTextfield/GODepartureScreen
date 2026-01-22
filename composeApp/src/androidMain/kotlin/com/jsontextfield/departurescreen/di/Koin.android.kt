@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.jsontextfield.departurescreen.core.data.DataStorePreferencesRepository
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.widget.config.WidgetConfigDataStore
 import com.jsontextfield.departurescreen.widget.config.WidgetConfigViewModel
 import org.koin.android.ext.koin.androidContext
@@ -31,7 +31,7 @@ actual fun widgetModule(): Module {
         }
         viewModel<WidgetConfigViewModel> { params ->
             WidgetConfigViewModel(
-                goTrainDataSource = get<IGoTrainDataSource>(),
+                goTrainDataSource = get<ITransitRepository>(),
                 preferencesRepository = get<IPreferencesRepository>(),
                 widgetConfigDataStore = get<WidgetConfigDataStore>(),
                 widgetId = params.getOrNull(Int::class),

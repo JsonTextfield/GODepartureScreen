@@ -43,13 +43,13 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import com.jsontextfield.departurescreen.R
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.ui.StationType
 import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.StopType
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lightScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
@@ -77,10 +77,10 @@ class DeparturesWidget : GlanceAppWidget() {
     override suspend fun providePreview(context: Context, widgetCategory: Int) {
         val uiState = WidgetUIState(
             status = Status.LOADED,
-            selectedStation = Station(
+            selectedStop = Stop(
                 name = "Union Station GO",
                 code = "UN",
-                types = setOf(StationType.TRAIN),
+                types = setOf(StopType.TRAIN),
             ),
             _allTrips = listOf(
                 Trip(
@@ -109,14 +109,14 @@ class DeparturesWidget : GlanceAppWidget() {
         // Use `withContext` to switch to another thread for long running
         // operations.
         val preferencesRepository: IPreferencesRepository by inject(IPreferencesRepository::class.java)
-        val goTrainDataSource: IGoTrainDataSource by inject(IGoTrainDataSource::class.java)
+        val goTrainDataSource: ITransitRepository by inject(ITransitRepository::class.java)
         val configDataStore: WidgetConfigDataStore by inject(WidgetConfigDataStore::class.java)
-        val getSelectedStationUseCase = GetSelectedStationUseCase(
+        val getSelectedStopUseCase = GetSelectedStopUseCase(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
         )
         val viewModel = WidgetViewModel(
-            getSelectedStationUseCase = getSelectedStationUseCase,
+            getSelectedStopUseCase = getSelectedStopUseCase,
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             configDataStore = configDataStore,
@@ -155,11 +155,11 @@ fun DepartureScreenWidget(
                 TitleBar(
                     startIcon = ImageProvider(R.mipmap.ic_launcher),
                     iconColor = null,
-                    title = uiState.selectedStation?.name.orEmpty(),
+                    title = uiState.selectedStop?.name.orEmpty(),
                     modifier = GlanceModifier.clickable(
                         actionStartActivity<MainActivity>(
                             parameters = actionParametersOf(
-                                selectedStationKey to uiState.selectedStation?.code.orEmpty()
+                                selectedStopKey to uiState.selectedStop?.code.orEmpty()
                             )
                         ),
                     ),
@@ -234,4 +234,4 @@ fun DepartureScreenWidget(
     }
 }
 
-private val selectedStationKey = ActionParameters.Key<String>("selectedStation")
+private val selectedStopKey = ActionParameters.Key<String>("selectedStop")

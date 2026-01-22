@@ -1,11 +1,11 @@
 package com.jsontextfield.departurescreen.core.entities
 
-import com.jsontextfield.departurescreen.core.ui.StationType
+import com.jsontextfield.departurescreen.core.ui.StopType
 
-data class Station(
+data class Stop(
     val name: String,
     val code: String,
-    val types: Set<StationType> = emptySet(),
+    val types: Set<StopType> = emptySet(),
     val isEnabled: Boolean = true,
     val isFavourite: Boolean = false,
 )

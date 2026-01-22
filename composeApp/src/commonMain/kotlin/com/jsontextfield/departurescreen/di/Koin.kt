@@ -3,16 +3,17 @@ package com.jsontextfield.departurescreen.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.jsontextfield.departurescreen.core.data.GoTrainDataSource
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
+import com.jsontextfield.departurescreen.core.data.TransitRepository
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import okio.Path.Companion.toPath
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -28,12 +29,12 @@ val networkModule = module {
 }
 
 val dataModule = module {
-    single<IGoTrainDataSource> {
+    single<ITransitRepository> {
         val useFake = false
         if (useFake) {
-            FakeGoTrainDataSource()
+            FakeTransitRepository()
         } else {
-            GoTrainDataSource(get<DepartureScreenAPI>())
+            TransitRepository(get<DepartureScreenAPI>())
         }
     }
 }
@@ -43,18 +44,27 @@ expect fun preferencesModule(): Module
 expect fun widgetModule(): Module
 
 val viewModelModule = module {
-    factoryOf(::GetSelectedStationUseCase)
-    factoryOf(::SetFavouriteStationUseCase)
+    factoryOf(::GetSelectedStopUseCase)
+    factoryOf(::SetFavouriteStopUseCase)
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
-    viewModelOf(::StationsViewModel)
+    viewModelOf(::StopsViewModel)
     viewModel { params ->
-        StationsViewModel(
-            getSelectedStationUseCase = get<GetSelectedStationUseCase>(),
-            setFavouriteStationUseCase = get<SetFavouriteStationUseCase>(),
-            goTrainDataSource = get<IGoTrainDataSource>(),
+        StopsViewModel(
+            getSelectedStopUseCase = get<GetSelectedStopUseCase>(),
+            setFavouriteStopUseCase = get<SetFavouriteStopUseCase>(),
+            goTrainDataSource = get<ITransitRepository>(),
             preferencesRepository = get<IPreferencesRepository>(),
-            selectedStationCode = params.getOrNull(String::class),
+            selectedStopCode = params.getOrNull(String::class),
+        )
+    }
+    viewModel { params ->
+        TripDetailsViewModel(
+            goTrainDataSource = get<ITransitRepository>(),
+            selectedStop = params[0],
+            tripId = params[1],
+            lineCode = params[2],
+            destination = params[3],
         )
     }
 }

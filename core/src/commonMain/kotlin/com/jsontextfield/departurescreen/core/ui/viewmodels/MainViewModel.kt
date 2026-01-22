@@ -5,11 +5,11 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.jsontextfield.departurescreen.core.data.IGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.data.ITransitRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -31,9 +31,9 @@ import kotlinx.io.IOException
 import kotlin.time.ExperimentalTime
 
 class MainViewModel(
-    private val getSelectedStationUseCase: GetSelectedStationUseCase,
-    private val setFavouriteStationUseCase: SetFavouriteStationUseCase,
-    private val goTrainDataSource: IGoTrainDataSource,
+    private val getSelectedStopUseCase: GetSelectedStopUseCase,
+    private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
+    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
@@ -60,14 +60,14 @@ class MainViewModel(
         }.launchIn(viewModelScope)
 
         combine(
-            getSelectedStationUseCase(),
-            preferencesRepository.getFavouriteStations(),
-        ) { selectedStation, favouriteStations ->
-            val stationCodes = selectedStation?.code?.split(",") ?: emptySet()
+            getSelectedStopUseCase(),
+            preferencesRepository.getFavouriteStops(),
+        ) { selectedStop, favouriteStops ->
+            val stopCodes = selectedStop?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(
-                    selectedStation = selectedStation?.copy(
-                        isFavourite = stationCodes.any { code -> code in favouriteStations }
+                    selectedStop = selectedStop?.copy(
+                        isFavourite = stopCodes.any { code -> code in favouriteStops }
                     )
                 )
             }
@@ -87,17 +87,17 @@ class MainViewModel(
             )
         }
         viewModelScope.launch {
-            getSelectedStationUseCase()
+            getSelectedStopUseCase()
                 .distinctUntilChanged()
                 .catch {
                     _uiState.value = errorState
                     stop()
-                }.collectLatest { selectedStation ->
+                }.collectLatest { selectedStop ->
                     _uiState.update {
                         it.copy(
                             status = Status.LOADING,
                             isRefreshing = false,
-                            selectedStation = selectedStation,
+                            selectedStop = selectedStop,
                         )
                     }
                     fetchDepartureData()
@@ -140,12 +140,12 @@ class MainViewModel(
     }
 
     private fun fetchDepartureData() {
-        val station = uiState.value.selectedStation ?: return
+        val stop = uiState.value.selectedStop ?: return
 
-        val stationCodes = station.code.split(",")
+        val stopCodes = stop.code.split(",")
         viewModelScope.launch {
             runCatching {
-                stationCodes.flatMap { goTrainDataSource.getTrips(it) }
+                stopCodes.flatMap { goTrainDataSource.getTrips(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
@@ -186,15 +186,15 @@ class MainViewModel(
         }
     }
 
-    fun setFavouriteStations(station: Station) {
+    fun setFavouriteStops(stop: Stop) {
         viewModelScope.launch {
-            setFavouriteStationUseCase(station)
+            setFavouriteStopUseCase(stop)
         }
     }
 
-    fun setSelectedStation(stationCode: String?) {
+    fun setSelectedStop(stopCode: String?) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStationCode(stationCode ?: "UN")
+            preferencesRepository.setSelectedStopCode(stopCode ?: "UN")
         }
     }
 
@@ -226,7 +226,7 @@ class MainViewModel(
 
 data class MainUIState(
     val status: Status = Status.LOADING,
-    val selectedStation: Station? = null,
+    val selectedStop: Stop? = null,
     private val _allTrips: List<Trip> = emptyList(),
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,

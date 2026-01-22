@@ -2,7 +2,6 @@ package com.jsontextfield.departurescreen.wearapp.ui
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,11 +15,11 @@ import androidx.navigation.compose.rememberNavController
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
-import com.jsontextfield.departurescreen.core.ui.navigation.StationsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,56 +42,54 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
         }
     }
     AppTheme(uiState.theme) {
-        Surface {
-            NavHost(
-                navController = navController,
-                startDestination = HomeRoute,
-            ) {
-                composable<HomeRoute> {
-                    MainScreen(
-                        mainViewModel = mainViewModel,
-                        navigationActions = NavigationActions(
-                            onShowAlerts = {
-                                navController.navigate(AlertsRoute) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onShowStations = {
-                                navController.navigate(StationsRoute) {
-                                    launchSingleTop = true
-                                }
-                            },
-                        )
-                    )
-                }
-
-                composable<AlertsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    val alertsViewModel = koinViewModel<AlertsViewModel>()
-                    AlertsScreen(
-                        alertsViewModel = alertsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
+        NavHost(
+            navController = navController,
+            startDestination = HomeRoute,
+        ) {
+            composable<HomeRoute> {
+                MainScreen(
+                    mainViewModel = mainViewModel,
+                    navigationActions = NavigationActions(
+                        onShowAlerts = {
+                            navController.navigate(AlertsRoute) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onShowStops = {
+                            navController.navigate(StopsRoute) {
+                                launchSingleTop = true
+                            }
                         },
                     )
-                }
-
-                composable<StationsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    val stationsViewModel = koinViewModel<StationsViewModel>()
-                    StationsScreen(
-                        stationsViewModel = stationsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
-                        },
-                    )
-                }
-
+                )
             }
+
+            composable<AlertsRoute>(
+                enterTransition = { slideInHorizontally { it } },
+                exitTransition = { slideOutHorizontally { it } },
+            ) {
+                val alertsViewModel = koinViewModel<AlertsViewModel>()
+                AlertsScreen(
+                    alertsViewModel = alertsViewModel,
+                    onBackPressed = {
+                        safeNavigation { navController.popBackStack() }
+                    },
+                )
+            }
+
+            composable<StopsRoute>(
+                enterTransition = { slideInHorizontally { it } },
+                exitTransition = { slideOutHorizontally { it } },
+            ) {
+                val stopsViewModel = koinViewModel<StopsViewModel>()
+                StopsScreen(
+                    stopsViewModel = stopsViewModel,
+                    onBackPressed = {
+                        safeNavigation { navController.popBackStack() }
+                    },
+                )
+            }
+
         }
     }
 }

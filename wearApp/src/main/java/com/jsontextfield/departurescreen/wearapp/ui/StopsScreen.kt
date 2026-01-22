@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.jsontextfield.departurescreen.wearapp.ui
 
@@ -16,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,37 +35,38 @@ import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.components.SearchBar
-import com.jsontextfield.departurescreen.core.ui.components.StationListItem
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsUIState
-import com.jsontextfield.departurescreen.core.ui.viewmodels.StationsViewModel
+import com.jsontextfield.departurescreen.core.ui.components.StopListItem
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsUIState
+import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun StationsScreen(
-    stationsViewModel: StationsViewModel,
+fun StopsScreen(
+    stopsViewModel: StopsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
-    val uiState by stationsViewModel.uiState.collectAsState()
-    StationsScreen(
+    val uiState by stopsViewModel.uiState.collectAsState()
+    StopsScreen(
         uiState = uiState,
-        onStationSelected = {
-            stationsViewModel.setSelectedStation(it)
+        onStopSelected = {
+            stopsViewModel.setSelectedStop(it)
             onBackPressed()
         },
-        onFavouriteClick = stationsViewModel::setFavouriteStations,
+        onFavouriteClick = stopsViewModel::setFavouriteStops,
         onBackPressed = onBackPressed,
     )
 }
 
 @Composable
-fun StationsScreen(
-    uiState: StationsUIState,
-    onStationSelected: (Station) -> Unit,
-    onFavouriteClick: (Station) -> Unit,
+fun StopsScreen(
+    uiState: StopsUIState,
+    onStopSelected: (Stop) -> Unit,
+    onFavouriteClick: (Stop) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val textFieldState = rememberTextFieldState()
@@ -77,7 +74,7 @@ fun StationsScreen(
     val scope = rememberCoroutineScope()
     BackHandler(onBack = onBackPressed)
     ScreenScaffold { innerPadding ->
-        val filteredStations = uiState.getFilteredStations(textFieldState.text.toString())
+        val filteredStops = uiState.getFilteredStops(textFieldState.text.toString())
         val density = LocalDensity.current
         val widthDp =
             (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
@@ -86,14 +83,13 @@ fun StationsScreen(
                 ).value - WindowInsets.safeDrawing.asPaddingValues()
                 .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
         val columns = (widthDp / 600).coerceIn(1, 4)
-        Surface {
             TransformingLazyColumn(
                 state = gridState,
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
                     .semantics {
                         collectionInfo = CollectionInfo(
-                            rowCount = filteredStations.size,
+                            rowCount = filteredStops.size,
                             columnCount = columns,
                         )
                     },
@@ -103,25 +99,25 @@ fun StationsScreen(
                     SearchBar(textFieldState)
                 }
                 itemsIndexed(
-                    filteredStations,
-                    key = { _, station -> station.code }) { index, station ->
+                    filteredStops,
+                    key = { _, stop -> stop.code }) { index, stop ->
                     ListHeader(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 40.dp)
-                            .alpha(if (station.isEnabled) 1f else 0.5f)
+                            .alpha(if (stop.isEnabled) 1f else 0.5f)
                             .background(
                                 color =
-                                    if (station.code.split(",").any { it in uiState.selectedStation?.code.orEmpty() }) {
+                                    if (stop.code.split(",").any { it in uiState.selectedStop?.code.orEmpty() }) {
                                         MaterialTheme.colorScheme.primaryContainer
-                                    } else if (!station.isEnabled) {
+                                    } else if (!stop.isEnabled) {
                                         MaterialTheme.colorScheme.surfaceContainerLow
                                     } else {
-                                        MaterialTheme.colorScheme.surface
+                                        MaterialTheme.colorScheme.background
                                     }
                             )
                             .clickable {
-                                onStationSelected(station)
+                                onStopSelected(stop)
                                 onBackPressed()
                             }
                             .semantics {
@@ -134,14 +130,13 @@ fun StationsScreen(
                             }
                             .animateItem()
                     ) {
-                        StationListItem(
-                            station = station,
-                            onFavouriteClick = { onFavouriteClick(station) },
+                        StopListItem(
+                            stop = stop,
+                            onFavouriteClick = { onFavouriteClick(stop) },
                         )
                     }
                 }
             }
-        }
     }
 
     Box(

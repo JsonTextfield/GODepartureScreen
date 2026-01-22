@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.core.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -28,8 +29,9 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import kotlin.math.ceil
 
 @Composable
-fun TrainList(
+fun TripList(
     trips: List<Trip>,
+    onItemClick: (Trip) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -88,6 +90,10 @@ fun TrainList(
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
+                        .clickable(
+                            enabled = !trip.isCancelled,
+                            onClick = { onItemClick(trip) },
+                        )
                         .padding(8.dp)
                         .padding(
                             start = WindowInsets.safeDrawing.asPaddingValues()

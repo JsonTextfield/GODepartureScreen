@@ -1,9 +1,11 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
-import com.jsontextfield.departurescreen.core.data.fake.FakeGoTrainDataSource
 import com.jsontextfield.departurescreen.core.data.fake.FakePreferencesRepository
-import com.jsontextfield.departurescreen.core.domain.GetSelectedStationUseCase
-import com.jsontextfield.departurescreen.core.domain.SetFavouriteStationUseCase
+import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
+import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
+import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
@@ -18,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,7 +40,7 @@ class MainViewModelTest {
 
     @Test
     fun testSortByTime() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 departureTime = Instant.Companion.fromEpochMilliseconds(9000),
@@ -59,11 +62,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -92,7 +95,7 @@ class MainViewModelTest {
 
     @Test
     fun testSortByLine() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "NY",
@@ -114,11 +117,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             )
         )
@@ -147,7 +150,7 @@ class MainViewModelTest {
 
     @Test
     fun testSetVisibleTrainsWhenTrainDeparts() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "LW",
@@ -163,11 +166,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )
@@ -182,7 +185,7 @@ class MainViewModelTest {
 
     @Test
     fun testSetVisibleTrainsWhenTrainsHaveNotYetDeparted() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         goTrainDataSource.trips = listOf(
             baseTrip.copy(
                 code = "LW",
@@ -198,11 +201,11 @@ class MainViewModelTest {
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )
@@ -217,17 +220,17 @@ class MainViewModelTest {
 
     @Test
     fun testSetTheme() = runTest {
-        val goTrainDataSource = FakeGoTrainDataSource()
+        val goTrainDataSource = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
 
         val mainViewModel = MainViewModel(
             goTrainDataSource = goTrainDataSource,
             preferencesRepository = preferencesRepository,
-            getSelectedStationUseCase = GetSelectedStationUseCase(
+            getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
                 preferencesRepository = preferencesRepository,
             ),
-            setFavouriteStationUseCase = SetFavouriteStationUseCase(
+            setFavouriteStopUseCase = SetFavouriteStopUseCase(
                 preferencesRepository = preferencesRepository,
             ),
         )

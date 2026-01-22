@@ -5,14 +5,15 @@ package com.jsontextfield.departurescreen.core.data
 import androidx.compose.ui.graphics.Color
 import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.core.entities.Station
+import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.model.Alerts
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
-import com.jsontextfield.departurescreen.core.ui.StationType
+import com.jsontextfield.departurescreen.core.ui.StopType
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -27,42 +28,69 @@ import kotlinx.datetime.parse
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalSerializationApi::class)
-class GoTrainDataSource(
+class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
-) : IGoTrainDataSource {
-    private var stations = emptyList<Station>()
+) : ITransitRepository {
+    private var stops: List<Stop> = emptyList()
+    private val upExpressStops: List<String> = listOf("UN", "BL", "MD", "WE", "PA")
+    private var serviceAlerts: List<Alert> = emptyList()
+    private var informationAlerts: List<Alert> = emptyList()
+    private var marketingAlerts: List<Alert> = emptyList()
 
     private var lastUpdated: Long = 0L
     private var serviceAtAGlanceTrains: Map<String, ServiceAtAGlanceTrainsResponse.Trips.Trip>? = null
     private var exceptions: ExceptionsResponse? = null
 
-    override suspend fun getTrips(stationCode: String): List<Trip> {
+    override suspend fun getTrips(stopCode: String): List<Trip> {
         if (Clock.System.now().toEpochMilliseconds() - lastUpdated > 60_000) {
             serviceAtAGlanceTrains =
                 departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
-            exceptions = departureScreenAPI.getExceptions()
+            exceptions = departureScreenAPI.getAllExceptions()
             lastUpdated = Clock.System.now().toEpochMilliseconds()
         }
         return try {
-            val nextService = departureScreenAPI.getNextService(stationCode)
+            val nextService = departureScreenAPI.getNextService(stopCode)
             val lastUpdated = Instant.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter)
             val lines = nextService.nextService?.lines
             val cancelledTrips =
                 exceptions?.trip?.filter { it.isCancelled == "1" }?.map { it.tripNumber } ?: emptyList()
 
-            val tripsMap = if (stationCode == "UN") {
+            val tripsMap = if (stopCode == "UN") {
                 val unionDepartures = departureScreenAPI.getUnionDepartures()
                 unionDepartures.allDepartures?.trips?.associateBy { it.tripNumber } ?: emptyMap()
             } else {
                 emptyMap()
             }
 
-            lines?.map { line ->
+            val upExpressTrips: List<Trip> = if (stopCode in upExpressStops) {
+                departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull {
+                    it.tripUpdate?.stopTimeUpdate?.dropLast(1)
+                        ?.firstOrNull { it.stopId == stopCode }?.departure?.time?.let { departureTimeString ->
+                        val departureTime = Instant.fromEpochSeconds(departureTimeString) - 5.hours
+                        Trip(
+                            id = it.id,
+                            code = "UP",
+                            name = "UP Express",
+                            destination = it.tripUpdate.vehicle?.label?.split(" - ")?.last().orEmpty(),
+                            color = lineColours["UP"] ?: Color.Gray,
+                            lastUpdated = lastUpdated,
+                            isCancelled = it.id in cancelledTrips,
+                            departureTime = departureTime,
+                            platform = "-",
+                        )
+                    }
+                }
+            } else {
+                emptyList()
+            }
+
+            val trips = lines?.map { line ->
                 val trip = tripsMap[line.tripNumber]
                 val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
                     Instant.parseOrNull(it, inFormatter)
@@ -88,7 +116,8 @@ class GoTrainDataSource(
                     cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
                     //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
                 )
-            }?.sortedBy { it.departureTime } ?: emptyList()
+            } ?: emptyList()
+            (upExpressTrips + trips).sortedBy { it.departureTime }
         } catch (exception: IOException) {
             throw exception
         } catch (_: Exception) {
@@ -96,49 +125,76 @@ class GoTrainDataSource(
         }
     }
 
-    override fun getServiceAlerts(): Flow<List<Alert>> = flow {
-        while (currentCoroutineContext().isActive) {
-            try {
-                emit(processAlerts(departureScreenAPI.getServiceAlerts()))
-            } catch (exception: Exception) {
-                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
-            }
-            delay(1.minutes)
+    override suspend fun getTripDetails(tripNumber: String): TripDetails? {
+        return try {
+            val response = departureScreenAPI.getTrip(tripNumber).trips
+            response.map {
+                TripDetails(
+                    id = it.tripNumber,
+                    stops = it.stops.map { stop -> stop.code }
+                )
+            }.firstOrNull()
+        } catch (_: Exception) {
+            null
         }
     }
 
-    override fun getInformationAlerts(): Flow<List<Alert>> = flow {
+    override fun getServiceAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getServiceAlerts() },
+        getCache = { serviceAlerts },
+        updateCache = { serviceAlerts = it }
+    )
+
+    override fun getInformationAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getInformationAlerts() },
+        getCache = { informationAlerts },
+        updateCache = { informationAlerts = it }
+    )
+
+    override fun getMarketingAlerts(): Flow<List<Alert>> = pollAlerts(
+        apiCall = { departureScreenAPI.getMarketingAlerts() },
+        getCache = { marketingAlerts },
+        updateCache = { marketingAlerts = it }
+    )
+
+    private fun pollAlerts(
+        apiCall: suspend () -> Alerts,
+        getCache: () -> List<Alert>,
+        updateCache: (List<Alert>) -> Unit
+    ): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                emit(processAlerts(departureScreenAPI.getInfromationAlerts()))
+                updateCache(
+                    processAlerts(apiCall()).also { emit(it) }
+                )
             } catch (exception: Exception) {
-                Logger.withTag(GoTrainDataSource::class.simpleName.toString()).e { exception.message.toString() }
+                Logger.withTag(TransitRepository::class.simpleName.toString()).e { exception.message.toString() }
+                emit(getCache())
             }
-            delay(1.minutes)
+            delay(60.seconds)
         }
     }
 
-    override suspend fun getAllStations(): List<Station> {
-        if (stations.isNotEmpty()) {
-            return stations
+    override suspend fun getAllStops(): List<Stop> {
+        if (stops.isNotEmpty()) {
+            return stops
         }
         return try {
             departureScreenAPI.getAllStops().stations?.stops?.groupBy {
                 it.locationName
-            }?.map { (stationName: String, stations: List<StopResponse.Stations.Stop>) ->
+            }?.map { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
                 val types = buildSet {
-                    stations.forEach {
-                        if ("Bus" in it.locationType) {
-                            add(StationType.BUS)
-                        }
-                        if ("Train" in it.locationType) {
-                            add(StationType.TRAIN)
+                    for (stop in stops) {
+                        for (stopType in StopType.entries) {
+                            if (stopType.typeString in stop.locationType) {
+                                add(stopType)
+                            }
                         }
                     }
                 }
-                Station(
-                    name = stationName,
-                    code = stations.joinToString(",") { it.locationCode },
+                Stop(
+                    name = stopName,
+                    code = stops.joinToString(",") { it.locationCode },
                     types = types,
                 )
             } ?: emptyList()
@@ -147,21 +203,24 @@ class GoTrainDataSource(
         } catch (_: Exception) {
             emptyList()
         }.also {
-            stations = it
+            stops = it
         }
     }
 
     private fun processAlerts(alerts: Alerts): List<Alert> {
-        val allStations = stations.associate {
+        val allStops = stops.associate {
             it.code to it.name
         }
         return try {
             alerts.messages?.message?.map { message ->
+                val bodyEn = message.bodyEnglish.orEmpty().trim()
+                val bodyFr = message.bodyFrench.orEmpty().trim()
+
                 Alert(
                     id = message.code,
                     date = Instant.parse(message.postedDateTime, inFormatter),
                     affectedLines = message.lines.map { if (it.code == "GT") "KI" else it.code },
-                    affectedStations = allStations.mapNotNull {
+                    affectedStops = allStops.mapNotNull {
                         if (message.stops.any { stop -> stop.code in it.key }) {
                             it.value
                         } else {
@@ -170,8 +229,18 @@ class GoTrainDataSource(
                     },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
-                    bodyEn = message.bodyEnglish.orEmpty().trim(),
-                    bodyFr = message.bodyFrench.orEmpty().trim(),
+                    bodyEn = bodyEn,
+                    bodyFr = bodyFr,
+                    urlEn = if ("Sign up for On The GO alerts" in bodyEn) {
+                        "https://www.gotransit.com/en/service-updates/sign-up-for-on-the-go-alerts"
+                    } else {
+                        null
+                    },
+                    urlFr = if ("Inscrivez-vous aux alertes On the GO" in bodyFr) {
+                        "https://www.gotransit.com/fr/mises-a-jour-des-services/inscrivez-vous-aux-alertes-on-the-go"
+                    } else {
+                        null
+                    },
                 )
             }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {

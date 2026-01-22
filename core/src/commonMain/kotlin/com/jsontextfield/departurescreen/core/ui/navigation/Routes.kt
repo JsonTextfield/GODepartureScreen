@@ -9,7 +9,12 @@ data object HomeRoute
 data object AlertsRoute
 
 @Serializable
-data class StationsRoute(val selectedStationCode: String? = null)
+data class StopsRoute(val selectedStopCode: String? = null)
 
 @Serializable
-data class TripRoute(val id: String? = null)
+data class TripDetailsRoute(
+    val selectedStop: String,
+    val tripId: String,
+    val lineCode: String,
+    val destination: String,
+)

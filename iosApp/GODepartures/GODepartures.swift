@@ -14,59 +14,63 @@ import coreKit
 
 struct Provider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
-    let goTrainDataSource: CoreIGoTrainDataSource
-    let departureScreenUseCase: CoreGetSelectedStationUseCase
+    let transitRepository: CoreITransitRepository
+    let departureScreenUseCase: CoreGetSelectedStopUseCase
 
     init() {
-        goTrainDataSource = widgetHelper.goTrainDataSource
-        departureScreenUseCase = widgetHelper.getSelectedStationUseCase
+        transitRepository = widgetHelper.goTrainDataSource
+        departureScreenUseCase = widgetHelper.getSelectedStopUseCase
     }
 
     func snapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> SimpleEntry {
+        ) async -> SimpleEntry {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
-        let selectedStationCode =
-            configuration.selectedStation?.id
-            ?? userDefaults?.object(
+        let selectedStopCode =
+            configuration.selectedStop?.id
+                ?? userDefaults?.object(
+                forKey: "selectedStopCode"
+            ) as? String
+                ?? userDefaults?.object(
                 forKey: "selectedStationCode"
             ) as? String
-            ?? "UN"
+                ?? "UN"
 
         do {
-            let allStations = try await goTrainDataSource.getAllStations()
-            if let station =
-                allStations
+            let allStops = try await transitRepository.getAllStops()
+            if let stop =
+            allStops
                 .first(where: {
-                    $0.code.contains(selectedStationCode)
+                    $0.code.contains(selectedStopCode)
                 })
-                ?? allStations
+                ?? allStops
                 .first(where: {
                     $0.code.contains("UN")
                 })
-                ?? allStations.first
-            {
+                ?? allStops.first {
                 let trips: [CoreTrip]
                 let sortMode = CoreSortMode.entries[
                     userDefaults?.integer(forKey: "sortMode") ?? 0
-                ]
+                    ]
                 let visibleTrains: String =
                     userDefaults?.object(forKey: "hiddenTrains")
-                    as? String ?? ""
+                        as? String ?? ""
 
-                // Parse comma-separated station codes
-                let codes: [String] = station.code
+                // Parse comma-separated stop codes
+                let codes: [String] = stop.code
                     .split(separator: ",")
-                    .map { String($0) }
+                    .map {
+                        String($0)
+                    }
 
                 // Fetch trips per code (sequentially; safe for widgets)
                 var fetchedTrips: [CoreTrip] = []
                 for code in codes {
-                    let result = try await goTrainDataSource.getTrips(
-                        stationCode: code
+                    let result = try await transitRepository.getTrips(
+                        stopCode: code
                     )
                     fetchedTrips.append(contentsOf: result)
                 }
@@ -74,7 +78,8 @@ struct Provider: AppIntentTimelineProvider {
                 trips = fetchedTrips.filter { trip in
                     visibleTrains.isEmpty
                         || visibleTrains.contains(trip.code)
-                }.sorted(by: {
+                }
+                .sorted(by: {
                     switch configuration.sortMode {
                     case .time:
                         return $0.departureTime.toEpochMilliseconds()
@@ -90,7 +95,7 @@ struct Provider: AppIntentTimelineProvider {
                 })
                 return SimpleEntry(
                     date: Date(),
-                    stationName: station.name,
+                    stopName: stop.name,
                     trips: trips
                 )
             }
@@ -99,7 +104,7 @@ struct Provider: AppIntentTimelineProvider {
 
         return SimpleEntry(
             date: Date(),
-            stationName: "",
+            stopName: "",
             trips: []
         )
     }
@@ -107,7 +112,7 @@ struct Provider: AppIntentTimelineProvider {
     func timeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> Timeline<SimpleEntry> {
+        ) async -> Timeline<SimpleEntry> {
         let entry = await snapshot(for: configuration, in: context)
         return Timeline(entries: [entry], policy: .atEnd)
     }
@@ -115,7 +120,7 @@ struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            stationName: "Union GO Station",
+            stopName: "Union GO Station",
             trips: [
                 CoreTrip(
                     id: "X1234",
@@ -135,7 +140,7 @@ struct Provider: AppIntentTimelineProvider {
                     isBus: true,
                     cars: nil,
                     busType: nil,
-                )
+                    )
             ]
         )
     }
@@ -147,7 +152,7 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let stationName: String
+    let stopName: String
     let trips: [CoreTrip]
 }
 
@@ -167,10 +172,10 @@ struct GODepartures: Widget {
             )
         }
         .configurationDisplayName("GO Departures")
-        .description("Shows departure information for a station")
+        .description("Shows departure information for a stop")
         .supportedFamilies([
-            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
-        ]).contentMarginsDisabled()
+                               .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
+                           ]).contentMarginsDisabled()
     }
 
     init() {

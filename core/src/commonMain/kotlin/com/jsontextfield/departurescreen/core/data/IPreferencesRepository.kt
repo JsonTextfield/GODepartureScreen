@@ -9,12 +9,12 @@ interface IPreferencesRepository {
     suspend fun setVisibleTrains(visibleTrains: Set<String>)
     fun getSortMode(): Flow<SortMode>
     suspend fun setSortMode(sortMode: SortMode)
-    fun getSelectedStationCode(): Flow<String>
-    suspend fun setSelectedStationCode(stationCode: String)
+    fun getSelectedStopCode(): Flow<String>
+    suspend fun setSelectedStopCode(stopCode: String)
     fun getTheme(): Flow<ThemeMode>
     suspend fun setTheme(theme: ThemeMode)
-    fun getFavouriteStations(): Flow<Set<String>>
-    suspend fun setFavouriteStations(favouriteStations: Set<String>)
+    fun getFavouriteStops(): Flow<Set<String>>
+    suspend fun setFavouriteStops(favouriteStops: Set<String>)
 
     fun getReadAlerts() : Flow<Set<String>>
     suspend fun addReadAlert(id: String)
@@ -22,7 +22,9 @@ interface IPreferencesRepository {
 
 const val SORT_MODE_KEY = "sortMode"
 const val THEME_KEY = "theme"
-const val SELECTED_STATION_CODE_KEY = "selectedStationCode"
-const val FAVOURITE_STATIONS_KEY = "favouriteStations"
+const val OLD_SELECTED_STOP_CODE_KEY = "selectedStationCode"
+const val SELECTED_STOP_CODE_KEY = "selectedStopCode"
+const val OLD_FAVOURITE_STOPS_KEY = "favouriteStations"
+const val FAVOURITE_STOPS_KEY = "favouriteStops"
 const val HIDDEN_TRAINS_KEY = "hiddenTrains"
 const val READ_ALERTS_KEY = "readAlerts"

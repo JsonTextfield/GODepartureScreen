@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,11 +46,15 @@ import org.jetbrains.compose.resources.stringResource
 fun AlertItem(
     alert: Alert,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     val language = Locale.current.language
     val fontScale = LocalDensity.current.fontScale
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable(
+            enabled = false, // alert.urlEn != null || alert.urlFr != null,
+            onClick = onClick,
+        ),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         border = BorderStroke(
@@ -67,7 +72,7 @@ fun AlertItem(
             ) {
                 Row(verticalAlignment = Alignment.Top) {
                     Text(
-                        text = alert.affectedStations.takeIf { it.isNotEmpty() }
+                        text = alert.affectedStops.takeIf { it.isNotEmpty() }
                             ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
                         modifier = Modifier
                             .weight(10 / 12f)
@@ -98,7 +103,7 @@ fun AlertItem(
                     }
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    alert.affectedLines.forEach { line ->
+                    for (line in alert.affectedLines) {
                         TripCodeBox(
                             tripCode = line,
                             modifier = Modifier

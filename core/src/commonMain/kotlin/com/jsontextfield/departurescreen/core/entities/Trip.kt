@@ -26,5 +26,5 @@ data class Trip(
 ) {
     val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"
-    val isExpress: Boolean = 'X' in id
+    val isExpress: Boolean = 'X' in id || code == "UP"
 }
