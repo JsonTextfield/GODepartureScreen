@@ -126,13 +126,17 @@ class TransitRepository(
     }
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
-        val response = departureScreenAPI.getTrip(tripNumber).trips
-        return response.map {
-            TripDetails(
-                id = it.tripNumber,
-                stops = it.stops.map { stop -> stop.code }
-            )
-        }.firstOrNull()
+        return try {
+            val response = departureScreenAPI.getTrip(tripNumber).trips
+            response.map {
+                TripDetails(
+                    id = it.tripNumber,
+                    stops = it.stops.map { stop -> stop.code }
+                )
+            }.firstOrNull()
+        } catch (_: Exception) {
+            null
+        }
     }
 
     override fun getServiceAlerts(): Flow<List<Alert>> = pollAlerts(
