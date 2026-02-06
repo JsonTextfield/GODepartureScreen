@@ -69,6 +69,7 @@ class TripDetailsViewModel(
                             ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop in code) name else null }
                             ?: stop
                     }.orEmpty(),
+                    serviceGuarantee = result?.serviceGuarantee.orEmpty(),
                 )
             }
             combine(
@@ -97,4 +98,5 @@ data class TripUIState(
     val destination: String = "",
     val stops: List<String> = emptyList(),
     val alerts: List<Alert> = emptyList(),
+    val serviceGuarantee: String = "",
 )

@@ -127,14 +127,18 @@ class TransitRepository(
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val response = departureScreenAPI.getTrip(tripNumber).trips
-            response.map {
+            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber).trips
+            val serviceGuaranteeResponse = departureScreenAPI.getServiceGuarantee(tripNumber)
+            val stops = serviceGuaranteeResponse.stops?.stop.orEmpty()
+            tripDetailsResponse.map {
                 TripDetails(
                     id = it.tripNumber,
-                    stops = it.stops.map { stop -> stop.code }
+                    stops = it.stops.map { stop -> stop.code },
+                    serviceGuarantee = stops.joinToString("\n"),
                 )
             }.firstOrNull()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Logger.withTag(TransitRepository::class.simpleName.toString()).e(e.message.orEmpty())
             null
         }
     }

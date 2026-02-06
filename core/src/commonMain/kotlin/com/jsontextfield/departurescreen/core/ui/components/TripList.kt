@@ -91,7 +91,7 @@ fun TripList(
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()
                         .clickable(
-                            enabled = !trip.isCancelled,
+                            //enabled = !trip.isCancelled,
                             onClick = { onItemClick(trip) },
                         )
                         .padding(8.dp)

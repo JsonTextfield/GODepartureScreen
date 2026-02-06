@@ -92,6 +92,19 @@ fun TripDetailsScreen(
                 bottom = 100.dp,
             )
         ) {
+            if (uiState.serviceGuarantee.isNotEmpty()) {
+                item {
+                    Column(modifier = Modifier.animateItem()) {
+                        Text("Service Guarantee", style = MaterialTheme.typography.headlineMedium)
+                        Text(
+                            text = uiState.serviceGuarantee,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                        )
+                    }
+                }
+            }
             if (uiState.stops.isNotEmpty()) {
                 item {
                     Column(modifier = Modifier.animateItem()) {

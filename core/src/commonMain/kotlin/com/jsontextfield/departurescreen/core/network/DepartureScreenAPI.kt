@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
+
 package com.jsontextfield.departurescreen.core.network
 
 import com.jsontextfield.departurescreen.core.network.model.Alerts
@@ -5,6 +7,7 @@ import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBusesResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceGuaranteeResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.TripResponse
 import com.jsontextfield.departurescreen.core.network.model.TripUpdatesResponse
@@ -113,6 +116,17 @@ class DepartureScreenAPI() {
     suspend fun getUnionDepartures(): UnionDeparturesResponse {
         return client.get("ServiceUpdate/UnionDepartures/All").body()
     }
+
+    suspend fun getServiceGuarantee(tripNumber: String): ServiceGuaranteeResponse {
+        val date = (Clock.System.now() - 8.hours).format(
+            DateTimeComponents.Format {
+                byUnicodePattern("yyyyMMdd")
+            }
+        )
+        return client.get("ServiceUpdate/ServiceGuarantee/$tripNumber/$date").body()
+        //return getServiceGuaranteeSample()
+    }
+
     suspend fun getTrainExceptions(): ExceptionsResponse {
         return client.get("ServiceUpdate/Exceptions/Train").body()
     }
@@ -163,7 +177,7 @@ class DepartureScreenAPI() {
     ): String {
         return client.get("Schedule/Line/$date/$code/$direction").body()
     }
-    @OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
+
     suspend fun getTrip(tripNumber: String): TripResponse {
         val date = (Clock.System.now() - 8.hours).format(
             DateTimeComponents.Format {
@@ -197,5 +211,40 @@ class DepartureScreenAPI() {
         date: String,
     ): String {
         return client.get("Fares/$from/$to/$date").body()
+    }
+
+    // Sample function that returns ServiceGuaranteeResponse with the provided JSON structure
+    fun getServiceGuaranteeSample(): ServiceGuaranteeResponse {
+        val json = Json {
+            prettyPrint = true
+            isLenient = true
+            ignoreUnknownKeys = true
+        }
+        val jsonString = """
+            {
+              "Metadata": {
+                "TimeStamp": "sample string 1",
+                "ErrorCode": "sample string 2",
+                "ErrorMessage": "sample string 3"
+              },
+              "Stops": {
+                "Stop": [
+                  {
+                    "Code": "sample string 1",
+                    "Scope": "sample string 2",
+                    "ReasonEn": "sample string 3",
+                    "ReasonFr": "sample string 4"
+                  },
+                  {
+                    "Code": "sample string 1",
+                    "Scope": "sample string 2",
+                    "ReasonEn": "sample string 3",
+                    "ReasonFr": "sample string 4"
+                  }
+                ]
+              }
+            }
+        """.trimIndent()
+        return json.decodeFromString<ServiceGuaranteeResponse>(jsonString)
     }
 }
