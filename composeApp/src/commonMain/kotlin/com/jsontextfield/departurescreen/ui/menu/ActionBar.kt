@@ -20,12 +20,14 @@ import departure_screen.composeapp.generated.resources.more
 import departure_screen.composeapp.generated.resources.rate_app
 import departure_screen.composeapp.generated.resources.round_bus_alert_24
 import departure_screen.composeapp.generated.resources.round_rate_review_24
+import departure_screen.composeapp.generated.resources.round_settings_24
 import departure_screen.composeapp.generated.resources.round_star_24
 import departure_screen.composeapp.generated.resources.round_star_border_24
 import departure_screen.composeapp.generated.resources.rounded_add_24
 import departure_screen.composeapp.generated.resources.rounded_brightness_4_24
 import departure_screen.composeapp.generated.resources.rounded_more_vert_24
 import departure_screen.composeapp.generated.resources.rounded_sort_24
+import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.sort
 import departure_screen.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
@@ -172,12 +174,19 @@ fun getActions(
         isVisible = isRateAppActionVisible(),
     )
 
+    val settings = Action(
+        icon = Res.drawable.round_settings_24,
+        tooltip = stringResource(Res.string.settings),
+        onClick = navigationActions.onShowSettings,
+    )
+
     return listOf(
         favourite,
         sort,
         alerts,
-        theme,
+        //theme,
         rate,
         addWidget,
+        settings,
     ).filter { it.isVisible }
 }

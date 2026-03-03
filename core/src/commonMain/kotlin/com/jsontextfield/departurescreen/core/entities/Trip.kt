@@ -1,8 +1,12 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
 
 package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.ui.graphics.Color
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -24,7 +28,10 @@ data class Trip(
     val cars: String? = null,
     val busType: String? = null,
 ) {
-    val departureDiffMinutes: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
+    val relativeDepartureTime: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
+    val twentyFourHourDepartureTime: String = departureTime.format(DateTimeComponents.Format {
+        byUnicodePattern("HH:mm")
+    })
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"
     val isExpress: Boolean = 'X' in id || code == "UP"
 }

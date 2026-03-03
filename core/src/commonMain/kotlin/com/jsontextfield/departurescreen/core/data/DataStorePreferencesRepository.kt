@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -71,6 +72,21 @@ class DataStorePreferencesRepository(
             ThemeMode.entries.firstOrNull {
                 it.ordinal == preferences[intPreferencesKey(THEME_KEY)]
             } ?: ThemeMode.DEFAULT
+        }
+    }
+
+    override suspend fun setTimeFormat(timeFormat: TimeFormat) {
+        dataStore.edit { preferences ->
+            val key = intPreferencesKey(TIME_FORMAT_KEY)
+            preferences[key] = timeFormat.ordinal
+        }
+    }
+
+    override fun getTimeFormat(): Flow<TimeFormat> {
+        return dataStore.data.map { preferences ->
+            TimeFormat.entries.firstOrNull {
+                it.ordinal == preferences[intPreferencesKey(TIME_FORMAT_KEY)]
+            } ?: TimeFormat.RELATIVE
         }
     }
 

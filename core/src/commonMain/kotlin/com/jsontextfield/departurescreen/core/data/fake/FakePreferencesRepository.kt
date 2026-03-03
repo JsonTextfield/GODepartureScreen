@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.core.data.fake
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -30,6 +31,12 @@ class FakePreferencesRepository : IPreferencesRepository {
     override fun getTheme(): Flow<ThemeMode> = themeFlow
     override suspend fun setTheme(theme: ThemeMode) {
         themeFlow.value = theme
+    }
+
+    private val timeFormatFlow = MutableStateFlow(TimeFormat.RELATIVE)
+    override fun getTimeFormat(): Flow<TimeFormat> = timeFormatFlow
+    override suspend fun setTimeFormat(timeFormat: TimeFormat) {
+        timeFormatFlow.value = timeFormat
     }
 
     private val favouriteStopsFlow = MutableStateFlow(emptySet<String>())

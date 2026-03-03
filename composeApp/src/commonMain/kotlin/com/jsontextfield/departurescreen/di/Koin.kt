@@ -12,6 +12,7 @@ import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import okio.Path.Companion.toPath
@@ -49,6 +50,7 @@ val viewModelModule = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::AlertsViewModel)
     viewModelOf(::StopsViewModel)
+    viewModelOf(::SettingsViewModel)
     viewModel { params ->
         StopsViewModel(
             getSelectedStopUseCase = get<GetSelectedStopUseCase>(),

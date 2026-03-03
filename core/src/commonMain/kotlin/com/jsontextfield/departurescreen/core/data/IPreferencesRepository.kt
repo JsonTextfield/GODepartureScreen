@@ -2,6 +2,7 @@ package com.jsontextfield.departurescreen.core.data
 
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.Flow
 
 interface IPreferencesRepository {
@@ -13,6 +14,8 @@ interface IPreferencesRepository {
     suspend fun setSelectedStopCode(stopCode: String)
     fun getTheme(): Flow<ThemeMode>
     suspend fun setTheme(theme: ThemeMode)
+    fun getTimeFormat(): Flow<TimeFormat>
+    suspend fun setTimeFormat(timeFormat: TimeFormat)
     fun getFavouriteStops(): Flow<Set<String>>
     suspend fun setFavouriteStops(favouriteStops: Set<String>)
 
@@ -22,6 +25,7 @@ interface IPreferencesRepository {
 
 const val SORT_MODE_KEY = "sortMode"
 const val THEME_KEY = "theme"
+const val TIME_FORMAT_KEY = "timeFormat"
 const val OLD_SELECTED_STOP_CODE_KEY = "selectedStationCode"
 const val SELECTED_STOP_CODE_KEY = "selectedStopCode"
 const val OLD_FAVOURITE_STOPS_KEY = "favouriteStations"

@@ -26,11 +26,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlin.math.ceil
 
 @Composable
 fun TripList(
     trips: List<Trip>,
+    timeFormat: TimeFormat,
     onItemClick: (Trip) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -87,6 +89,7 @@ fun TripList(
             ) {
                 TripListItem(
                     trip,
+                    timeFormat = timeFormat,
                     modifier = Modifier
                         .heightIn(min = 80.dp)
                         .fillMaxWidth()

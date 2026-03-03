@@ -44,6 +44,9 @@
     <string name="day_difference">%1$s j</string>
     <string name="hour_difference">%1$s h</string>
     <string name="minute_difference">%1$s m</string>
+    <string name="twelve_hour">12 h</string>
+    <string name="twenty_four_hour">24 h</string>
+    <string name="relative">Relative</string>
     <plurals name="number_of_cars">
         <item quantity="one">%1$s voiture</item>
         <item quantity="other">%1$s voitures</item>

@@ -14,6 +14,7 @@ import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,12 +50,14 @@ class MainViewModel(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
             preferencesRepository.getTheme(),
-        ) { visibleTrains, sortMode, theme ->
+            preferencesRepository.getTimeFormat(),
+        ) { visibleTrains, sortMode, theme, timeFormat ->
             _uiState.update {
                 it.copy(
                     visibleTrains = visibleTrains,
                     sortMode = sortMode,
                     theme = theme,
+                    timeFormat = timeFormat,
                 )
             }
         }.launchIn(viewModelScope)
@@ -231,6 +234,7 @@ data class MainUIState(
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
+    val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val isRefreshing: Boolean = false,
     val unreadAlertsCount: Int = 0,
 ) {

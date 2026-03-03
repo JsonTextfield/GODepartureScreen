@@ -17,6 +17,7 @@ import androidx.navigation.toRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
+import com.jsontextfield.departurescreen.core.ui.navigation.SettingsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
@@ -26,6 +27,7 @@ import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
+import com.jsontextfield.departurescreen.ui.views.SettingsScreen
 import com.jsontextfield.departurescreen.ui.views.StopsScreen
 import com.jsontextfield.departurescreen.ui.views.TripDetailsScreen
 import kotlinx.coroutines.delay
@@ -79,6 +81,11 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                         destination = trip.destination,
                                     )
                                 ) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onShowSettings = {
+                                navController.navigate(SettingsRoute) {
                                     launchSingleTop = true
                                 }
                             },
@@ -136,6 +143,14 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     )
                 }
 
+                composable<SettingsRoute>(
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    SettingsScreen(onBackPressed = {
+                        safeNavigation { navController.popBackStack() }
+                    })
+                }
             }
         }
     }

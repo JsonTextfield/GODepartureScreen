@@ -18,3 +18,5 @@ data class TripDetailsRoute(
     val lineCode: String,
     val destination: String,
 )
+@Serializable
+data object SettingsRoute

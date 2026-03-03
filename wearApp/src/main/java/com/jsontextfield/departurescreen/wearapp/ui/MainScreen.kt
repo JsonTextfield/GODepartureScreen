@@ -139,8 +139,8 @@ fun MainScreen(
                         ) { index, trip ->
                             val minutesContentDescription = pluralStringResource(
                                 R.plurals.minutes_content_description,
-                                trip.departureDiffMinutes,
-                                trip.departureDiffMinutes,
+                                trip.relativeDepartureTime,
+                                trip.relativeDepartureTime,
                             )
                             ListHeader {
                                 Row(
@@ -161,7 +161,7 @@ fun MainScreen(
                                         verticalArrangement = Arrangement.Center,
                                     ) {
                                         Text(
-                                            text = trip.departureDiffMinutes.toString(),
+                                            text = trip.relativeDepartureTime.toString(),
                                             modifier = Modifier.basicMarquee(),
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 textAlign = TextAlign.Center,

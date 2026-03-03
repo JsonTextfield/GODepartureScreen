@@ -36,6 +36,8 @@
     <string name="rate">Évaluer</string>
     <string name="stops">Arrêts</string>
     <string name="more_trips">Plus de voyages</string>
+    <string name="settings">Paramètres</string>
+    <string name="time_format">Format de l'heure</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Partira dans %1$s minute</item>
         <item quantity="other">Partira dans %1$s minutes</item>

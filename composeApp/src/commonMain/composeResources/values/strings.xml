@@ -36,6 +36,8 @@
     <string name="rate">Rate</string>
     <string name="stops">Stops</string>
     <string name="more_trips">More trips</string>
+    <string name="settings">Settings</string>
+    <string name="time_format">Time format</string>
     <plurals name="minutes_content_description">
         <item quantity="one">Departing in %1$s minute</item>
         <item quantity="other">Departing in %1$s minutes</item>

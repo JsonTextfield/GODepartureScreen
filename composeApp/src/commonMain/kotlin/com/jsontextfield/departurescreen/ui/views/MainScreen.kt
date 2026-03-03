@@ -158,6 +158,7 @@ fun MainScreen(
                             }
                             TripList(
                                 trips = uiState.allTrips.filter { it.isVisible },
+                                timeFormat = uiState.timeFormat,
                                 onItemClick = navigationActions.onShowTripDetails,
                             )
                         }

@@ -1,11 +1,9 @@
 package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,11 +20,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.cancelled
 import departure_screen.core.generated.resources.express
-import departure_screen.core.generated.resources.min
-import departure_screen.core.generated.resources.minutes_content_description
 import departure_screen.core.generated.resources.number_of_cars
 import departure_screen.core.generated.resources.platform_number
 import org.jetbrains.compose.resources.pluralStringResource
@@ -38,49 +35,21 @@ private const val SHOULD_SHOW_TRAIN_INFO = false
 fun TripListItem(
     trip: Trip,
     modifier: Modifier = Modifier,
+    timeFormat: TimeFormat = TimeFormat.RELATIVE,
 ) {
     Row(
         modifier = modifier.semantics(mergeDescendants = true) {},
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        val minutesContentDescription = pluralStringResource(
-            Res.plurals.minutes_content_description,
-            trip.departureDiffMinutes,
-            trip.departureDiffMinutes,
-        )
         val shouldShowTrainCode = with(LocalDensity.current) {
             fontScale <= 1.5f
         }
-        Column(
-            modifier = Modifier
-                .weight(3 / 12f)
-                .semantics {
-                    contentDescription = minutesContentDescription
-                },
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = trip.departureDiffMinutes.toString(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .basicMarquee(),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                ),
-                maxLines = 1,
-            )
-            Text(
-                text = stringResource(Res.string.min),
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelSmall.copy(
-                    textAlign = TextAlign.Center,
-                ),
-                maxLines = 1,
-            )
-        }
+        TimeBox(
+            trip,
+            timeFormat = timeFormat,
+            modifier = Modifier.weight(3 / 12f)
+        )
         Row(
             modifier = Modifier.weight(6 / 12f),
             verticalAlignment = Alignment.CenterVertically,

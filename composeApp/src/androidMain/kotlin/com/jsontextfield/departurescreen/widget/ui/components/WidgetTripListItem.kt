@@ -40,8 +40,8 @@ fun WidgetTripListItem(
     ) {
         val minutesContentDescription = context.resources.getQuantityString(
             R.plurals.minutes_content_description,
-            trip.departureDiffMinutes,
-            trip.departureDiffMinutes,
+            trip.relativeDepartureTime,
+            trip.relativeDepartureTime,
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,7 +49,7 @@ fun WidgetTripListItem(
             modifier = GlanceModifier.width(40.dp)
         ) {
             Text(
-                text = trip.departureDiffMinutes.toString(),
+                text = trip.relativeDepartureTime.toString(),
                 style = TextDefaults.defaultTextStyle.copy(
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
