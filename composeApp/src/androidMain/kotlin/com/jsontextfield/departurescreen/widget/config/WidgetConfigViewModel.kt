@@ -6,6 +6,7 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,6 +59,14 @@ class WidgetConfigViewModel(
         }
     }
 
+    fun onTimeFormatChanged(timeFormat: TimeFormat) {
+        _config.update {
+            it.copy(
+                timeFormat = timeFormat
+            )
+        }
+    }
+
     fun onOpacityChanged(opacity: Float) {
         _config.update {
             it.copy(
@@ -80,5 +89,6 @@ data class WidgetConfig(
     val selectedStop: Stop? = null,
     val selectedStopCode: String? = null,
     val sortMode: SortMode = SortMode.TIME,
+    val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val opacity: Float = 0.8f,
 )

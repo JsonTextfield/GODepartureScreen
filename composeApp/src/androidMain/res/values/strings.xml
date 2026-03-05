@@ -20,6 +20,9 @@
     <string name="departure">Departure</string>
     <string name="destination">Destination</string>
     <string name="sort_by">Sort by…</string>
+    <string name="time_format">Time format</string>
+    <string name="relative">Relative</string>
+    <string name="twenty_four_hour">24-hour</string>
     <string name="stop">Stop</string>
     <string name="widget_settings">Widget settings</string>
     <string name="loading">Loading…</string>

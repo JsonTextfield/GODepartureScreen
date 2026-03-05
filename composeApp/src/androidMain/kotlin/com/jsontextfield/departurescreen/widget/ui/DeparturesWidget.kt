@@ -50,6 +50,7 @@ import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.StopType
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.theme.darkScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lightScheme
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
@@ -217,6 +218,7 @@ fun DepartureScreenWidget(
                             items(uiState.allTrips) { trip ->
                                 WidgetTripListItem(
                                     trip,
+                                    timeFormat = config?.timeFormat ?: TimeFormat.RELATIVE,
                                     modifier = GlanceModifier
                                         .fillMaxWidth()
                                         .padding(8.dp),

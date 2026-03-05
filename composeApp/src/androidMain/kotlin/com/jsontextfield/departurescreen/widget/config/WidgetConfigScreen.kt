@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 
 @Composable
 fun WidgetConfigScreen(
     widgetConfig: WidgetConfig,
     onSortModeChanged: (SortMode) -> Unit,
+    onTimeFormatChanged: (TimeFormat) -> Unit,
     onOpacityChanged: (Float) -> Unit,
     onStopButtonClicked: () -> Unit,
     onCancel: () -> Unit,
@@ -54,6 +56,7 @@ fun WidgetConfigScreen(
                 WidgetConfigControls(
                     widgetConfig = widgetConfig,
                     onSortModeChanged = onSortModeChanged,
+                    onTimeFormatChanged = onTimeFormatChanged,
                     onOpacityChanged = onOpacityChanged,
                     onStopButtonClicked = onStopButtonClicked,
                     onCancel = onCancel,

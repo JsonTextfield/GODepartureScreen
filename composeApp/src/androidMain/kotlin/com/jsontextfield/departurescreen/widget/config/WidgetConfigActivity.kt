@@ -50,6 +50,7 @@ class WidgetConfigActivity : ComponentActivity() {
                         WidgetConfigScreen(
                             widgetConfig = widgetConfig,
                             onSortModeChanged = configViewModel::onSortModeChanged,
+                            onTimeFormatChanged = configViewModel::onTimeFormatChanged,
                             onOpacityChanged = {
                                 haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                 configViewModel.onOpacityChanged(it)

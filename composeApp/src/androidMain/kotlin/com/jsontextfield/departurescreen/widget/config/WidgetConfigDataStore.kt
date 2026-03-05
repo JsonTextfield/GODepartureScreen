@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -21,6 +22,7 @@ class WidgetConfigDataStore(private val context: Context) {
     private object PreferenceKeys {
         fun selectedStop(appWidgetId: Int) = stringPreferencesKey("selected_stop_${appWidgetId}")
         fun sortMode(appWidgetId: Int) = intPreferencesKey("sort_mode_${appWidgetId}")
+        fun timeFormat(appWidgetId: Int) = intPreferencesKey("time_format${appWidgetId}")
         fun opacity(appWidgetId: Int) = floatPreferencesKey("opacity_${appWidgetId}")
     }
 
@@ -32,6 +34,9 @@ class WidgetConfigDataStore(private val context: Context) {
                 sortMode = SortMode.entries.firstOrNull {
                     preferences[PreferenceKeys.sortMode(appWidgetId)] == it.ordinal
                 } ?: SortMode.TIME,
+                timeFormat = TimeFormat.entries.firstOrNull {
+                    preferences[PreferenceKeys.timeFormat(appWidgetId)] == it.ordinal
+                } ?: TimeFormat.RELATIVE,
                 opacity = preferences[PreferenceKeys.opacity(appWidgetId)] ?: 0.8f,
             )
         }
@@ -43,6 +48,7 @@ class WidgetConfigDataStore(private val context: Context) {
                 preferences[PreferenceKeys.selectedStop(appWidgetId)] = it
             }
             preferences[PreferenceKeys.sortMode(appWidgetId)] = config.sortMode.ordinal
+            preferences[PreferenceKeys.timeFormat(appWidgetId)] = config.timeFormat.ordinal
             preferences[PreferenceKeys.opacity(appWidgetId)] = config.opacity
         }
     }

@@ -20,12 +20,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.R
 import com.jsontextfield.departurescreen.core.ui.SortMode
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 
 @Composable
 fun WidgetConfigControls(
     widgetConfig: WidgetConfig,
     onStopButtonClicked: () -> Unit,
     onSortModeChanged: (SortMode) -> Unit,
+    onTimeFormatChanged: (TimeFormat) -> Unit,
     onOpacityChanged: (Float) -> Unit,
     onCancel: () -> Unit,
     onDone: () -> Unit,
@@ -72,6 +74,30 @@ fun WidgetConfigControls(
                     )
                     Text(
                         stringResource(if (sortMode == SortMode.TIME) R.string.time else R.string.line),
+                        modifier = Modifier.padding(end = 10.dp),
+                    )
+                }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = stringResource(R.string.time_format), modifier = Modifier.weight(1f))
+            for (timeFormat in TimeFormat.entries) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        onTimeFormatChanged(timeFormat)
+                    },
+                ) {
+                    RadioButton(
+                        selected = timeFormat == widgetConfig.timeFormat,
+                        onClick = { onTimeFormatChanged(timeFormat) },
+                    )
+                    Text(
+                        stringResource(if (timeFormat == TimeFormat.RELATIVE) R.string.relative else R.string.twenty_four_hour),
                         modifier = Modifier.padding(end = 10.dp),
                     )
                 }

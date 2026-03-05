@@ -25,6 +25,7 @@ import androidx.glance.text.TextDefaults
 import androidx.glance.unit.ColorProvider
 import com.jsontextfield.departurescreen.R
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 
 private const val SHOULD_SHOW_TRAIN_INFO = false
 
@@ -32,43 +33,14 @@ private const val SHOULD_SHOW_TRAIN_INFO = false
 fun WidgetTripListItem(
     trip: Trip,
     modifier: GlanceModifier = GlanceModifier,
+    timeFormat: TimeFormat = TimeFormat.RELATIVE,
 ) {
     val context = LocalContext.current
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val minutesContentDescription = context.resources.getQuantityString(
-            R.plurals.minutes_content_description,
-            trip.relativeDepartureTime,
-            trip.relativeDepartureTime,
-        )
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.width(40.dp)
-        ) {
-            Text(
-                text = trip.relativeDepartureTime.toString(),
-                style = TextDefaults.defaultTextStyle.copy(
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.onBackground,
-                ),
-                modifier = GlanceModifier
-                    .semantics {
-                        contentDescription = minutesContentDescription
-                    }
-            )
-            Text(
-                text = context.getString(R.string.min),
-                style = TextDefaults.defaultTextStyle.copy(
-                    fontSize = 12.sp,
-                    color = GlanceTheme.colors.onBackground,
-                ),
-                maxLines = 1,
-            )
-        }
+        WidgetTimeBox(trip, timeFormat = timeFormat)
         Spacer(modifier = GlanceModifier.width(12.dp))
         WidgetTripCodeBox(
             tripCode = trip.code,
