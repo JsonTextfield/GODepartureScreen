@@ -38,7 +38,8 @@ struct Provider: AppIntentTimelineProvider {
                 forKey: "selectedStationCode"
             ) as? String
                 ?? "UN"
-
+            
+            let timeFormat: TimeFormat = configuration.timeFormat ?? .relative
         do {
             let allStops = try await transitRepository.getAllStops()
             if let stop =
@@ -96,7 +97,8 @@ struct Provider: AppIntentTimelineProvider {
                 return SimpleEntry(
                     date: Date(),
                     stopName: stop.name,
-                    trips: trips
+                    trips: trips,
+                    timeFormat: timeFormat
                 )
             }
         } catch {
@@ -105,7 +107,8 @@ struct Provider: AppIntentTimelineProvider {
         return SimpleEntry(
             date: Date(),
             stopName: "",
-            trips: []
+            trips: [],
+            timeFormat: .relative
         )
     }
 
@@ -141,7 +144,8 @@ struct Provider: AppIntentTimelineProvider {
                     cars: nil,
                     busType: nil,
                     )
-            ]
+            ],
+            timeFormat: .relative
         )
     }
 
@@ -154,6 +158,7 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let stopName: String
     let trips: [CoreTrip]
+    let timeFormat: TimeFormat
 }
 
 @main
@@ -171,7 +176,7 @@ struct GODepartures: Widget {
                 for: .widget
             )
         }
-        .configurationDisplayName("GO Departures")
+        .configurationDisplayName("Upcoming Departures")
         .description("Shows departure information for a stop")
         .supportedFamilies([
                                .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,

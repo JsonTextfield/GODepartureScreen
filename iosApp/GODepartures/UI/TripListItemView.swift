@@ -12,7 +12,13 @@ import coreKit
 
 struct TripListItemView: View {
     @Environment(\.colorScheme) var colorScheme
-    var trip: CoreTrip
+    let trip: CoreTrip
+    let timeFormat: TimeFormat
+    
+    init(trip: CoreTrip, timeFormat: TimeFormat = .relative) {
+        self.trip = trip
+        self.timeFormat = timeFormat
+    }
 
     var body: some View {
         let colour = Color(
@@ -24,15 +30,7 @@ struct TripListItemView: View {
                 ? coreKit.ColourKt.errorDark : coreKit.ColourKt.errorLight)
         )
         HStack(alignment: .center, spacing: 12) {
-            VStack(alignment: .center, spacing: 0) {
-                Text("\(trip.departureDiffMinutes)")
-                    .multilineTextAlignment(.center)
-                    .bold()
-                Text("min")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .bold()
-            }.frame(width: 40)
+            TimeBox(trip: trip, timeFormat: timeFormat)
             TripCodeBox(trip: trip)
             VStack(alignment: .leading) {
                 Text(trip.destination)

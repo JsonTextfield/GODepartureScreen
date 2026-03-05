@@ -17,16 +17,21 @@ struct ConfigurationIntent: WidgetConfigurationIntent {
     @Parameter(title: "Stop")
     var selectedStop: StopDetail?
 
-    @Parameter(title: "Sort by...")
+    @Parameter(title: "Sort by…")
     var sortMode: SortMode?
+    
+    @Parameter(title: "Time format")
+    var timeFormat: TimeFormat?
 
     init() {}
 
     init(
         selectedStop: StopDetail? = nil,
-        sortMode: SortMode
+        sortMode: SortMode,
+        timeFormat: TimeFormat,
     ) {
         self.selectedStop = selectedStop
         self.sortMode = sortMode
+        self.timeFormat = timeFormat
     }
 }

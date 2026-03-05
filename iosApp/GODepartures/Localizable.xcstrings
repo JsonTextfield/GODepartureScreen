@@ -2,7 +2,14 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
     },
     "%@ cars" : {
       "localizations" : {
@@ -21,10 +28,34 @@
       }
     },
     "%d" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d"
+          }
+        }
+      }
     },
     "%d min" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d min"
+          }
+        }
+      }
+    },
+    "24-hour" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24 h"
+          }
+        }
+      }
     },
     "cancelled" : {
       "extractionState" : "manual",
@@ -44,7 +75,14 @@
       }
     },
     "Configure the GO Departures widget." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer le widget Départs GO"
+          }
+        }
+      }
     },
     "express" : {
       "extractionState" : "manual",
@@ -59,16 +97,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Express"
-          }
-        }
-      }
-    },
-    "GO Departures" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Départs GO"
           }
         }
       }
@@ -100,7 +128,14 @@
       }
     },
     "min" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "min"
+          }
+        }
+      }
     },
     "Platform" : {
       "localizations" : {
@@ -108,6 +143,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quai"
+          }
+        }
+      }
+    },
+    "Relative" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relative"
           }
         }
       }
@@ -122,7 +167,7 @@
         }
       }
     },
-    "Sort by..." : {
+    "Sort by…" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -133,10 +178,24 @@
       }
     },
     "Sort mode" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de tri"
+          }
+        }
+      }
     },
     "Stop" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrêt"
+          }
+        }
+      }
     },
     "Time" : {
       "localizations" : {
@@ -144,6 +203,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Heure"
+          }
+        }
+      }
+    },
+    "Time format" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format de l’heure"
+          }
+        }
+      }
+    },
+    "Upcoming Departures" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Départs à venir"
           }
         }
       }
@@ -169,7 +248,14 @@
       }
     },
     "Widget settings" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres du widget"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

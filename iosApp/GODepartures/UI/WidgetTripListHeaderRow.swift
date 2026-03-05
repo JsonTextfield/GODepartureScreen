@@ -14,7 +14,7 @@ struct WidgetTripListHeaderRow: View {
             Text("Time")
                 .lineLimit(1)
                 .font(.footnote)
-                .frame(width: 40)
+                .frame(width: 50)
             Text("Line")
                 .lineLimit(1)
                 .font(.footnote)

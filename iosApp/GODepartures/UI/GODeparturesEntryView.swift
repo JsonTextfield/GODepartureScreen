@@ -48,7 +48,8 @@ struct GODeparturesEntryView: View {
                         GridRow {
                             ForEach(trips, id: \.self.id) { trip in
                                 TripListItemView(
-                                    trip: trip
+                                    trip: trip,
+                                    timeFormat: entry.timeFormat,
                                 )
                             }
                         }.frame(maxHeight: .infinity, alignment: .top)

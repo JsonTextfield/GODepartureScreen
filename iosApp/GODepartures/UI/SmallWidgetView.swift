@@ -42,10 +42,17 @@ struct SmallWidgetView: View {
                         Text("Time")
                             .lineLimit(1)
                             .font(.footnote)
-                        Text("\(trip.departureDiffMinutes) min")
-                            .font(.footnote)
-                            .multilineTextAlignment(.center)
-                            .bold()
+                        if entry.timeFormat == .relative {
+                            Text("\(trip.relativeDepartureTime) min")
+                                .font(.footnote)
+                                .multilineTextAlignment(.center)
+                                .bold()
+                        } else {
+                            Text("\(trip.twentyFourHourDepartureTime)")
+                                .font(.footnote)
+                                .multilineTextAlignment(.center)
+                                .bold()
+                        }
                     }.frame(maxWidth: .infinity)
                     VStack(alignment: .center) {
                         Text("Platform")
@@ -53,7 +60,9 @@ struct SmallWidgetView: View {
                             .font(.footnote)
                         Text(trip.platform)
                             .font(.footnote)
-                            .foregroundColor(trip.platform == "-" ? nil : colour)
+                            .foregroundColor(
+                                trip.platform == "-" ? nil : colour
+                            )
                             .bold()
                     }.frame(maxWidth: .infinity)
                 }.frame(maxHeight: .infinity)
