@@ -139,7 +139,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                         tripDetailsViewModel = tripDetailsViewModel,
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
-                        }
+                        },
                     )
                 }
 

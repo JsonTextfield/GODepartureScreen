@@ -2,10 +2,12 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.core.entities.TripDetails
+import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 class TripDetailsViewModel(
+    private val preferencesRepository: IPreferencesRepository,
     private val goTrainDataSource: ITransitRepository,
     private val selectedStop: String,
     private val tripId: String,
@@ -24,8 +27,6 @@ class TripDetailsViewModel(
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
-
-    private val upExpressStations = listOf("UN", "BL", "MD", "WE", "PA")
 
     init {
         loadData()
@@ -46,36 +47,22 @@ class TripDetailsViewModel(
                     destination = destination,
                 )
             }
-            val allStops = goTrainDataSource.getAllStops().associate {
-                it.code to it.name
-            }
-            val result = if (lineCode == "UP") {
-                TripDetails(
-                    id = tripId,
-                    stops = if (destination == "Union Station") {
-                        upExpressStations.reversed()
-                    } else {
-                        upExpressStations
-                    }
-                )
+            val schedules = if (lineCode == "UP") {
+                goTrainDataSource.getUPExpressTripSchedule(tripId)
             } else {
-                goTrainDataSource.getTripDetails(tripId)
-            }
+                goTrainDataSource.getTripDetails(tripId)?.stops
+            } ?: emptyList()
             _uiState.update {
                 it.copy(
                     status = Status.LOADED,
-                    stops = result?.stops?.map { stop ->
-                        allStops[stop]
-                            ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop in code) name else null }
-                            ?: stop
-                    }.orEmpty(),
-                    serviceGuarantee = result?.serviceGuarantee.orEmpty(),
+                    stops = schedules,
                 )
             }
             combine(
                 goTrainDataSource.getServiceAlerts(),
                 goTrainDataSource.getInformationAlerts(),
-            ) { serviceAlerts, informationAlerts ->
+                preferencesRepository.getTimeFormat(),
+            ) { serviceAlerts, informationAlerts, timeFormat ->
                 _uiState.update {
                     it.copy(
                         alerts = (serviceAlerts + informationAlerts)
@@ -83,10 +70,17 @@ class TripDetailsViewModel(
                             .filter { alert ->
                                 alert.affectedLines.any { line -> line == lineCode } ||
                                         alert.affectedStops.any { stop -> stop == selectedStop }
-                            }
+                            },
+                        timeFormat = timeFormat,
                     )
                 }
             }.collect()
+        }
+    }
+
+    fun setSelectedStop(stopCode: String) {
+        viewModelScope.launch {
+            preferencesRepository.setSelectedStopCode(stopCode)
         }
     }
 }
@@ -96,7 +90,8 @@ data class TripUIState(
     val lineCode: String = "",
     val selectedStop: String = "",
     val destination: String = "",
-    val stops: List<String> = emptyList(),
+    val stops: List<Schedule> = emptyList(),
     val alerts: List<Alert> = emptyList(),
     val serviceGuarantee: String = "",
+    val timeFormat: TimeFormat = TimeFormat.RELATIVE,
 )

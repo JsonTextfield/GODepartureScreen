@@ -5,6 +5,7 @@ package com.jsontextfield.departurescreen.core.data
 import androidx.compose.ui.graphics.Color
 import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
@@ -20,11 +21,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.parse
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
@@ -69,18 +74,23 @@ class TransitRepository(
             }
 
             val upExpressTrips: List<Trip> = if (stopCode in upExpressStops) {
-                departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull {
-                    it.tripUpdate?.stopTimeUpdate?.dropLast(1)
-                        ?.firstOrNull { it.stopId == stopCode }?.departure?.time?.let { departureTimeString ->
-                        val departureTime = Instant.fromEpochSeconds(departureTimeString) - 5.hours
+                departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull { entity ->
+                    entity.tripUpdate?.stopTimeUpdate?.firstOrNull {
+                        it.stopId == stopCode
+                    }?.departure?.time?.let { departureTimeSeconds: Long ->
+                        val departureTime = Instant.fromEpochSeconds(departureTimeSeconds)
+                            .toLocalDateTime(TimeZone.of("America/Toronto"))
+                            .toInstant(TimeZone.UTC)
+                        val trip = entity.tripUpdate.trip
+                        val vehicle = entity.tripUpdate.vehicle
                         Trip(
-                            id = it.id,
-                            code = "UP",
+                            id = trip.tripId,
+                            code = trip.routeId,
                             name = "UP Express",
-                            destination = it.tripUpdate.vehicle?.label?.split(" - ")?.last().orEmpty(),
-                            color = lineColours["UP"] ?: Color.Gray,
+                            destination = vehicle?.label?.split(" - ")?.last().orEmpty(),
+                            color = lineColours[trip.routeId] ?: Color.Gray,
                             lastUpdated = lastUpdated,
-                            isCancelled = it.id in cancelledTrips,
+                            isCancelled = trip.tripId in cancelledTrips,
                             departureTime = departureTime,
                             platform = "-",
                         )
@@ -125,15 +135,66 @@ class TransitRepository(
         }
     }
 
+    override suspend fun getUPExpressTripSchedule(id: String): List<Schedule> {
+        val lastUpdated = Clock.System.now()
+            .toLocalDateTime(TimeZone.of("America/Toronto"))
+            .toInstant(TimeZone.UTC)
+        return try {
+            val allStops = getAllStops().associate { it.code to it.name }
+            departureScreenAPI.getUpGtfsTripUpdates().entity.firstOrNull { entity ->
+                entity.id == id
+            }?.let { entity ->
+                entity.tripUpdate?.stopTimeUpdate?.map { stopTimeUpdate ->
+                    val departureTime = Instant.fromEpochSeconds(stopTimeUpdate.departure?.time ?: 0L)
+                        .toLocalDateTime(TimeZone.of("America/Toronto"))
+                        .toInstant(TimeZone.UTC)
+                    Schedule(
+                        name = allStops[stopTimeUpdate.stopId]
+                            ?: allStops.firstNotNullOfOrNull { (code, name) ->
+                                if (stopTimeUpdate.stopId in code) name else null
+                            }
+                            ?: "",
+                        code = stopTimeUpdate.stopId,
+                        time = departureTime,
+                        lastUpdated = lastUpdated,
+                    )
+                }
+            } ?: emptyList()
+        } catch (_: IOException) {
+            emptyList()
+        }
+    }
+
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber).trips
+            val date = (Clock.System.now() - 8.hours).format(
+                DateTimeComponents.Format {
+                    byUnicodePattern("yyyyMMdd")
+                }
+            )
+            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, date)
             val serviceGuaranteeResponse = departureScreenAPI.getServiceGuarantee(tripNumber)
             val stops = serviceGuaranteeResponse.stops?.stop.orEmpty()
-            tripDetailsResponse.map {
+            val allStops = getAllStops().associate { it.code to it.name }
+            val lastUpdated = Instant.parse(tripDetailsResponse.metadata?.timestamp.orEmpty(), inFormatter)
+            tripDetailsResponse.trips.map {
                 TripDetails(
                     id = it.tripNumber,
-                    stops = it.stops.map { stop -> stop.code },
+                    stops = it.stops.map { stop ->
+                        val time = stop.arrivalTime?.computed.takeIf { !it.isNullOrBlank() }
+                            ?: stop.arrivalTime?.scheduled.takeIf { !it.isNullOrBlank() }
+                            ?: stop.departureTime?.computed.takeIf { !it.isNullOrBlank() }
+                            ?: stop.departureTime?.scheduled.takeIf { !it.isNullOrBlank() } ?: ""
+                        Schedule(
+                            name = allStops[stop.code]
+                                ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop.code in code) name else null }
+                                ?: "",
+                            code = stop.code,
+                            time = Instant.parseOrNull("$date $time", scheduleFormatter)
+                                ?: Instant.fromEpochMilliseconds(0),
+                            lastUpdated = lastUpdated,
+                        )
+                    },
                     serviceGuarantee = stops.joinToString("\n"),
                 )
             }.firstOrNull()
@@ -260,6 +321,11 @@ class TransitRepository(
         @OptIn(FormatStringsInDatetimeFormats::class)
         val inFormatter = DateTimeComponents.Format {
             byUnicodePattern("yyyy-MM-dd HH:mm:ss")
+        }
+
+        @OptIn(FormatStringsInDatetimeFormats::class)
+        val scheduleFormatter = DateTimeComponents.Format {
+            byUnicodePattern("yyyyMMdd HH:mm")
         }
     }
 }

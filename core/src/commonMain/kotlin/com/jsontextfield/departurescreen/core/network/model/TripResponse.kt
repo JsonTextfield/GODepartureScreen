@@ -1,29 +1,42 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package com.jsontextfield.departurescreen.core.network.model
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 @Serializable
 data class TripResponse(
-    @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("Trips") val trips: List<Trip> = emptyList(),
+    @SerialName("Metadata") val metadata: Metadata? = null,
+    @SerialName("Trips") val trips: List<Trip> = emptyList(),
 ) {
     @Serializable
     data class Trip(
-        @JsonNames("TripNumber") val tripNumber: String = "",
-        @JsonNames("Destination") val destination: String? = "",
-        @JsonNames("Status") val status: String = "",
-        @JsonNames("TimeStamp") val time: String = "",
-        @JsonNames("Stops") val stops: List<Stop> = emptyList(),
+        @SerialName("TripNumber") val tripNumber: String = "",
+        @SerialName("Destination") val destination: String? = "",
+        @SerialName("Status") val status: String = "",
+        @SerialName("TimeStamp") val time: String = "",
+        @SerialName("Stops") val stops: List<Stop> = emptyList(),
     ) {
         @Serializable
         data class Stop(
-            @JsonNames("Code") val code: String = "",
-            @JsonNames("Status") val status: String = "",
-            @JsonNames("Remark") val remark: String? = null,
-        )
+            @SerialName("Code") val code: String = "",
+            @SerialName("Status") val status: String = "",
+            @SerialName("Remark") val remark: String? = null,
+            @SerialName("Track") val track: Track? = null,
+            @SerialName("ArrivalTime") val arrivalTime: Schedule? = null,
+            @SerialName("DepartureTime") val departureTime: Schedule? = null,
+        ) {
+            @Serializable
+            data class Track(
+                @SerialName("Scheduled") val scheduled: String? = null,
+                @SerialName("Actual") val actual: String? = null,
+            )
+
+            @Serializable
+            data class Schedule(
+                @SerialName("Scheduled") val scheduled: String? = null,
+                @SerialName("Computed") val computed: String? = null,
+                @SerialName("Status") val status: String? = null,
+            )
+        }
     }
 }

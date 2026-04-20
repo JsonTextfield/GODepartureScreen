@@ -15,6 +15,7 @@
     <string name="more">More</string>
     <string name="sort_by_time">Sort by time</string>
     <string name="sort_by_line">Sort by line</string>
+    <string name="stop">Stop</string>
     <string name="time">Time</string>
     <string name="line">Line</string>
     <string name="route">Route</string>

@@ -178,12 +178,7 @@ class DepartureScreenAPI() {
         return client.get("Schedule/Line/$date/$code/$direction").body()
     }
 
-    suspend fun getTrip(tripNumber: String): TripResponse {
-        val date = (Clock.System.now() - 8.hours).format(
-            DateTimeComponents.Format {
-                byUnicodePattern("yyyyMMdd")
-            }
-        )
+    suspend fun getTrip(tripNumber: String, date: String): TripResponse {
         return client.get("Schedule/Trip/$date/$tripNumber").body()
     }
 

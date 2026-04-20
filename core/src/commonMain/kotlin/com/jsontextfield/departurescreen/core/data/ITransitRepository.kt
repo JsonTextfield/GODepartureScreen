@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.core.data
 
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
@@ -18,4 +19,6 @@ interface ITransitRepository {
     fun getMarketingAlerts(): Flow<List<Alert>>
 
     suspend fun getAllStops(): List<Stop>
+
+    suspend fun getUPExpressTripSchedule(id: String): List<Schedule>
 }

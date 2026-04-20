@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.core.data.fake
 
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
@@ -86,5 +87,9 @@ class FakeTransitRepository : ITransitRepository {
 
     override suspend fun getAllStops(): List<Stop> {
         return stops
+    }
+
+    override suspend fun getUPExpressTripSchedule(id: String): List<Schedule> {
+        TODO("Not yet implemented")
     }
 }

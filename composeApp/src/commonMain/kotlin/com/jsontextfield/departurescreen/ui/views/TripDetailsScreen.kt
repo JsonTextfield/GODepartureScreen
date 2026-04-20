@@ -3,6 +3,8 @@
 package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,15 +16,18 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -30,11 +35,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -42,6 +45,9 @@ import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
+import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListHeader
+import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListItem
+import com.jsontextfield.departurescreen.core.ui.components.isEven
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import departure_screen.composeapp.generated.resources.Res
@@ -52,7 +58,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TripDetailsScreen(
     tripDetailsViewModel: TripDetailsViewModel,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
@@ -107,30 +113,43 @@ fun TripDetailsScreen(
             }
             if (uiState.stops.isNotEmpty()) {
                 item {
-                    Column(modifier = Modifier.animateItem()) {
-                        Text(
-                            text = stringResource(Res.string.stops),
-                            style = MaterialTheme.typography.headlineMedium,
-                        )
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            uiState.stops.forEachIndexed { index, stop ->
-                                Text(
-                                    text = stop,
-                                    style = if (stop == uiState.selectedStop) {
-                                        MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary,
-                                        )
-                                    } else {
-                                        MaterialTheme.typography.bodyMedium
-                                    },
+                    Text(
+                        text = stringResource(Res.string.stops),
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .widthIn(max = 400.dp)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outline.copy(alpha = .5f),
+                                RoundedCornerShape(8.dp)
+                            ).animateItem()
+                    ) {
+                        TripDetailStopListHeader(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                        uiState.stops.forEachIndexed { index, stop ->
+                            Surface(
+                                tonalElevation = if (index.isEven) 1.dp else 0.dp,
+                            ) {
+                                TripDetailStopListItem(
+                                    stop = stop,
+                                    timeFormat = uiState.timeFormat,
+                                    isSelected = stop.name == uiState.selectedStop,
+                                    isEnabled = index >= uiState.stops.indexOfFirst { it.name == uiState.selectedStop },
                                     modifier = Modifier
-                                        .alpha(if (index < uiState.stops.indexOf(uiState.selectedStop)) 0.5f else 1f)
+                                        .heightIn(min = 60.dp)
+                                        .clickable(onClick = {
+                                            tripDetailsViewModel.setSelectedStop(stop.code)
+                                            onBackPressed()
+                                        })
+                                        .padding(8.dp)
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
             if (uiState.alerts.isNotEmpty()) {
@@ -140,7 +159,10 @@ fun TripDetailsScreen(
                         style = MaterialTheme.typography.headlineMedium,
                     )
                 }
-                itemsIndexed(items = uiState.alerts, key = { index, alert -> alert.id }) { index, alert ->
+                items(
+                    items = uiState.alerts,
+                    key = { alert -> alert.id },
+                ) { alert ->
                     AlertItem(
                         alert = alert,
                         modifier = Modifier
@@ -152,7 +174,8 @@ fun TripDetailsScreen(
                             } else {
                                 alert.urlEn
                             }?.let(uriHandler::openUri)
-                        })
+                        },
+                    )
                 }
             }
         }
