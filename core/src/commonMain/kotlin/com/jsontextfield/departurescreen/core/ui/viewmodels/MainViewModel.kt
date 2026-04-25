@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -227,6 +228,7 @@ class MainViewModel(
     }
 }
 
+@Stable
 data class MainUIState(
     val status: Status = Status.LOADING,
     val selectedStop: Stop? = null,

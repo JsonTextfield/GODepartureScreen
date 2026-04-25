@@ -3,15 +3,19 @@ package com.jsontextfield.departurescreen.ui.menu
 import OverflowMenu
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import com.jsontextfield.departurescreen.core.ui.SortMode
-import com.jsontextfield.departurescreen.core.ui.ThemeMode
-import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
-import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
+import com.jsontextfield.departurescreen.ui.intents.ActionBarAction
+import com.jsontextfield.departurescreen.ui.intents.Alerts
+import com.jsontextfield.departurescreen.ui.intents.SetFavouriteStop
+import com.jsontextfield.departurescreen.ui.intents.SetSortMode
+import com.jsontextfield.departurescreen.ui.intents.Settings
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.add_widget
 import departure_screen.composeapp.generated.resources.alerts
@@ -24,23 +28,41 @@ import departure_screen.composeapp.generated.resources.round_settings_24
 import departure_screen.composeapp.generated.resources.round_star_24
 import departure_screen.composeapp.generated.resources.round_star_border_24
 import departure_screen.composeapp.generated.resources.rounded_add_24
-import departure_screen.composeapp.generated.resources.rounded_brightness_4_24
 import departure_screen.composeapp.generated.resources.rounded_more_vert_24
 import departure_screen.composeapp.generated.resources.rounded_sort_24
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.sort
-import departure_screen.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ActionBar(
-    maxActions: Int,
-    actions: List<Action>,
+    uiState: MainUIState,
+    onActionClicked: (ActionBarAction) -> Unit,
 ) {
     var openMenuIndex by remember { mutableStateOf(-1) }
 
-    val displayActions = actions.take(maxActions)
-    val overflowActions = actions.drop(maxActions)
+    val actions = getActions(
+        uiState = uiState,
+        onAction = onActionClicked,
+    )
+
+    val maxActions = with(LocalDensity.current) {
+        val screenWidthDp = LocalWindowInfo.current.containerSize.width.toDp()
+        val fraction = when {
+            screenWidthDp.value < 400 -> 1 / 4f
+            screenWidthDp.value < 600 -> 1 / 3f
+            screenWidthDp.value < 800 -> 1 / 2f
+            else -> 2 / 3f
+        }
+        val max = (screenWidthDp.value * fraction / 48f).toInt()
+        if (actions.size - max == 1) {
+            max + 1
+        } else {
+            max
+        }
+    }
+
+    val (displayActions, overflowActions) = actions.partition { actions.indexOf(it) < maxActions }
 
     displayActions.forEachIndexed { index, action ->
         Box {
@@ -93,16 +115,15 @@ expect fun addWidgetAction()
 
 expect fun rateAppAction()
 
-expect fun isAddWidgetActionVisible() : Boolean
+expect fun isAddWidgetActionVisible(): Boolean
 
-expect fun isRateAppActionVisible() : Boolean
+expect fun isRateAppActionVisible(): Boolean
 
 @Composable
 fun getActions(
-    mainViewModel: MainViewModel,
-    navigationActions: NavigationActions,
+    uiState: MainUIState,
+    onAction: (ActionBarAction) -> Unit,
 ): List<Action> {
-    val uiState by mainViewModel.uiState.collectAsState()
     val favourite = Action(
         icon = if (uiState.selectedStop?.isFavourite == true) {
             Res.drawable.round_star_24
@@ -112,7 +133,7 @@ fun getActions(
         tooltip = stringResource(Res.string.favourite),
         isVisible = uiState.selectedStop != null,
         onClick = {
-            uiState.selectedStop?.let(mainViewModel::setFavouriteStops)
+            uiState.selectedStop?.let { onAction(SetFavouriteStop(it)) }
         },
     )
 
@@ -126,24 +147,7 @@ fun getActions(
                     title = stringResource(sortMode.key),
                     isSelected = uiState.sortMode == sortMode,
                     onClick = {
-                        mainViewModel.setSortMode(sortMode)
-                        onDismiss()
-                    },
-                )
-            }
-        },
-    )
-
-    val theme = Action(
-        icon = Res.drawable.rounded_brightness_4_24,
-        tooltip = stringResource(Res.string.theme),
-        menuContent = { onDismiss ->
-            for (themeMode in ThemeMode.entries) {
-                RadioMenuItem(
-                    title = stringResource(themeMode.key),
-                    isSelected = uiState.theme == themeMode,
-                    onClick = {
-                        mainViewModel.setTheme(themeMode)
+                        onAction(SetSortMode(sortMode))
                         onDismiss()
                     },
                 )
@@ -154,7 +158,7 @@ fun getActions(
     val alerts = Action(
         icon = Res.drawable.round_bus_alert_24,
         tooltip = stringResource(Res.string.alerts),
-        onClick = navigationActions.onShowAlerts,
+        onClick = { onAction(Alerts) },
         isAlertIndicatorVisible = uiState.unreadAlertsCount > 0,
     )
 
@@ -177,14 +181,13 @@ fun getActions(
     val settings = Action(
         icon = Res.drawable.round_settings_24,
         tooltip = stringResource(Res.string.settings),
-        onClick = navigationActions.onShowSettings,
+        onClick = { onAction(Settings) },
     )
 
     return listOf(
         favourite,
         sort,
         alerts,
-        //theme,
         rate,
         addWidget,
         settings,

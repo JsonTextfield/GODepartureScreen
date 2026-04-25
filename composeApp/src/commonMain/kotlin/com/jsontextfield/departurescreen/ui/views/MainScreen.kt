@@ -23,8 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -34,29 +32,47 @@ import com.jsontextfield.departurescreen.core.ui.components.ErrorScreen
 import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TripList
-import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
-import com.jsontextfield.departurescreen.ui.menu.Action
+import com.jsontextfield.departurescreen.ui.intents.MainScreenAction
+import com.jsontextfield.departurescreen.ui.intents.MainScreenNavigationAction
+import com.jsontextfield.departurescreen.ui.intents.Refresh
+import com.jsontextfield.departurescreen.ui.intents.Retry
+import com.jsontextfield.departurescreen.ui.intents.SetFavouriteStop
+import com.jsontextfield.departurescreen.ui.intents.SetSortMode
+import com.jsontextfield.departurescreen.ui.intents.SetVisibleTrains
+import com.jsontextfield.departurescreen.ui.intents.Stops
+import com.jsontextfield.departurescreen.ui.intents.TripDetails
 import com.jsontextfield.departurescreen.ui.menu.ActionBar
-import com.jsontextfield.departurescreen.ui.menu.getActions
 
 
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel,
-    navigationActions: NavigationActions,
+    onNavigationAction: (MainScreenNavigationAction) -> Unit = {},
 ) {
     val uiState by mainViewModel.uiState.collectAsState()
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
     MainScreen(
         uiState = uiState,
         timeRemaining = timeRemaining,
-        actions = getActions(mainViewModel, navigationActions),
         onRetryClicked = mainViewModel::loadData,
         onRefresh = mainViewModel::refresh,
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
-        navigationActions = navigationActions,
+        onAction = { action ->
+            when (action) {
+                Refresh -> mainViewModel.refresh()
+                Retry -> mainViewModel.loadData()
+                is SetFavouriteStop -> mainViewModel.setFavouriteStops(action.stop)
+                is SetSortMode -> mainViewModel.setSortMode(action.sortMode)
+                is SetVisibleTrains -> mainViewModel.setVisibleTrains(action.visibleTrains)
+                else -> {
+                    if (action is MainScreenNavigationAction) {
+                        onNavigationAction(action)
+                    }
+                }
+            }
+        }
     )
 }
 
@@ -65,11 +81,10 @@ fun MainScreen(
 fun MainScreen(
     uiState: MainUIState,
     timeRemaining: Int,
-    actions: List<Action>,
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
-    navigationActions: NavigationActions,
+    onAction: (MainScreenAction) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -77,7 +92,7 @@ fun MainScreen(
                 TopAppBar(
                     title = {
                         FilledTonalButton(
-                            onClick = navigationActions.onShowStops,
+                            onClick = { onAction(Stops()) },
                             contentPadding = PaddingValues(horizontal = 8.dp),
                         ) {
                             Text(
@@ -91,23 +106,9 @@ fun MainScreen(
                         }
                     },
                     actions = {
-                        val maxActions = with(LocalDensity.current) {
-                            val screenWidthDp = LocalWindowInfo.current.containerSize.width.toDp()
-                            val fraction = when {
-                                screenWidthDp.value < 400 -> 1 / 4f
-                                screenWidthDp.value < 600 -> 1 / 3f
-                                screenWidthDp.value < 800 -> 1 / 2f
-                                else -> 2 / 3f
-                            }
-                            (screenWidthDp.value * fraction / 48f).toInt()
-                        }
                         ActionBar(
-                            maxActions = if (actions.size - maxActions == 1) {
-                                maxActions + 1
-                            } else {
-                                maxActions
-                            },
-                            actions = actions,
+                            uiState = uiState,
+                            onActionClicked = onAction,
                         )
                     },
                     modifier = Modifier.shadow(4.dp)
@@ -159,7 +160,7 @@ fun MainScreen(
                             TripList(
                                 trips = uiState.allTrips.filter { it.isVisible },
                                 timeFormat = uiState.timeFormat,
-                                onItemClick = navigationActions.onShowTripDetails,
+                                onItemClick = { onAction(TripDetails(it)) },
                             )
                         }
                     }

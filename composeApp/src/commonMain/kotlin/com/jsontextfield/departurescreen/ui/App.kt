@@ -16,7 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
-import com.jsontextfield.departurescreen.core.ui.navigation.NavigationActions
 import com.jsontextfield.departurescreen.core.ui.navigation.SettingsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
@@ -25,6 +24,10 @@ import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
+import com.jsontextfield.departurescreen.ui.intents.Alerts
+import com.jsontextfield.departurescreen.ui.intents.Settings
+import com.jsontextfield.departurescreen.ui.intents.Stops
+import com.jsontextfield.departurescreen.ui.intents.TripDetails
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.SettingsScreen
@@ -61,35 +64,37 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                 composable<HomeRoute> {
                     MainScreen(
                         mainViewModel = mainViewModel,
-                        navigationActions = NavigationActions(
-                            onShowAlerts = {
-                                navController.navigate(AlertsRoute) {
-                                    launchSingleTop = true
+                        onNavigationAction = { action ->
+                            when (action) {
+                                Alerts -> {
+                                    navController.navigate(AlertsRoute) {
+                                        launchSingleTop = true
+                                    }
                                 }
-                            },
-                            onShowStops = {
-                                navController.navigate(StopsRoute()) {
-                                    launchSingleTop = true
+                                Settings -> {
+                                    navController.navigate(SettingsRoute) {
+                                        launchSingleTop = true
+                                    }
                                 }
-                            },
-                            onShowTripDetails = { trip ->
-                                navController.navigate(
-                                    TripDetailsRoute(
-                                        selectedStop = uiState.selectedStop?.name.orEmpty(),
-                                        tripId = trip.id,
-                                        lineCode = trip.code,
-                                        destination = trip.destination,
-                                    )
-                                ) {
-                                    launchSingleTop = true
+                                is Stops -> {
+                                    navController.navigate(StopsRoute(action.selectedStopCode)) {
+                                        launchSingleTop = true
+                                    }
                                 }
-                            },
-                            onShowSettings = {
-                                navController.navigate(SettingsRoute) {
-                                    launchSingleTop = true
+                                is TripDetails -> {
+                                    navController.navigate(
+                                        TripDetailsRoute(
+                                            selectedStop = uiState.selectedStop?.name.orEmpty(),
+                                            tripId = action.trip.id,
+                                            lineCode = action.trip.code,
+                                            destination = action.trip.destination,
+                                        )
+                                    ) {
+                                        launchSingleTop = true
+                                    }
                                 }
-                            },
-                        )
+                            }
+                        },
                     )
                 }
 
