@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.core.data
 
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -14,6 +15,10 @@ interface IPreferencesRepository {
     suspend fun setSelectedStopCode(stopCode: String)
     fun getTheme(): Flow<ThemeMode>
     suspend fun setTheme(theme: ThemeMode)
+    fun getDynamicTheme(): Flow<Boolean>
+    suspend fun setDynamicTheme(useDynamicTheme: Boolean)
+    fun getContrast(): Flow<ContrastMode>
+    suspend fun setContrast(contrast: ContrastMode)
     fun getTimeFormat(): Flow<TimeFormat>
     suspend fun setTimeFormat(timeFormat: TimeFormat)
     fun getFavouriteStops(): Flow<Set<String>>
@@ -25,6 +30,8 @@ interface IPreferencesRepository {
 
 const val SORT_MODE_KEY = "sortMode"
 const val THEME_KEY = "theme"
+const val DYNAMIC_THEME_KEY = "dynamicTheme"
+const val CONTRAST_KEY = "contrast"
 const val TIME_FORMAT_KEY = "timeFormat"
 const val OLD_SELECTED_STOP_CODE_KEY = "selectedStationCode"
 const val SELECTED_STOP_CODE_KEY = "selectedStopCode"

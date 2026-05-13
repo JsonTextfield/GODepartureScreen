@@ -48,6 +48,9 @@
     <string name="twelve_hour">12 h</string>
     <string name="twenty_four_hour">24 h</string>
     <string name="relative">Relative</string>
+    <string name="normal">Normal</string>
+    <string name="medium">Moyen</string>
+    <string name="high">Haut</string>
     <plurals name="number_of_cars">
         <item quantity="one">%1$s voiture</item>
         <item quantity="other">%1$s voitures</item>

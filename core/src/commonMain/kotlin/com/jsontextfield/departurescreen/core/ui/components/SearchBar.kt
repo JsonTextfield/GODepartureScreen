@@ -58,13 +58,17 @@ fun SearchBar(textFieldState: TextFieldState) {
                     .padding(horizontal = 12.dp)
                     .heightIn(min = 56.dp)
             ) {
-                Icon(painterResource(Res.drawable.round_search_24), contentDescription = null)
+                Icon(
+                    painterResource(Res.drawable.round_search_24),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
                 Box(modifier = Modifier.weight(1f)) {
                     if (textFieldState.text.isEmpty()) {
                         Text(
                             stringResource(Res.string.search),
                             style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onBackground.copy(
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(
                                     alpha = .8f
                                 )
                             )

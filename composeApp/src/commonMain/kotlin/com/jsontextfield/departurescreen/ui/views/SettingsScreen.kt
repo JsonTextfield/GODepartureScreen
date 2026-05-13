@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,12 +18,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
 import com.jsontextfield.departurescreen.ui.menu.RadioMenuItem
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.contrast
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.theme
 import departure_screen.composeapp.generated.resources.time_format
@@ -39,9 +42,13 @@ fun SettingsScreen(
     val uiState by settingsViewModel.uiState.collectAsState()
     SettingsScreen(
         themeMode = uiState.themeMode,
+        contrastMode = uiState.contrastMode,
+        useDynamicTheme = uiState.useDynamicTheme,
         timeFormat = uiState.timeFormat,
         onBackPressed = onBackPressed,
         onThemeChanged = settingsViewModel::onThemeModeChange,
+        onContrastChanged = settingsViewModel::onContrastModeChange,
+        onDynamicThemeChanged = settingsViewModel::onDynamicThemeChange,
         onTimeFormatChanged = settingsViewModel::onTimeFormatChange,
     )
 }
@@ -50,9 +57,13 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScreen(
     themeMode: ThemeMode = ThemeMode.DEFAULT,
+    contrastMode: ContrastMode = ContrastMode.NORMAL,
+    useDynamicTheme: Boolean = false,
     timeFormat: TimeFormat = TimeFormat.RELATIVE,
     onBackPressed: () -> Unit = {},
     onThemeChanged: (ThemeMode) -> Unit = {},
+    onContrastChanged: (ContrastMode) -> Unit = {},
+    onDynamicThemeChanged: (Boolean) -> Unit = {},
     onTimeFormatChanged: (TimeFormat) -> Unit = {},
 ) {
     Scaffold(topBar = {
@@ -69,21 +80,58 @@ private fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ThemeSetting(themeMode, onThemeChanged = onThemeChanged)
+            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                ThemeSetting(
+                    themeMode,
+                    onThemeChanged = onThemeChanged,
+                    modifier = Modifier.weight(1f),
+                )
+                ContrastSetting(
+                    contrastMode,
+                    onContrastChanged = onContrastChanged,
+                    isEnabled = !useDynamicTheme,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            DynamicThemeSetting(useDynamicTheme, onDynamicThemeChanged)
+            HorizontalDivider()
             TimeSetting(timeFormat, onTimeFormatChanged = onTimeFormatChanged)
         }
     }
 }
 
 @Composable
-private fun ThemeSetting(themeMode: ThemeMode, onThemeChanged: (ThemeMode) -> Unit = {}) {
-    Column {
+private fun ThemeSetting(
+    themeMode: ThemeMode,
+    modifier: Modifier = Modifier,
+    onThemeChanged: (ThemeMode) -> Unit = {}
+) {
+    Column(modifier = modifier) {
         Text(stringResource(Res.string.theme))
         ThemeMode.entries.forEach {
             RadioMenuItem(
                 title = stringResource(it.key),
                 isSelected = themeMode == it,
                 onClick = { onThemeChanged(it) })
+        }
+    }
+}
+
+@Composable
+private fun ContrastSetting(
+    contrastMode: ContrastMode,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+    onContrastChanged: (ContrastMode) -> Unit = {}
+) {
+    Column(modifier = modifier) {
+        Text(stringResource(Res.string.contrast))
+        ContrastMode.entries.forEach {
+            RadioMenuItem(
+                title = stringResource(it.key),
+                isSelected = contrastMode == it,
+                isEnabled = isEnabled,
+                onClick = { onContrastChanged(it) })
         }
     }
 }
@@ -100,6 +148,12 @@ private fun TimeSetting(timeFormat: TimeFormat, onTimeFormatChanged: (TimeFormat
         }
     }
 }
+
+@Composable
+expect fun DynamicThemeSetting(
+    useDynamicTheme: Boolean = false,
+    onDynamicThemeChanged: (Boolean) -> Unit = {},
+)
 
 @Composable
 private fun RadioListItem(text: String) {

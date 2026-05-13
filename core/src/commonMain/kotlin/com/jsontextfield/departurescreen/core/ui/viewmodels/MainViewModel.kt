@@ -12,6 +12,7 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
@@ -50,15 +51,27 @@ class MainViewModel(
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
-            preferencesRepository.getTheme(),
             preferencesRepository.getTimeFormat(),
-        ) { visibleTrains, sortMode, theme, timeFormat ->
+        ) { visibleTrains, sortMode, timeFormat ->
             _uiState.update {
                 it.copy(
                     visibleTrains = visibleTrains,
                     sortMode = sortMode,
-                    theme = theme,
                     timeFormat = timeFormat,
+                )
+            }
+        }.launchIn(viewModelScope)
+
+        combine(
+            preferencesRepository.getTheme(),
+            preferencesRepository.getContrast(),
+            preferencesRepository.getDynamicTheme(),
+        ) { theme, contrast, useDynamicTheme ->
+            _uiState.update {
+                it.copy(
+                    theme = theme,
+                    contrast = contrast,
+                    useDynamicTheme = useDynamicTheme,
                 )
             }
         }.launchIn(viewModelScope)
@@ -236,6 +249,8 @@ data class MainUIState(
     val visibleTrains: Set<String> = emptySet(),
     val sortMode: SortMode = SortMode.TIME,
     val theme: ThemeMode = ThemeMode.DEFAULT,
+    val contrast: ContrastMode = ContrastMode.NORMAL,
+    val useDynamicTheme: Boolean = false,
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val isRefreshing: Boolean = false,
     val unreadAlertsCount: Int = 0,

@@ -27,12 +27,24 @@ import org.jetbrains.compose.resources.stringResource
 fun StopListItem(
     stop: Stop,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     onFavouriteClick: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier,
+        modifier = modifier
+            .background(
+                color =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else if (!stop.isEnabled) {
+                        MaterialTheme.colorScheme.surfaceContainerLow
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    }
+            )
+            .padding(8.dp),
     ) {
         Column(
             modifier = Modifier.weight(1f),
@@ -42,12 +54,21 @@ fun StopListItem(
                 text = stop.name,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                color =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else if (!stop.isEnabled) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
             )
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 for (type in stop.types) {
                     Text(
                         text = stringResource(type.stringResId),
                         style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.background(
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             shape = RoundedCornerShape(4.dp),
@@ -64,7 +85,15 @@ fun StopListItem(
                 } else {
                     painterResource(Res.drawable.round_star_border_24)
                 },
-                contentDescription = stringResource(Res.string.favourite)
+                contentDescription = stringResource(Res.string.favourite),
+                tint =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else if (!stop.isEnabled) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
             )
         }
     }

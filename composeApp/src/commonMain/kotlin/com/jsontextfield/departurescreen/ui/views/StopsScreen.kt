@@ -2,7 +2,6 @@
 
 package com.jsontextfield.departurescreen.ui.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
@@ -155,27 +153,16 @@ private fun StopsScreen(
                         key = { _, stop -> stop.code.split(",") }) { index, stop ->
                         StopListItem(
                             stop = stop,
+                            isSelected = stop.code.split(",")
+                                .any { it in uiState.selectedStop?.code?.split(",").orEmpty() },
                             onFavouriteClick = { onFavouriteClick(stop) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 60.dp)
                                 .alpha(if (stop.isEnabled) 1f else 0.5f)
-                                .background(
-                                    color =
-                                        if (stop.code.split(",")
-                                                .any { it in uiState.selectedStop?.code?.split(",").orEmpty() }
-                                        ) {
-                                            MaterialTheme.colorScheme.primaryContainer
-                                        } else if (!stop.isEnabled) {
-                                            MaterialTheme.colorScheme.surfaceContainerLow
-                                        } else {
-                                            MaterialTheme.colorScheme.surface
-                                        }
-                                )
                                 .clickable {
                                     onStopSelected(stop)
                                 }
-                                .padding(8.dp)
                                 .then(
                                     if (index % columns == columns - 1) {
                                         Modifier

@@ -1,6 +1,7 @@
 package com.jsontextfield.departurescreen.core.data.fake
 
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -31,6 +32,18 @@ class FakePreferencesRepository : IPreferencesRepository {
     override fun getTheme(): Flow<ThemeMode> = themeFlow
     override suspend fun setTheme(theme: ThemeMode) {
         themeFlow.value = theme
+    }
+
+    private val dynamicThemeFlow = MutableStateFlow(false)
+    override fun getDynamicTheme(): Flow<Boolean> = dynamicThemeFlow
+    override suspend fun setDynamicTheme(useDynamicTheme: Boolean) {
+        dynamicThemeFlow.value = useDynamicTheme
+    }
+
+    private val contrastFlow = MutableStateFlow(ContrastMode.NORMAL)
+    override fun getContrast(): Flow<ContrastMode> = contrastFlow
+    override suspend fun setContrast(contrast: ContrastMode) {
+        contrastFlow.value = contrast
     }
 
     private val timeFormatFlow = MutableStateFlow(TimeFormat.RELATIVE)

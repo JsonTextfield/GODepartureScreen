@@ -55,7 +55,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
             isNavigating = false
         }
     }
-    AppTheme(uiState.theme) {
+    AppTheme(uiState.theme, uiState.contrast, uiState.useDynamicTheme) {
         Surface {
             NavHost(
                 navController = navController,

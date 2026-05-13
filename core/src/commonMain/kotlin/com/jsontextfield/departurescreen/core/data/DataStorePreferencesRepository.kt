@@ -2,10 +2,12 @@ package com.jsontextfield.departurescreen.core.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -72,6 +74,34 @@ class DataStorePreferencesRepository(
             ThemeMode.entries.firstOrNull {
                 it.ordinal == preferences[intPreferencesKey(THEME_KEY)]
             } ?: ThemeMode.DEFAULT
+        }
+    }
+
+    override suspend fun setDynamicTheme(useDynamicTheme: Boolean) {
+        dataStore.edit { preferences ->
+            val key = booleanPreferencesKey(DYNAMIC_THEME_KEY)
+            preferences[key] = useDynamicTheme
+        }
+    }
+
+    override fun getDynamicTheme(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[booleanPreferencesKey(DYNAMIC_THEME_KEY)] ?: false
+        }
+    }
+
+    override suspend fun setContrast(contrast: ContrastMode) {
+        dataStore.edit { preferences ->
+            val key = intPreferencesKey(CONTRAST_KEY)
+            preferences[key] = contrast.ordinal
+        }
+    }
+
+    override fun getContrast(): Flow<ContrastMode> {
+        return dataStore.data.map { preferences ->
+            ContrastMode.entries.firstOrNull {
+                it.ordinal == preferences[intPreferencesKey(CONTRAST_KEY)]
+            } ?: ContrastMode.NORMAL
         }
     }
 

@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.core.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
+import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +24,15 @@ class SettingsViewModel(
     init {
         combine(
             preferencesRepository.getTheme(),
+            preferencesRepository.getContrast(),
+            preferencesRepository.getDynamicTheme(),
             preferencesRepository.getTimeFormat(),
-        ) { theme, timeFormat ->
+        ) { theme, contrast, dynamicTheme, timeFormat ->
             _uiState.update {
                 it.copy(
                     themeMode = theme,
+                    contrastMode = contrast,
+                    useDynamicTheme = dynamicTheme,
                     timeFormat = timeFormat,
                 )
             }
@@ -45,9 +50,23 @@ class SettingsViewModel(
             preferencesRepository.setTheme(newThemeMode)
         }
     }
+
+    fun onContrastModeChange(newContrastMode: ContrastMode) {
+        viewModelScope.launch {
+            preferencesRepository.setContrast(newContrastMode)
+        }
+    }
+
+    fun onDynamicThemeChange(useDynamicTheme: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setDynamicTheme(useDynamicTheme)
+        }
+    }
 }
 
 data class SettingsUIState(
     val themeMode: ThemeMode = ThemeMode.DEFAULT,
+    val contrastMode: ContrastMode = ContrastMode.NORMAL,
+    val useDynamicTheme: Boolean = false,
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
 )

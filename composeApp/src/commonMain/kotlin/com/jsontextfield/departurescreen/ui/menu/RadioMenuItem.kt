@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun RadioMenuItem(
     title: String = "",
     isSelected: Boolean = false,
+    isEnabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
     DropdownMenuItem(
@@ -29,6 +30,7 @@ fun RadioMenuItem(
                 }) {
                 RadioButton(
                     selected = isSelected,
+                    enabled = isEnabled,
                     modifier = Modifier.padding(0.dp),
                     onClick = onClick,
                 )
@@ -38,6 +40,7 @@ fun RadioMenuItem(
                 )
             }
         },
+        enabled = isEnabled,
         onClick = onClick,
     )
 }
