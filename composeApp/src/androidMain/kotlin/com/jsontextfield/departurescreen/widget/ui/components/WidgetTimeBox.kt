@@ -37,6 +37,7 @@ fun WidgetTimeBox(
     ) {
         Text(
             text = when (timeFormat) {
+                TimeFormat.TWELVE_HOUR -> trip.twelveHourDepartureTime
                 TimeFormat.TWENTY_FOUR_HOUR -> trip.twentyFourHourDepartureTime
                 TimeFormat.RELATIVE -> trip.relativeDepartureTime.toString()
             },

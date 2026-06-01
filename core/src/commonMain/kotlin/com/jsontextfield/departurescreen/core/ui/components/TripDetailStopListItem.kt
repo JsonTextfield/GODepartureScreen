@@ -38,6 +38,7 @@ fun TripDetailStopListItem(
         TripDetailsTimeBox(
             timeFormat = timeFormat,
             relativeTime = stop.relativeDepartureTime,
+            twelveHourTime = stop.twelveHourDepartureTime,
             twentyFourHourTime = stop.twentyFourHourDepartureTime,
             isEnabled = isEnabled,
             isSelected = isSelected,
@@ -65,6 +66,7 @@ fun TripDetailStopListItem(
 @Composable
 private fun TripDetailsTimeBox(
     relativeTime: Int,
+    twelveHourTime: String,
     twentyFourHourTime: String,
     modifier: Modifier = Modifier,
     timeFormat: TimeFormat = TimeFormat.TWENTY_FOUR_HOUR,
@@ -87,6 +89,7 @@ private fun TripDetailsTimeBox(
     ) {
         Text(
             text = when (timeFormat) {
+                TimeFormat.TWELVE_HOUR -> twelveHourTime
                 TimeFormat.TWENTY_FOUR_HOUR -> twentyFourHourTime
                 TimeFormat.RELATIVE -> relativeTime.toString()
             },

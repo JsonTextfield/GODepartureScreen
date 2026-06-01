@@ -22,6 +22,7 @@
     <string name="sort_by">Trier par…</string>
     <string name="time_format">Format de l\'heure</string>
     <string name="relative">Relative</string>
+    <string name="twelve_hour">12 h</string>
     <string name="twenty_four_hour">24 h</string>
     <string name="stop">Arrêts</string>
     <string name="widget_settings">Paramètres du widget</string>

@@ -79,12 +79,10 @@ fun WidgetConfigControls(
                 }
             }
         }
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(R.string.time_format), modifier = Modifier.weight(1f))
+            Text(text = stringResource(R.string.time_format))
             for (timeFormat in TimeFormat.entries) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -97,7 +95,13 @@ fun WidgetConfigControls(
                         onClick = { onTimeFormatChanged(timeFormat) },
                     )
                     Text(
-                        stringResource(if (timeFormat == TimeFormat.RELATIVE) R.string.relative else R.string.twenty_four_hour),
+                        stringResource(
+                            when (timeFormat) {
+                                TimeFormat.TWELVE_HOUR -> R.string.twelve_hour
+                                TimeFormat.TWENTY_FOUR_HOUR -> R.string.twenty_four_hour
+                                TimeFormat.RELATIVE -> R.string.relative
+                            }
+                        ),
                         modifier = Modifier.padding(end = 10.dp),
                     )
                 }

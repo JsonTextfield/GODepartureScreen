@@ -6,7 +6,8 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -29,8 +30,18 @@ data class Trip(
     val busType: String? = null,
 ) {
     val relativeDepartureTime: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
+
+    val twelveHourDepartureTime: String = departureTime.format(DateTimeComponents.Format {
+        amPmHour(Padding.NONE)
+        char(':')
+        minute()
+        char(' ')
+        amPmMarker("AM", "PM")
+    })
     val twentyFourHourDepartureTime: String = departureTime.format(DateTimeComponents.Format {
-        byUnicodePattern("HH:mm")
+        hour()
+        char(':')
+        minute()
     })
     val hasPlatform: Boolean = platform.isNotBlank() && platform != "-"
     val isExpress: Boolean = 'X' in id || code == "UP"

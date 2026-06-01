@@ -26,7 +26,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.format.char
 import kotlinx.datetime.parse
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -169,7 +169,9 @@ class TransitRepository(
         return try {
             val date = (Clock.System.now() - 8.hours).format(
                 DateTimeComponents.Format {
-                    byUnicodePattern("yyyyMMdd")
+                    year()
+                    monthNumber()
+                    day()
                 }
             )
             val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, date)
@@ -320,12 +322,28 @@ class TransitRepository(
     companion object {
         @OptIn(FormatStringsInDatetimeFormats::class)
         val inFormatter = DateTimeComponents.Format {
-            byUnicodePattern("yyyy-MM-dd HH:mm:ss")
+            year()
+            char('-')
+            monthNumber()
+            char('-')
+            day()
+            char(' ')
+            hour()
+            char(':')
+            minute()
+            char(':')
+            second()
         }
 
         @OptIn(FormatStringsInDatetimeFormats::class)
         val scheduleFormatter = DateTimeComponents.Format {
-            byUnicodePattern("yyyyMMdd HH:mm")
+            year()
+            monthNumber()
+            day()
+            char(' ')
+            hour()
+            char(':')
+            minute()
         }
     }
 }

@@ -70,6 +70,7 @@ fun WidgetConfigPreview(
                 ) { trip ->
                     TripListItem(
                         trip = trip,
+                        timeFormat = widgetConfig.timeFormat,
                         modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }
