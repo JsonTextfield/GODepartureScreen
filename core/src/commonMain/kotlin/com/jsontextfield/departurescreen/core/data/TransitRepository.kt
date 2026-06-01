@@ -33,6 +33,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -167,35 +168,62 @@ class TransitRepository(
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val date = (Clock.System.now() - 8.hours).format(
+            val date = (Clock.System.now() - 8.hours)
+            val dateFormat =
                 DateTimeComponents.Format {
                     year()
                     monthNumber()
                     day()
                 }
-            )
-            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, date)
+            val dateString = date.format(dateFormat)
+            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, dateString)
             val serviceGuaranteeResponse = departureScreenAPI.getServiceGuarantee(tripNumber)
             val stops = serviceGuaranteeResponse.stops?.stop.orEmpty()
             val allStops = getAllStops().associate { it.code to it.name }
             val lastUpdated = Instant.parse(tripDetailsResponse.metadata?.timestamp.orEmpty(), inFormatter)
-            tripDetailsResponse.trips.map {
+            tripDetailsResponse.trips.map { trip ->
                 TripDetails(
-                    id = it.tripNumber,
-                    stops = it.stops.map { stop ->
+                    id = trip.tripNumber,
+                    stops = trip.stops.map { stop ->
                         val time = stop.arrivalTime?.computed.takeIf { !it.isNullOrBlank() }
                             ?: stop.arrivalTime?.scheduled.takeIf { !it.isNullOrBlank() }
                             ?: stop.departureTime?.computed.takeIf { !it.isNullOrBlank() }
-                            ?: stop.departureTime?.scheduled.takeIf { !it.isNullOrBlank() } ?: ""
+                            ?: stop.departureTime?.scheduled.takeIf { !it.isNullOrBlank() }
+                        val hour = time?.split(":")?.firstOrNull()
+                        val minute = time?.split(":")?.lastOrNull()
+                        val formattedDate = when (hour) {
+                            "00", "01", "02", "24", "25" -> {
+                                date + 1.days
+                            }
+
+                            else -> {
+                                date
+                            }
+                        }.format(dateFormat)
+                        val formattedHour = when (hour) {
+                            "24" -> {
+                                "00"
+                            }
+
+                            "25" -> {
+                                "01"
+                            }
+
+                            else -> {
+                                hour
+                            }
+                        }
                         Schedule(
                             name = allStops[stop.code]
                                 ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop.code in code) name else null }
                                 ?: "",
                             code = stop.code,
-                            time = Instant.parseOrNull("$date $time", scheduleFormatter)
+                            time = Instant.parseOrNull("$formattedDate $formattedHour:$minute", scheduleFormatter)
                                 ?: Instant.fromEpochMilliseconds(0),
                             lastUpdated = lastUpdated,
                         )
+                    }.sortedBy { stop ->
+                        stop.time
                     },
                     serviceGuarantee = stops.joinToString("\n"),
                 )
