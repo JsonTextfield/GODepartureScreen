@@ -27,7 +27,6 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
@@ -36,16 +35,15 @@ import kotlin.time.ExperimentalTime
 import co.touchlab.kermit.Logger as Kermit
 
 @OptIn(ExperimentalSerializationApi::class)
-class DepartureScreenAPI() {
+class DepartureScreenAPI {
+    private val json = Json {
+        prettyPrint = true
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
     private val client = HttpClient {
         install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                }
-            )
+            json(json)
         }
         install(Logging) {
             logger = object : Logger {
@@ -89,9 +87,11 @@ class DepartureScreenAPI() {
     suspend fun getNextService(stopCode: String): NextServiceResponse {
         return client.get("Stop/NextService/$stopCode").body()
     }
+
     suspend fun getStopDetails(stopCode: String): String {
         return client.get("Stop/Details/$stopCode").body()
     }
+
     suspend fun getStopDestinations(
         stopCode: String,
         from: String,
@@ -99,6 +99,7 @@ class DepartureScreenAPI() {
     ): String {
         return client.get("Stop/Destinations/$stopCode/$from/$to").body()
     }
+
     suspend fun getAllStops(): StopResponse {
         return client.get("Stop/All").body()
     }
@@ -107,12 +108,15 @@ class DepartureScreenAPI() {
     suspend fun getServiceAlerts(): Alerts {
         return client.get("ServiceUpdate/ServiceAlert/All").body()
     }
+
     suspend fun getInformationAlerts(): Alerts {
         return client.get("ServiceUpdate/InformationAlert/All").body()
     }
+
     suspend fun getMarketingAlerts(): Alerts {
         return client.get("ServiceUpdate/MarketingAlert/All").body()
     }
+
     suspend fun getUnionDepartures(): UnionDeparturesResponse {
         return client.get("ServiceUpdate/UnionDepartures/All").body()
     }
@@ -120,7 +124,9 @@ class DepartureScreenAPI() {
     suspend fun getServiceGuarantee(tripNumber: String): ServiceGuaranteeResponse {
         val date = (Clock.System.now() - 8.hours).format(
             DateTimeComponents.Format {
-                byUnicodePattern("yyyyMMdd")
+                year()
+                monthNumber()
+                day()
             }
         )
         return client.get("ServiceUpdate/ServiceGuarantee/$tripNumber/$date").body()
@@ -130,9 +136,11 @@ class DepartureScreenAPI() {
     suspend fun getTrainExceptions(): ExceptionsResponse {
         return client.get("ServiceUpdate/Exceptions/Train").body()
     }
+
     suspend fun getBusExceptions(): ExceptionsResponse {
         return client.get("ServiceUpdate/Exceptions/Bus").body()
     }
+
     suspend fun getAllExceptions(): ExceptionsResponse {
         return client.get("ServiceUpdate/Exceptions/All").body()
     }
@@ -141,6 +149,7 @@ class DepartureScreenAPI() {
     suspend fun getServiceAtAGlanceTrains(): ServiceAtAGlanceTrainsResponse {
         return client.get("ServiceataGlance/Trains/All").body()
     }
+
     suspend fun getServiceAtAGlanceBuses(): ServiceAtAGlanceBusesResponse {
         return client.get("ServiceataGlance/Buses/All").body()
     }
@@ -155,6 +164,7 @@ class DepartureScreenAPI() {
     ): String {
         return client.get("Schedule/Journey/$date/$from/$to/$startTime/$maxJourney").body()
     }
+
     suspend fun getJourney(
         date: String,
         from: String,
@@ -170,6 +180,7 @@ class DepartureScreenAPI() {
             }
         }.body()
     }
+
     suspend fun getLine(
         date: String,
         code: String,
@@ -186,9 +197,11 @@ class DepartureScreenAPI() {
     suspend fun getGtfsAlerts(): String {
         return client.get("Gtfs/Feed/Alerts").body()
     }
+
     suspend fun getGtfsTripUpdates(): String {
         return client.get("Gtfs/Feed/TripUpdates").body()
     }
+
     suspend fun getGtfsVehiclePositions(): String {
         return client.get("Gtfs/Feed/VehiclePosition").body()
     }
@@ -200,6 +213,7 @@ class DepartureScreenAPI() {
     ): String {
         return client.get("Fares/$from/$to").body()
     }
+
     suspend fun getFares(
         from: String,
         to: String,
@@ -210,11 +224,6 @@ class DepartureScreenAPI() {
 
     // Sample function that returns ServiceGuaranteeResponse with the provided JSON structure
     fun getServiceGuaranteeSample(): ServiceGuaranteeResponse {
-        val json = Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        }
         val jsonString = """
             {
               "Metadata": {
