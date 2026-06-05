@@ -36,10 +36,8 @@ fun TripDetailStopListItem(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         TripDetailsTimeBox(
+            stop,
             timeFormat = timeFormat,
-            relativeTime = stop.relativeDepartureTime,
-            twelveHourTime = stop.twelveHourDepartureTime,
-            twentyFourHourTime = stop.twentyFourHourDepartureTime,
             isEnabled = isEnabled,
             isSelected = isSelected,
             modifier = Modifier.width(80.dp),
@@ -65,19 +63,22 @@ fun TripDetailStopListItem(
 
 @Composable
 private fun TripDetailsTimeBox(
-    relativeTime: Int,
-    twelveHourTime: String,
-    twentyFourHourTime: String,
+    stop: Schedule,
     modifier: Modifier = Modifier,
     timeFormat: TimeFormat = TimeFormat.TWENTY_FOUR_HOUR,
     isEnabled: Boolean = true,
     isSelected: Boolean = false,
 ) {
-    val minutesContentDescription = pluralStringResource(
-        Res.plurals.minutes_content_description,
-        relativeTime,
-        relativeTime,
-    )
+
+    val minutesContentDescription = if (stop.relativeDepartureTime != null) {
+        pluralStringResource(
+            Res.plurals.minutes_content_description,
+            stop.relativeDepartureTime,
+            stop.relativeDepartureTime,
+        )
+    } else {
+        ""
+    }
 
     Column(
         modifier = modifier
@@ -89,9 +90,9 @@ private fun TripDetailsTimeBox(
     ) {
         Text(
             text = when (timeFormat) {
-                TimeFormat.TWELVE_HOUR -> twelveHourTime
-                TimeFormat.TWENTY_FOUR_HOUR -> twentyFourHourTime
-                TimeFormat.RELATIVE -> relativeTime.toString()
+                TimeFormat.TWELVE_HOUR -> stop.twelveHourDepartureTime
+                TimeFormat.TWENTY_FOUR_HOUR -> stop.twentyFourHourDepartureTime
+                TimeFormat.RELATIVE -> stop.relativeDepartureTime?.toString() ?: "-"
             },
             modifier = Modifier
                 .fillMaxWidth()

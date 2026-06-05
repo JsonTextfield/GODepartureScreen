@@ -26,6 +26,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.parse
 import kotlinx.datetime.toInstant
@@ -168,7 +169,7 @@ class TransitRepository(
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val date = (Clock.System.now() - 8.hours)
+            val date = Clock.System.now() - 8.hours
             val dateFormat =
                 DateTimeComponents.Format {
                     year()
@@ -189,37 +190,26 @@ class TransitRepository(
                             ?: stop.arrivalTime?.scheduled.takeIf { !it.isNullOrBlank() }
                             ?: stop.departureTime?.computed.takeIf { !it.isNullOrBlank() }
                             ?: stop.departureTime?.scheduled.takeIf { !it.isNullOrBlank() }
-                        val hour = time?.split(":")?.firstOrNull()
-                        val minute = time?.split(":")?.lastOrNull()
-                        val formattedDate = when (hour) {
-                            "00", "01", "02", "24", "25" -> {
-                                date + 1.days
-                            }
 
-                            else -> {
-                                date
+                        val formattedTime = time?.let {
+                            val hour = time.substringBefore(':').toIntOrNull()
+                            val minute = time.substringAfter(':')
+                            hour?.let {
+                                val formattedHour = hour % 24
+                                val formattedDate = if (formattedHour < 5) {
+                                    date + 1.days
+                                } else {
+                                    date
+                                }.format(dateFormat)
+                                "$formattedDate $formattedHour:$minute"
                             }
-                        }.format(dateFormat)
-                        val formattedHour = when (hour) {
-                            "24" -> {
-                                "00"
-                            }
-
-                            "25" -> {
-                                "01"
-                            }
-
-                            else -> {
-                                hour
-                            }
-                        }
+                        }.orEmpty()
                         Schedule(
                             name = allStops[stop.code]
                                 ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop.code in code) name else null }
                                 ?: "",
                             code = stop.code,
-                            time = Instant.parseOrNull("$formattedDate $formattedHour:$minute", scheduleFormatter)
-                                ?: Instant.fromEpochMilliseconds(0),
+                            time = Instant.parseOrNull(formattedTime, scheduleFormatter),
                             lastUpdated = lastUpdated,
                         )
                     }.sortedBy { stop ->
@@ -369,7 +359,7 @@ class TransitRepository(
             monthNumber()
             day()
             char(' ')
-            hour()
+            hour(Padding.NONE)
             char(':')
             minute()
         }

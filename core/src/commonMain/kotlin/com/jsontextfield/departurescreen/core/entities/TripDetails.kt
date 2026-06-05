@@ -19,21 +19,21 @@ data class TripDetails(
 data class Schedule(
     val name: String,
     val code: String,
-    val time: Instant = Instant.fromEpochMilliseconds(0),
+    val time: Instant? = null,
     private val lastUpdated: Instant = Instant.fromEpochMilliseconds(0),
 ) {
-    val relativeDepartureTime: Int = (time - lastUpdated).toInt(DurationUnit.MINUTES)
+    val relativeDepartureTime: Int? = time?.let { (time - lastUpdated).toInt(DurationUnit.MINUTES) }
 
-    val twelveHourDepartureTime: String = time.format(DateTimeComponents.Format {
+    val twelveHourDepartureTime: String = time?.format(DateTimeComponents.Format {
         amPmHour(Padding.NONE)
         char(':')
         minute()
         char(' ')
         amPmMarker("AM", "PM")
-    })
-    val twentyFourHourDepartureTime: String = time.format(DateTimeComponents.Format {
+    }) ?: "-"
+    val twentyFourHourDepartureTime: String = time?.format(DateTimeComponents.Format {
         hour()
         char(':')
         minute()
-    })
+    }) ?: "-"
 }
