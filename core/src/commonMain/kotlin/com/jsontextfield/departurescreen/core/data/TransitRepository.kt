@@ -21,12 +21,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.parse
 import kotlinx.datetime.toInstant
@@ -34,8 +34,8 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -169,15 +169,11 @@ class TransitRepository(
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val date = Clock.System.now() - 8.hours
-            val dateFormat =
-                DateTimeComponents.Format {
-                    year()
-                    monthNumber()
-                    day()
-                }
-            val dateString = date.format(dateFormat)
-            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, dateString)
+            val timeZone = TimeZone.of("America/Toronto")
+            val serviceDate = (Clock.System.now() - 5.hours).toLocalDateTime(timeZone).date
+            val serviceMidnight = LocalDateTime(serviceDate, LocalTime(0, 0)).toInstant(TimeZone.UTC)
+
+            val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, serviceDate.toString().replace("-", ""))
             val serviceGuaranteeResponse = departureScreenAPI.getServiceGuarantee(tripNumber)
             val stops = serviceGuaranteeResponse.stops?.stop.orEmpty()
             val allStops = getAllStops().associate { it.code to it.name }
@@ -191,25 +187,20 @@ class TransitRepository(
                             ?: stop.departureTime?.computed.takeIf { !it.isNullOrBlank() }
                             ?: stop.departureTime?.scheduled.takeIf { !it.isNullOrBlank() }
 
-                        val formattedTime = time?.let {
-                            val hour = time.substringBefore(':').toIntOrNull()
-                            val minute = time.substringAfter(':')
-                            hour?.let {
-                                val formattedHour = hour % 24
-                                val formattedDate = if (formattedHour < 5) {
-                                    date + 1.days
-                                } else {
-                                    date
-                                }.format(dateFormat)
-                                "$formattedDate $formattedHour:$minute"
-                            }
-                        }.orEmpty()
+                        val stopTime = time?.let {
+                            val colonIndex = it.indexOf(':')
+                            if (colonIndex != -1) {
+                                val h = it.substring(0, colonIndex).toLongOrNull() ?: 0L
+                                val m = it.substring(colonIndex + 1).toLongOrNull() ?: 0L
+                                serviceMidnight + h.hours + m.minutes
+                            } else null
+                        }
                         Schedule(
                             name = allStops[stop.code]
                                 ?: allStops.firstNotNullOfOrNull { (code, name) -> if (stop.code in code) name else null }
                                 ?: "",
                             code = stop.code,
-                            time = Instant.parseOrNull(formattedTime, scheduleFormatter),
+                            time = stopTime,
                             lastUpdated = lastUpdated,
                         )
                     }.sortedBy { stop ->
@@ -351,17 +342,6 @@ class TransitRepository(
             minute()
             char(':')
             second()
-        }
-
-        @OptIn(FormatStringsInDatetimeFormats::class)
-        val scheduleFormatter = DateTimeComponents.Format {
-            year()
-            monthNumber()
-            day()
-            char(' ')
-            hour(Padding.NONE)
-            char(':')
-            minute()
         }
     }
 }

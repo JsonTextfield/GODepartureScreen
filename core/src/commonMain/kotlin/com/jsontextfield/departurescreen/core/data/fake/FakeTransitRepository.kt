@@ -69,8 +69,8 @@ class FakeTransitRepository : ITransitRepository {
         return trips
     }
 
-    override suspend fun getTripDetails(tripNumber: String) : TripDetails {
-        TODO("Not yet implemented")
+    override suspend fun getTripDetails(tripNumber: String): TripDetails? {
+        return null
     }
 
     override fun getServiceAlerts(): Flow<List<Alert>> {
@@ -82,7 +82,7 @@ class FakeTransitRepository : ITransitRepository {
     }
 
     override fun getMarketingAlerts(): Flow<List<Alert>> {
-        TODO("Not yet implemented")
+        return flowOf(emptyList())
     }
 
     override suspend fun getAllStops(): List<Stop> {
@@ -90,6 +90,6 @@ class FakeTransitRepository : ITransitRepository {
     }
 
     override suspend fun getUPExpressTripSchedule(id: String): List<Schedule> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 }
