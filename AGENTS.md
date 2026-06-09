@@ -28,3 +28,4 @@ The application interacts with the Open API Data Catalogue for transit informati
 - Maintain consistency with the existing architecture in the `:core` and `:composeApp` modules.
 - Ensure that UI components in `composeApp` are reusable where possible.
 - Refer to `API_Data_Catalogue.md` for data structures and attribute meanings when working on data parsing or domain models.
+- Refer to `docs/notification-response-fields.md` for details on processing service update notifications from the API.

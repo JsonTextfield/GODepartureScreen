@@ -67,12 +67,16 @@ fun AlertsScreen(
     alertsViewModel: AlertsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
+    val language = Locale.current.language
+    LaunchedEffect(language) {
+        alertsViewModel.loadData(language)
+    }
     val uiState by alertsViewModel.uiState.collectAsState()
     AlertsScreen(
         uiState = uiState,
         onBackPressed = onBackPressed,
-        onRefresh = alertsViewModel::refresh,
-        onRetryClicked = alertsViewModel::loadData,
+        onRefresh = { alertsViewModel.refresh(language) },
+        onRetryClicked = { alertsViewModel.loadData(language) },
         onLinesSelected = alertsViewModel::setFilter,
         onReadAlert = alertsViewModel::readAlert,
     )

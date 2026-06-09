@@ -31,37 +31,36 @@ class AlertsViewModel(
         loadData()
     }
 
-    fun loadData() {
+    fun loadData(language: String = "en") {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
                 isRefreshing = false,
             )
         }
-        loadAlerts()
+        loadAlerts(language)
     }
 
-    fun refresh() {
+    fun refresh(language: String = "en") {
         _uiState.update {
             it.copy(isRefreshing = true)
         }
         viewModelScope.launch {
             delay(500)
-            loadAlerts()
+            loadAlerts(language)
         }
     }
 
-    private fun loadAlerts() {
+    private fun loadAlerts(language: String = "en") {
         combine(
             preferencesRepository.getReadAlerts().take(1),
-            goTrainDataSource.getServiceAlerts(),
-            goTrainDataSource.getInformationAlerts(),
-        ) { readAlerts, serviceAlerts, informationAlerts ->
-            val allLines = (serviceAlerts + informationAlerts)
+            goTrainDataSource.getServiceUpdates("all", language),
+        ) { readAlerts, alerts ->
+            val allLines = alerts
                 .flatMap { it.affectedLines }
                 .distinct()
                 .sorted()
-            val allAlerts = (serviceAlerts + informationAlerts).map {
+            val allAlerts = alerts.map {
                 it.copy(isRead = it.id in readAlerts)
             }.sortedByDescending { it.date }
             _uiState.update { uiState ->

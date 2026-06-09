@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.data.fake
 
+import androidx.compose.ui.text.AnnotatedString
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
@@ -83,6 +84,16 @@ class FakeTransitRepository : ITransitRepository {
 
     override fun getMarketingAlerts(): Flow<List<Alert>> {
         return flowOf(emptyList())
+    }
+
+    override fun getServiceUpdates(type: String, language: String): Flow<List<Alert>> {
+        return flowOf(listOf(
+            Alert(
+                id = "1",
+                subjectEn = "Test Alert",
+                bodyEn = AnnotatedString("Test Body"),
+            )
+        ))
     }
 
     override suspend fun getAllStops(): List<Stop> {
