@@ -64,4 +64,10 @@ class FakePreferencesRepository : IPreferencesRepository {
     override suspend fun addReadAlert(id: String) {
         readAlertsFlow.value += id
     }
+
+    private val useAlertsWithLinksFlow = MutableStateFlow(false)
+    override fun getUseAlertsWithLinks(): Flow<Boolean> = useAlertsWithLinksFlow
+    override suspend fun setUseAlertsWithLinks(useAlertsWithLinks: Boolean) {
+        useAlertsWithLinksFlow.value = useAlertsWithLinks
+    }
 }

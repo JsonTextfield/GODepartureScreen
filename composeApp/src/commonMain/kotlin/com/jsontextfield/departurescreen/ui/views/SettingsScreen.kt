@@ -32,9 +32,11 @@ import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.appearance
 import departure_screen.composeapp.generated.resources.contrast
 import departure_screen.composeapp.generated.resources.dynamic_theme
+import departure_screen.composeapp.generated.resources.experimental
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.theme
 import departure_screen.composeapp.generated.resources.time_format
+import departure_screen.composeapp.generated.resources.use_alerts_with_links
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,11 +53,13 @@ fun SettingsScreen(
         contrastMode = uiState.contrastMode,
         useDynamicTheme = uiState.useDynamicTheme,
         timeFormat = uiState.timeFormat,
+        useAlertsWithLinks = uiState.useAlertsWithLinks,
         onBackPressed = onBackPressed,
         onThemeChanged = settingsViewModel::onThemeModeChange,
         onContrastChanged = settingsViewModel::onContrastModeChange,
         onDynamicThemeChanged = settingsViewModel::onDynamicThemeChange,
         onTimeFormatChanged = settingsViewModel::onTimeFormatChange,
+        onUseAlertsWithLinksChanged = settingsViewModel::onUseAlertsWithLinksChange,
     )
 }
 
@@ -66,11 +70,13 @@ private fun SettingsScreen(
     contrastMode: ContrastMode = ContrastMode.NORMAL,
     useDynamicTheme: Boolean = false,
     timeFormat: TimeFormat = TimeFormat.RELATIVE,
+    useAlertsWithLinks: Boolean = false,
     onBackPressed: () -> Unit = {},
     onThemeChanged: (ThemeMode) -> Unit = {},
     onContrastChanged: (ContrastMode) -> Unit = {},
     onDynamicThemeChanged: (Boolean) -> Unit = {},
     onTimeFormatChanged: (TimeFormat) -> Unit = {},
+    onUseAlertsWithLinksChanged: (Boolean) -> Unit = {},
 ) {
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -112,6 +118,17 @@ private fun SettingsScreen(
                 )
             }
             TimeSetting(timeFormat, onTimeFormatChanged = onTimeFormatChanged)
+
+            Text(
+                stringResource(Res.string.experimental),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            SettingsSwitchItem(
+                text = stringResource(Res.string.use_alerts_with_links),
+                checked = useAlertsWithLinks,
+                onCheckedChange = onUseAlertsWithLinksChanged,
+            )
         }
     }
 }
