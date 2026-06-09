@@ -8,11 +8,13 @@ import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
@@ -32,7 +34,7 @@ class TripDetailsViewModel(
         loadData()
     }
 
-    @OptIn(ExperimentalTime::class)
+    @OptIn(ExperimentalTime::class, ExperimentalCoroutinesApi::class)
     fun loadData() {
         _uiState.update {
             it.copy(
@@ -58,21 +60,32 @@ class TripDetailsViewModel(
                     stops = schedules,
                 )
             }
-            combine(
-                goTrainDataSource.getServiceAlerts(),
-                goTrainDataSource.getInformationAlerts(),
-                preferencesRepository.getTimeFormat(),
-            ) { serviceAlerts, informationAlerts, timeFormat ->
-                _uiState.update {
-                    it.copy(
-                        alerts = (serviceAlerts + informationAlerts)
-                            .map { it.copy(isRead = true) }
-                            .filter { alert ->
-                                alert.affectedLines.any { line -> line == lineCode } ||
-                                        alert.affectedStops.any { stop -> stop == selectedStop }
-                            },
-                        timeFormat = timeFormat,
-                    )
+            preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
+                val alertsFlow = if (useLinks) {
+                    goTrainDataSource.getServiceUpdates("all", "en")
+                } else {
+                    combine(
+                        goTrainDataSource.getServiceAlerts(),
+                        goTrainDataSource.getInformationAlerts()
+                    ) { service, info ->
+                        service + info
+                    }
+                }
+                combine(
+                    alertsFlow,
+                    preferencesRepository.getTimeFormat(),
+                ) { alerts, timeFormat ->
+                    _uiState.update {
+                        it.copy(
+                            alerts = alerts
+                                .map { it.copy(isRead = true) }
+                                .filter { alert ->
+                                    alert.affectedLines.any { line -> line == lineCode } ||
+                                            alert.affectedStops.any { stop -> stop == selectedStop }
+                                },
+                            timeFormat = timeFormat,
+                        )
+                    }
                 }
             }.collect()
         }

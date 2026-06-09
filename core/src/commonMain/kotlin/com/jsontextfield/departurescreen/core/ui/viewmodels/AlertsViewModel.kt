@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, ExperimentalCoroutinesApi::class)
 
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
@@ -8,12 +8,14 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.ui.Status
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
@@ -54,7 +56,19 @@ class AlertsViewModel(
     private fun loadAlerts(language: String = "en") {
         combine(
             preferencesRepository.getReadAlerts().take(1),
-            goTrainDataSource.getServiceUpdates("all", language),
+            preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
+                if (useLinks) {
+                    goTrainDataSource.getServiceUpdates("all", language)
+                } else {
+                    combine(
+                        goTrainDataSource.getServiceAlerts(),
+                        goTrainDataSource.getInformationAlerts(),
+                        goTrainDataSource.getMarketingAlerts()
+                    ) { service, info, marketing ->
+                        (service + info + marketing).distinctBy { it.id }
+                    }
+                }
+            },
         ) { readAlerts, alerts ->
             val allLines = alerts
                 .flatMap { it.affectedLines }
