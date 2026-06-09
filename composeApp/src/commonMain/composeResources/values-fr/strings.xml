@@ -38,6 +38,7 @@
     <string name="stops">Arrêts</string>
     <string name="more_trips">Plus de voyages</string>
     <string name="settings">Paramètres</string>
+    <string name="appearance">Apparence</string>
     <string name="time_format">Format de l'heure</string>
     <string name="dynamic_theme">Thème dynamique</string>
     <plurals name="minutes_content_description">

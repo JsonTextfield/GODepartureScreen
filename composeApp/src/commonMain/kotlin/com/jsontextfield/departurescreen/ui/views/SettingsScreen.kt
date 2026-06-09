@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,6 +25,7 @@ import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
 import com.jsontextfield.departurescreen.ui.menu.RadioMenuItem
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.appearance
 import departure_screen.composeapp.generated.resources.contrast
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.theme
@@ -80,6 +81,11 @@ private fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Text(
+                stringResource(Res.string.appearance),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
             Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                 ThemeSetting(
                     themeMode,
@@ -94,7 +100,6 @@ private fun SettingsScreen(
                 )
             }
             DynamicThemeSetting(useDynamicTheme, onDynamicThemeChanged)
-            HorizontalDivider()
             TimeSetting(timeFormat, onTimeFormatChanged = onTimeFormatChanged)
         }
     }
