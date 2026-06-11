@@ -14,6 +14,7 @@ data class StopsRoute(val selectedStopCode: String? = null)
 @Serializable
 data class TripDetailsRoute(
     val selectedStop: String,
+    val stopCode: String,
     val tripId: String,
     val lineCode: String,
     val destination: String,

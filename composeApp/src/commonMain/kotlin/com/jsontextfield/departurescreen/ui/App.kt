@@ -85,6 +85,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                     navController.navigate(
                                         TripDetailsRoute(
                                             selectedStop = uiState.selectedStop?.name.orEmpty(),
+                                            stopCode = uiState.selectedStop?.code.orEmpty(),
                                             tripId = action.trip.id,
                                             lineCode = action.trip.code,
                                             destination = action.trip.destination,
@@ -135,6 +136,7 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                     val tripDetailsViewModel = koinViewModel<TripDetailsViewModel> {
                         parametersOf(
                             route.selectedStop,
+                            route.stopCode,
                             route.tripId,
                             route.lineCode,
                             route.destination,
@@ -145,6 +147,19 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
+                        onTripSelected = { trip ->
+                            navController.navigate(
+                                TripDetailsRoute(
+                                    selectedStop = route.selectedStop,
+                                    stopCode = route.stopCode,
+                                    tripId = trip.id,
+                                    lineCode = trip.code,
+                                    destination = trip.destination,
+                                )
+                            ) {
+                                popUpTo<TripDetailsRoute> { inclusive = true }
+                            }
+                        }
                     )
                 }
 

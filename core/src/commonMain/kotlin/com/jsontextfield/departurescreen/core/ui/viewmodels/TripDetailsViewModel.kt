@@ -6,6 +6,7 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +24,7 @@ class TripDetailsViewModel(
     private val preferencesRepository: IPreferencesRepository,
     private val goTrainDataSource: ITransitRepository,
     private val selectedStop: String,
+    private val stopCode: String,
     private val tripId: String,
     private val lineCode: String,
     private val destination: String,
@@ -49,6 +51,10 @@ class TripDetailsViewModel(
                     destination = destination,
                 )
             }
+            val moreTrips = stopCode.split(",").flatMap { goTrainDataSource.getTrips(it) }
+                .filter { it.code == lineCode && it.id != tripId }
+                .take(4)
+
             val schedules = if (lineCode == "UP") {
                 goTrainDataSource.getUPExpressTripSchedule(tripId)
             } else {
@@ -58,6 +64,7 @@ class TripDetailsViewModel(
                 it.copy(
                     status = Status.LOADED,
                     stops = schedules,
+                    moreTrips = moreTrips,
                 )
             }
             preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
@@ -107,4 +114,5 @@ data class TripUIState(
     val alerts: List<Alert> = emptyList(),
     val serviceGuarantee: String = "",
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
+    val moreTrips: List<Trip> = emptyList(),
 )

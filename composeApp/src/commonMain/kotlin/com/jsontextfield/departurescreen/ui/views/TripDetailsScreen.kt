@@ -41,17 +41,20 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
 import com.jsontextfield.departurescreen.core.ui.components.AlertItem
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListHeader
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListItem
+import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 import com.jsontextfield.departurescreen.core.ui.components.isEven
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
+import departure_screen.composeapp.generated.resources.more_trips
 import departure_screen.composeapp.generated.resources.stops
 import org.jetbrains.compose.resources.stringResource
 
@@ -59,6 +62,7 @@ import org.jetbrains.compose.resources.stringResource
 fun TripDetailsScreen(
     tripDetailsViewModel: TripDetailsViewModel,
     onBackPressed: () -> Unit,
+    onTripSelected: (Trip) -> Unit,
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
@@ -101,7 +105,7 @@ fun TripDetailsScreen(
             if (uiState.serviceGuarantee.isNotEmpty()) {
                 item {
                     Column(modifier = Modifier.animateItem()) {
-                        Text("Service Guarantee", style = MaterialTheme.typography.headlineMedium)
+                        SectionHeader("Service Guarantee")
                         Text(
                             text = uiState.serviceGuarantee,
                             style = MaterialTheme.typography.bodyMedium,
@@ -113,10 +117,7 @@ fun TripDetailsScreen(
             }
             if (uiState.stops.isNotEmpty()) {
                 item {
-                    Text(
-                        text = stringResource(Res.string.stops),
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
+                    SectionHeader(stringResource(Res.string.stops))
                 }
                 item {
                     Column(
@@ -152,12 +153,40 @@ fun TripDetailsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+            if (uiState.moreTrips.isNotEmpty()) {
+                item {
+                    SectionHeader(stringResource(Res.string.more_trips, uiState.selectedStop))
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .widthIn(max = 400.dp)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.outline.copy(alpha = .5f),
+                                RoundedCornerShape(8.dp)
+                            ).animateItem()
+                    ) {
+                        uiState.moreTrips.forEachIndexed { index, trip ->
+                            Surface(
+                                tonalElevation = if (index.isEven) 1.dp else 0.dp,
+                            ) {
+                                TripListItem(
+                                    trip = trip,
+                                    timeFormat = uiState.timeFormat,
+                                    modifier = Modifier
+                                        .clickable { onTripSelected(trip) }
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
             if (uiState.alerts.isNotEmpty()) {
                 item {
-                    Text(
-                        text = stringResource(Res.string.alerts),
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
+                    SectionHeader(stringResource(Res.string.alerts))
                 }
                 items(
                     items = uiState.alerts,
@@ -180,4 +209,12 @@ fun TripDetailsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+    )
 }

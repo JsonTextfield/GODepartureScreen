@@ -36,7 +36,7 @@
     <string name="rate_app">Évaluer l'application</string>
     <string name="rate">Évaluer</string>
     <string name="stops">Arrêts</string>
-    <string name="more_trips">Plus de voyages</string>
+    <string name="more_trips">Plus de voyages de %1$s</string>
     <string name="settings">Paramètres</string>
     <string name="appearance">Apparence</string>
     <string name="time_format">Format de l'heure</string>
