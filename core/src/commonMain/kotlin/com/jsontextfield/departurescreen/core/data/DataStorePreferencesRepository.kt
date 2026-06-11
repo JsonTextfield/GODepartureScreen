@@ -145,4 +145,16 @@ class DataStorePreferencesRepository(
             preferences[stringSetPreferencesKey(READ_ALERTS_KEY)] = readAlerts + id
         }
     }
+
+    override fun getUseAlertsWithLinks(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[booleanPreferencesKey(USE_ALERTS_WITH_LINKS_KEY)] ?: false
+        }
+    }
+
+    override suspend fun setUseAlertsWithLinks(useAlertsWithLinks: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(USE_ALERTS_WITH_LINKS_KEY)] = useAlertsWithLinks
+        }
+    }
 }

@@ -18,6 +18,8 @@ interface ITransitRepository {
 
     fun getMarketingAlerts(): Flow<List<Alert>>
 
+    fun getServiceUpdates(type: String, language: String): Flow<List<Alert>>
+
     suspend fun getAllStops(): List<Stop>
 
     suspend fun getUPExpressTripSchedule(id: String): List<Schedule>

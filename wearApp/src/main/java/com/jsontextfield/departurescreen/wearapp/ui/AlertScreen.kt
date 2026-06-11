@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Scaffold
@@ -35,12 +37,16 @@ fun AlertsScreen(
     alertsViewModel: AlertsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
+    val language = Locale.current.language
+    LaunchedEffect(language) {
+        alertsViewModel.loadData(language)
+    }
     val uiState by alertsViewModel.uiState.collectAsState()
     AlertScreen(
         isRefreshing = uiState.isRefreshing,
         alerts = uiState.alerts,
         onBackPressed = onBackPressed,
-        onRefresh = alertsViewModel::refresh,
+        onRefresh = { alertsViewModel.refresh(language) },
     )
 }
 

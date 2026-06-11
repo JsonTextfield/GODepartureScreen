@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, ExperimentalCoroutinesApi::class)
 
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
@@ -17,6 +17,7 @@ import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -221,14 +224,24 @@ class MainViewModel(
     }
 
     fun getUnreadAlertsCount() {
-        combine(
-            preferencesRepository.getReadAlerts(),
-            goTrainDataSource.getServiceAlerts(),
-            goTrainDataSource.getInformationAlerts(),
-        ) { readAlerts, serviceAlertsList, informationAlertsList ->
-            val count = (serviceAlertsList + informationAlertsList).count {
-                it.id !in readAlerts
+        preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
+            val alertsFlow = if (useLinks) {
+                goTrainDataSource.getServiceUpdates("all", "en")
+            } else {
+                combine(
+                    goTrainDataSource.getServiceAlerts(),
+                    goTrainDataSource.getInformationAlerts()
+                ) { service, info ->
+                    service + info
+                }
             }
+            combine(
+                preferencesRepository.getReadAlerts(),
+                alertsFlow
+            ) { readAlerts, alertsList ->
+                alertsList.count { it.id !in readAlerts }
+            }
+        }.onEach { count ->
             _uiState.update {
                 it.copy(unreadAlertsCount = count)
             }

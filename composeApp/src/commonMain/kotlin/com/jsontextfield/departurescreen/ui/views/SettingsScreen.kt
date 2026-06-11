@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.ui.views
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,9 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -22,13 +25,18 @@ import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
+import com.jsontextfield.departurescreen.core.ui.theme.isDynamicThemeEnabled
 import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
 import com.jsontextfield.departurescreen.ui.menu.RadioMenuItem
 import departure_screen.composeapp.generated.resources.Res
+import departure_screen.composeapp.generated.resources.appearance
 import departure_screen.composeapp.generated.resources.contrast
+import departure_screen.composeapp.generated.resources.dynamic_theme
+import departure_screen.composeapp.generated.resources.experimental
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.theme
 import departure_screen.composeapp.generated.resources.time_format
+import departure_screen.composeapp.generated.resources.use_alerts_with_links
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,11 +53,13 @@ fun SettingsScreen(
         contrastMode = uiState.contrastMode,
         useDynamicTheme = uiState.useDynamicTheme,
         timeFormat = uiState.timeFormat,
+        useAlertsWithLinks = uiState.useAlertsWithLinks,
         onBackPressed = onBackPressed,
         onThemeChanged = settingsViewModel::onThemeModeChange,
         onContrastChanged = settingsViewModel::onContrastModeChange,
         onDynamicThemeChanged = settingsViewModel::onDynamicThemeChange,
         onTimeFormatChanged = settingsViewModel::onTimeFormatChange,
+        onUseAlertsWithLinksChanged = settingsViewModel::onUseAlertsWithLinksChange,
     )
 }
 
@@ -60,11 +70,13 @@ private fun SettingsScreen(
     contrastMode: ContrastMode = ContrastMode.NORMAL,
     useDynamicTheme: Boolean = false,
     timeFormat: TimeFormat = TimeFormat.RELATIVE,
+    useAlertsWithLinks: Boolean = false,
     onBackPressed: () -> Unit = {},
     onThemeChanged: (ThemeMode) -> Unit = {},
     onContrastChanged: (ContrastMode) -> Unit = {},
     onDynamicThemeChanged: (Boolean) -> Unit = {},
     onTimeFormatChanged: (TimeFormat) -> Unit = {},
+    onUseAlertsWithLinksChanged: (Boolean) -> Unit = {},
 ) {
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -80,6 +92,11 @@ private fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Text(
+                stringResource(Res.string.appearance),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
             Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                 ThemeSetting(
                     themeMode,
@@ -93,9 +110,25 @@ private fun SettingsScreen(
                     modifier = Modifier.weight(1f)
                 )
             }
-            DynamicThemeSetting(useDynamicTheme, onDynamicThemeChanged)
-            HorizontalDivider()
+            if (isDynamicThemeEnabled()) {
+                SettingsSwitchItem(
+                    text = stringResource(Res.string.dynamic_theme),
+                    checked = useDynamicTheme,
+                    onCheckedChange = onDynamicThemeChanged,
+                )
+            }
             TimeSetting(timeFormat, onTimeFormatChanged = onTimeFormatChanged)
+
+            Text(
+                stringResource(Res.string.experimental),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            SettingsSwitchItem(
+                text = stringResource(Res.string.use_alerts_with_links),
+                checked = useAlertsWithLinks,
+                onCheckedChange = onUseAlertsWithLinksChanged,
+            )
         }
     }
 }
@@ -150,18 +183,31 @@ private fun TimeSetting(timeFormat: TimeFormat, onTimeFormatChanged: (TimeFormat
 }
 
 @Composable
-expect fun DynamicThemeSetting(
-    useDynamicTheme: Boolean = false,
-    onDynamicThemeChanged: (Boolean) -> Unit = {},
-)
-
-@Composable
 private fun RadioListItem(text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         RadioButton(false, onClick = {})
         Text(text)
     }
 }
+
+@Composable
+private fun SettingsSwitchItem(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(text) },
+        trailingContent = {
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        },
+        modifier = Modifier.clickable { onCheckedChange(!checked) }
+    )
+}
+
 
 @Preview
 @Composable

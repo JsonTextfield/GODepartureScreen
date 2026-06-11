@@ -27,13 +27,15 @@ class SettingsViewModel(
             preferencesRepository.getContrast(),
             preferencesRepository.getDynamicTheme(),
             preferencesRepository.getTimeFormat(),
-        ) { theme, contrast, dynamicTheme, timeFormat ->
+            preferencesRepository.getUseAlertsWithLinks(),
+        ) { theme, contrast, dynamicTheme, timeFormat, useAlertsWithLinks ->
             _uiState.update {
                 it.copy(
                     themeMode = theme,
                     contrastMode = contrast,
                     useDynamicTheme = dynamicTheme,
                     timeFormat = timeFormat,
+                    useAlertsWithLinks = useAlertsWithLinks,
                 )
             }
         }.launchIn(viewModelScope)
@@ -62,6 +64,12 @@ class SettingsViewModel(
             preferencesRepository.setDynamicTheme(useDynamicTheme)
         }
     }
+
+    fun onUseAlertsWithLinksChange(useAlertsWithLinks: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setUseAlertsWithLinks(useAlertsWithLinks)
+        }
+    }
 }
 
 data class SettingsUIState(
@@ -69,4 +77,5 @@ data class SettingsUIState(
     val contrastMode: ContrastMode = ContrastMode.NORMAL,
     val useDynamicTheme: Boolean = false,
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
+    val useAlertsWithLinks: Boolean = false,
 )

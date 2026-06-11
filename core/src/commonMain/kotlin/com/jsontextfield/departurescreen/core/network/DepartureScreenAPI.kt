@@ -8,11 +8,13 @@ import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBusesResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceGuaranteeResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceUpdatesResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.network.model.TripResponse
 import com.jsontextfield.departurescreen.core.network.model.TripUpdatesResponse
 import com.jsontextfield.departurescreen.core.network.model.UnionDeparturesResponse
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -21,6 +23,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLProtocol
 import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
@@ -36,36 +39,60 @@ import co.touchlab.kermit.Logger as Kermit
 
 @OptIn(ExperimentalSerializationApi::class)
 class DepartureScreenAPI {
+    companion object {
+        private const val BASE_HOST = "api.openmetrolinx.com"
+        private const val BASE_HOST2 = "api.metrolinx.com"
+        private const val V1_API_PATH = "/OpenDataAPI/api/V1/"
+        private const val DEFAULT_TIMEOUT_MS = 6000L
+    }
+
     private val json = Json {
-        prettyPrint = true
+        prettyPrint = false
         isLenient = true
         ignoreUnknownKeys = true
     }
-    private val client = HttpClient {
+    private val httpLogger = object : Logger {
+        override fun log(message: String) {
+            Kermit.withTag("HttpClient").d(message)
+        }
+    }
+
+    private fun createHttpClient(block: HttpClientConfig<*>.() -> Unit = {}) = HttpClient {
         install(ContentNegotiation) {
             json(json)
         }
         install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    Kermit
-                        .withTag("HttpClient")
-                        .d(message)
-                }
-            }
+            logger = httpLogger
             level = LogLevel.INFO
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 6000
-            connectTimeoutMillis = 6000
-            socketTimeoutMillis = 6000
+            requestTimeoutMillis = DEFAULT_TIMEOUT_MS
+            connectTimeoutMillis = DEFAULT_TIMEOUT_MS
+            socketTimeoutMillis = DEFAULT_TIMEOUT_MS
         }
         defaultRequest {
             url {
                 protocol = URLProtocol.HTTPS
-                host = "api.openmetrolinx.com"
-                encodedPath = "/OpenDataAPI/api/V1/"
+                host = BASE_HOST
+            }
+        }
+        this.block()
+    }
+
+    private val client = createHttpClient {
+        defaultRequest {
+            url {
+                host = BASE_HOST
+                encodedPath = V1_API_PATH
                 parameters.append("key", API_KEY)
+            }
+        }
+    }
+
+    private val serviceUpdatesClient = createHttpClient {
+        defaultRequest {
+            url {
+                host = BASE_HOST2
             }
         }
     }
@@ -143,6 +170,17 @@ class DepartureScreenAPI {
 
     suspend fun getAllExceptions(): ExceptionsResponse {
         return client.get("ServiceUpdate/Exceptions/All").body()
+    }
+
+    /**
+     * This endpoint is an alternative to the ServiceAlert/All, InformationAlert/All, and MarketingAlert/All endpoints.
+     * Instead of calling those endpoints, this one can be called.
+     * @param type type of service update. Valid values are "general" and "all"
+     * @param language language code for the response. Valid values are "en" and "fr"
+     */
+    suspend fun getServiceUpdates(type: String, language: String): ServiceUpdatesResponse {
+        val jsonString = serviceUpdatesClient.get("/external/go/serviceupdate/$language/$type").bodyAsText()
+        return json.decodeFromString<ServiceUpdatesResponse>(jsonString)
     }
 
     // Service At Glance

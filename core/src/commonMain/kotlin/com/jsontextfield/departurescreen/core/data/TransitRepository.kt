@@ -13,6 +13,7 @@ import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.model.Alerts
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
+import com.jsontextfield.departurescreen.core.network.model.ServiceUpdatesResponse
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.ui.StopType
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
@@ -233,6 +234,19 @@ class TransitRepository(
         updateCache = { marketingAlerts = it }
     )
 
+    override fun getServiceUpdates(type: String, language: String): Flow<List<Alert>> = flow {
+        while (currentCoroutineContext().isActive) {
+            try {
+                val response = departureScreenAPI.getServiceUpdates(type, language)
+                emit(processServiceUpdates(response))
+            } catch (exception: Exception) {
+                Logger.withTag(TransitRepository::class.simpleName.toString()).e { exception.message.toString() }
+                emit(emptyList())
+            }
+            delay(60.seconds)
+        }
+    }
+
     private fun pollAlerts(
         apiCall: suspend () -> Alerts,
         getCache: () -> List<Alert>,
@@ -305,8 +319,8 @@ class TransitRepository(
                     },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
-                    bodyEn = bodyEn,
-                    bodyFr = bodyFr,
+                    bodyEn = Alert.parseHtmlToAnnotatedString(bodyEn),
+                    bodyFr = Alert.parseHtmlToAnnotatedString(bodyFr),
                     urlEn = if ("Sign up for On The GO alerts" in bodyEn) {
                         "https://www.gotransit.com/en/service-updates/sign-up-for-on-the-go-alerts"
                     } else {
@@ -327,6 +341,99 @@ class TransitRepository(
         }
     }
 
+    private fun processServiceUpdates(response: ServiceUpdatesResponse): List<Alert> {
+        val alerts = mutableListOf<Alert>()
+
+        // Process top-level notifications
+        response.notifications?.notification?.let {
+            alerts.addAll(it.map { n -> n.toAlert() })
+        }
+
+        // Process train-specific notifications
+        response.trains?.train?.forEach { train ->
+            train.notifications?.notification?.forEach { n ->
+                alerts.add(n.toAlert(affectedLines = listOfNotNull(train.corridorCode)))
+            }
+        }
+
+        // Process bus-specific notifications
+        response.buses?.bus?.forEach { bus ->
+            bus.notifications?.notification?.forEach { n ->
+                alerts.add(n.toAlert(affectedLines = listOfNotNull(bus.routeNumber)))
+            }
+        }
+
+        // Process station-specific notifications
+        response.stations?.station?.forEach { station ->
+            station.notifications?.notification?.forEach { n ->
+                alerts.add(n.toAlert(affectedStops = listOfNotNull(station.stationName)))
+            }
+        }
+
+        // Process announcements
+        response.trainAnnouncements?.notification?.forEach { n ->
+            alerts.add(n.toAlert())
+        }
+        response.busAnnouncements?.notification?.forEach { n ->
+            alerts.add(n.toAlert(affectedLines = n.affectedLineCodes))
+        }
+
+        return alerts.distinctBy { it.id }.sortedByDescending { it.date }
+    }
+
+    private fun ServiceUpdatesResponse.Notification.toAlert(
+        affectedLines: List<String> = emptyList(),
+        affectedStops: List<String> = emptyList()
+    ): Alert {
+        val subject = messageSubject.orEmpty().stripHtml()
+        val body = messageBody.orEmpty() // Keep HTML for AnnotatedString parsing
+        val dateStr = postedDateTime.orEmpty()
+        val date = try {
+            Instant.parse(dateStr, serviceUpdateDateFormatter)
+        } catch (_: Exception) {
+            Instant.fromEpochMilliseconds(0)
+        }
+
+        // If no explicit lines are provided, try to extract them from the subject
+        val finalLines = (affectedLines + extractAffectedLines(subject)).map {
+            if (it == "GT") "KI" else it
+        }.distinct()
+
+        return Alert(
+            id = code ?: (dateStr + subject).hashCode().toString(),
+            date = date,
+            affectedLines = finalLines,
+            affectedStops = affectedStops,
+            subjectEn = subject,
+            subjectFr = subject,
+            bodyEn = Alert.parseHtmlToAnnotatedString(body),
+            bodyFr = Alert.parseHtmlToAnnotatedString(body),
+        )
+    }
+
+    private fun String.stripHtml(): String {
+        return replace(Regex("<[^>]*>"), "")
+            .replace("&nbsp;", " ")
+            .replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&quot;", "\"")
+            .replace("&apos;", "'")
+            .trim()
+    }
+
+    private fun extractAffectedLines(text: String): List<String> {
+        val lines = mutableListOf<String>()
+        if (text.contains("Lakeshore West", ignoreCase = true)) lines.add("LW")
+        if (text.contains("Lakeshore East", ignoreCase = true)) lines.add("LE")
+        if (text.contains("Stouffville", ignoreCase = true)) lines.add("ST")
+        if (text.contains("Kitchener", ignoreCase = true)) lines.add("KI")
+        if (text.contains("Milton", ignoreCase = true)) lines.add("MI")
+        if (text.contains("Barrie", ignoreCase = true)) lines.add("BR")
+        if (text.contains("Richmond Hill", ignoreCase = true)) lines.add("RH")
+        if (text.contains("UP Express", ignoreCase = true)) lines.add("UP")
+        return lines.distinct()
+    }
 
     companion object {
         @OptIn(FormatStringsInDatetimeFormats::class)
@@ -336,6 +443,21 @@ class TransitRepository(
             monthNumber()
             char('-')
             day()
+            char(' ')
+            hour()
+            char(':')
+            minute()
+            char(':')
+            second()
+        }
+
+        @OptIn(FormatStringsInDatetimeFormats::class)
+        val serviceUpdateDateFormatter = DateTimeComponents.Format {
+            monthNumber()
+            char('/')
+            day()
+            char('/')
+            year()
             char(' ')
             hour()
             char(':')
