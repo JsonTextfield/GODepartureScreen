@@ -42,12 +42,12 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+const val UP_EXPRESS_STOPS = "UN,BL,MD,WE,PA"
 
 class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
 ) : ITransitRepository {
     private var stops: List<Stop> = emptyList()
-    private val upExpressStops: List<String> = listOf("UN", "BL", "MD", "WE", "PA")
     private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
     private var marketingAlerts: List<Alert> = emptyList()
@@ -57,11 +57,12 @@ class TransitRepository(
     private var exceptions: ExceptionsResponse? = null
 
     override suspend fun getTrips(stopCode: String): List<Trip> {
-        if (Clock.System.now().toEpochMilliseconds() - lastUpdated > 60_000) {
+        val currentTime = Clock.System.now().toEpochMilliseconds()
+        if (currentTime - lastUpdated > 60_000) {
             serviceAtAGlanceTrains =
                 departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
             exceptions = departureScreenAPI.getAllExceptions()
-            lastUpdated = Clock.System.now().toEpochMilliseconds()
+            lastUpdated = currentTime
         }
         return try {
             val nextService = departureScreenAPI.getNextService(stopCode)
@@ -77,7 +78,7 @@ class TransitRepository(
                 emptyMap()
             }
 
-            val upExpressTrips: List<Trip> = if (stopCode in upExpressStops) {
+            val upExpressTrips: List<Trip> = if (stopCode in UP_EXPRESS_STOPS) {
                 departureScreenAPI.getUpGtfsTripUpdates().entity.mapNotNull { entity ->
                     entity.tripUpdate?.stopTimeUpdate?.firstOrNull {
                         it.stopId == stopCode
