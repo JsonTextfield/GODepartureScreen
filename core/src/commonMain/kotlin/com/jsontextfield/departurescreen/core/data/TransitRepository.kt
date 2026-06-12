@@ -25,11 +25,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.DateTimeComponents
-import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.char
-import kotlinx.datetime.parse
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
@@ -42,10 +39,12 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 const val UP_EXPRESS_STOPS = "UN,BL,MD,WE,PA"
+const val UP_EXPRESS = "UP Express"
 
 class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
 ) : ITransitRepository {
+    private val timeZone = TimeZone.of("America/Toronto")
     private var stops: List<Stop> = emptyList()
     private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
@@ -65,7 +64,7 @@ class TransitRepository(
         }
         return try {
             val nextService = departureScreenAPI.getNextService(stopCode)
-            val lastUpdated = Instant.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter)
+            val lastUpdated = LocalDateTime.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter).toInstant(timeZone)
             val lines = nextService.nextService?.lines
             val cancelledTrips =
                 exceptions?.trip?.filter { it.isCancelled == "1" }?.map { it.tripNumber } ?: emptyList()
@@ -82,15 +81,16 @@ class TransitRepository(
                     entity.tripUpdate?.stopTimeUpdate?.firstOrNull {
                         it.stopId == stopCode
                     }?.departure?.time?.let { departureTimeSeconds: Long ->
-                        val departureTime = Instant.fromEpochSeconds(departureTimeSeconds)
-                            .toLocalDateTime(TimeZone.of("America/Toronto"))
+                        val departureTime = Instant
+                            .fromEpochSeconds(departureTimeSeconds)
+                            .toLocalDateTime(timeZone)
                             .toInstant(TimeZone.UTC)
                         val trip = entity.tripUpdate.trip
                         val vehicle = entity.tripUpdate.vehicle
                         Trip(
                             id = trip.tripId,
                             code = trip.routeId,
-                            name = "UP Express",
+                            name = UP_EXPRESS,
                             destination = vehicle?.label?.split(" - ")?.last().orEmpty(),
                             color = lineColours[trip.routeId] ?: Color.Gray,
                             lastUpdated = lastUpdated,
@@ -107,14 +107,14 @@ class TransitRepository(
             val trips = lines?.map { line ->
                 val trip = tripsMap[line.tripNumber]
                 val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
-                    Instant.parseOrNull(it, inFormatter)
+                    LocalDateTime.parse(it, inFormatter).toInstant(TimeZone.UTC)
                 } ?: Instant.fromEpochMilliseconds(0)
                 val platform = trip?.platform ?: line.actualPlatform.takeIf { !it.isNullOrBlank() }
                 ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
                 ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
-                val updateTime = Instant.parseOrNull(line.updateTime, inFormatter) ?: lastUpdated
+                val updateTime = LocalDateTime.parse(line.updateTime, inFormatter).toInstant(TimeZone.UTC) ?: lastUpdated
                 Trip(
                     id = line.tripNumber,
                     code = lineCode,
@@ -142,7 +142,7 @@ class TransitRepository(
 
     override suspend fun getUPExpressTripSchedule(id: String): List<Schedule> {
         val lastUpdated = Clock.System.now()
-            .toLocalDateTime(TimeZone.of("America/Toronto"))
+            .toLocalDateTime(timeZone)
             .toInstant(TimeZone.UTC)
         return try {
             val allStops = getAllStops().associate { it.code to it.name }
@@ -150,8 +150,9 @@ class TransitRepository(
                 entity.id == id
             }?.let { entity ->
                 entity.tripUpdate?.stopTimeUpdate?.map { stopTimeUpdate ->
-                    val departureTime = Instant.fromEpochSeconds(stopTimeUpdate.departure?.time ?: 0L)
-                        .toLocalDateTime(TimeZone.of("America/Toronto"))
+                    val departureTime = Instant
+                        .fromEpochSeconds(stopTimeUpdate.departure?.time ?: 0L)
+                        .toLocalDateTime(timeZone)
                         .toInstant(TimeZone.UTC)
                     Schedule(
                         name = allStops[stopTimeUpdate.stopId]
@@ -172,7 +173,6 @@ class TransitRepository(
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
         return try {
-            val timeZone = TimeZone.of("America/Toronto")
             val serviceDate = (Clock.System.now() - 5.hours).toLocalDateTime(timeZone).date
             val serviceMidnight = LocalDateTime(serviceDate, LocalTime(0, 0)).toInstant(TimeZone.UTC)
 
@@ -180,7 +180,9 @@ class TransitRepository(
             val serviceGuaranteeResponse = departureScreenAPI.getServiceGuarantee(tripNumber)
             val stops = serviceGuaranteeResponse.stops?.stop.orEmpty()
             val allStops = getAllStops().associate { it.code to it.name }
-            val lastUpdated = Instant.parse(tripDetailsResponse.metadata?.timestamp.orEmpty(), inFormatter)
+            val lastUpdated = LocalDateTime
+                .parse(tripDetailsResponse.metadata?.timestamp.orEmpty(), inFormatter)
+                .toInstant(timeZone)
             tripDetailsResponse.trips.map { trip ->
                 TripDetails(
                     id = trip.tripNumber,
@@ -318,10 +320,12 @@ class TransitRepository(
             messages?.message?.map { message ->
                 val bodyEn = message.bodyEnglish.orEmpty().trim()
                 val bodyFr = message.bodyFrench.orEmpty().trim()
-
+                val date = LocalDateTime
+                    .parse(message.postedDateTime, inFormatter)
+                    .toInstant(timeZone)
                 Alert(
                     id = message.code,
-                    date = Instant.parse(message.postedDateTime, inFormatter),
+                    date = date,
                     affectedLines = message.lines.map { if (it.code == "GT") "KI" else it.code },
                     affectedStops = allStops.mapNotNull {
                         if (message.stops.any { stop -> stop.code in it.key }) {
@@ -392,7 +396,9 @@ class TransitRepository(
         val body = messageBody.orEmpty()
         val dateStr = postedDateTime.orEmpty()
         val date = try {
-            Instant.parse(dateStr, serviceUpdateDateFormatter)
+            LocalDateTime
+                .parse(dateStr, serviceUpdateDateFormatter)
+                .toInstant(timeZone)
         } catch (_: Exception) {
             Instant.fromEpochMilliseconds(0)
         }
@@ -415,7 +421,7 @@ class TransitRepository(
 
     companion object {
         @OptIn(FormatStringsInDatetimeFormats::class)
-        val inFormatter = DateTimeComponents.Format {
+        val inFormatter = LocalDateTime.Format {
             year()
             char('-')
             monthNumber()
@@ -430,7 +436,7 @@ class TransitRepository(
         }
 
         @OptIn(FormatStringsInDatetimeFormats::class)
-        val serviceUpdateDateFormatter = DateTimeComponents.Format {
+        val serviceUpdateDateFormatter = LocalDateTime.Format {
             monthNumber()
             char('/')
             day()
@@ -443,13 +449,5 @@ class TransitRepository(
             char(':')
             second()
         }
-    }
-}
-
-fun Instant.Companion.parseOrNull(input: CharSequence, format: DateTimeFormat<DateTimeComponents>): Instant? {
-    return try {
-        Instant.parse(input, format)
-    } catch (_: Exception) {
-        null
     }
 }

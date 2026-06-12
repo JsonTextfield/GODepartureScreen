@@ -9,10 +9,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -31,9 +27,7 @@ data class Alert(
     val urlEn: String? = null,
     val urlFr: String? = null,
 ) {
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    val dateDifference: Duration =
-        Clock.System.now().toLocalDateTime(TimeZone.of("America/Toronto")).toInstant(TimeZone.UTC) - date
+    val dateDifference: Duration = Clock.System.now() - date
 
     fun getSubject(language: String): String {
         return subjectFr.takeIf { "fr" in language && it.isNotEmpty() } ?: subjectEn
