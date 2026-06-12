@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -175,6 +176,8 @@ fun TripDetailsScreen(
                                     trip = trip,
                                     timeFormat = uiState.timeFormat,
                                     modifier = Modifier
+                                        .heightIn(min = 80.dp)
+                                        .fillMaxWidth()
                                         .clickable { onTripSelected(trip) }
                                         .padding(8.dp)
                                 )
