@@ -34,6 +34,7 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -112,6 +113,7 @@ class TransitRepository(
                 ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
+                val updateTime = Instant.parseOrNull(line.updateTime, inFormatter) ?: lastUpdated
                 Trip(
                     id = line.tripNumber,
                     code = lineCode,
@@ -119,7 +121,7 @@ class TransitRepository(
                     destination = line.directionName.split(" - ").last(),
                     color = lineColours[lineCode] ?: Color.Gray,
                     tripOrder = line.tripOrder,
-                    lastUpdated = lastUpdated,
+                    lastUpdated = updateTime,
                     isCancelled = line.tripNumber in cancelledTrips,
                     departureTime = departureTime,
                     platform = platform,
@@ -192,7 +194,8 @@ class TransitRepository(
                             if (colonIndex != -1) {
                                 val h = it.substring(0, colonIndex).toLongOrNull() ?: 0L
                                 val m = it.substring(colonIndex + 1).toLongOrNull() ?: 0L
-                                serviceMidnight + h.hours + m.minutes
+                                val days = if (h < 5) 1 else 0
+                                serviceMidnight + days.days + h.hours + m.minutes
                             } else null
                         }
                         Schedule(
