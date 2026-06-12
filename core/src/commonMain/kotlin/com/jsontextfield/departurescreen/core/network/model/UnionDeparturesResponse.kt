@@ -1,32 +1,30 @@
 package com.jsontextfield.departurescreen.core.network.model
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
-@ExperimentalSerializationApi
 @Serializable
 data class UnionDeparturesResponse(
-    @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("AllDepartures") val allDepartures: AllDepartures? = null,
+    @SerialName("Metadata") val metadata: Metadata? = null,
+    @SerialName("AllDepartures") val allDepartures: AllDepartures? = null,
 ) {
     @Serializable
     data class AllDepartures(
-        @JsonNames("Trip") val trips: List<Trip> = emptyList(),
+        @SerialName("Trip") val trips: List<Trip> = emptyList(),
     ) {
         @Serializable
         data class Trip(
-            @JsonNames("Info") val info: String = "",
-            @JsonNames("TripNumber") val tripNumber: String = "",
-            @JsonNames("Platform") val platform: String = "",
-            @JsonNames("Service") val service: String = "",
-            @JsonNames("Time") val time: String = "",
-            @JsonNames("Stops") val stops: List<Stop> = emptyList(),
+            @SerialName("Info") val info: String = "",
+            @SerialName("TripNumber") val tripNumber: String = "",
+            @SerialName("Platform") val platform: String = "",
+            @SerialName("Service") val service: String = "",
+            @SerialName("Time") val time: String = "",
+            @SerialName("Stops") val stops: List<Stop> = emptyList(),
         ) {
             @Serializable
             data class Stop(
-                @JsonNames("Name") val name: String = "",
-                @JsonNames("Code") val code: String? = null,
+                @SerialName("Name") val name: String = "",
+                @SerialName("Code") val code: String? = null,
             )
         }
     }

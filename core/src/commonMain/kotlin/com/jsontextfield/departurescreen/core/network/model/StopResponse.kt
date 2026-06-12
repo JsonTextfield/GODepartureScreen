@@ -1,25 +1,23 @@
 package com.jsontextfield.departurescreen.core.network.model
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
-@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class StopResponse(
-    @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("Stations") val stations: Stations? = null,
+    @SerialName("Metadata") val metadata: Metadata? = null,
+    @SerialName("Stations") val stations: Stations? = null,
 ) {
     @Serializable
     data class Stations(
-        @JsonNames("Station") val stops: List<Stop>? = null,
+        @SerialName("Station") val stops: List<Stop>? = null,
     ) {
         @Serializable
         data class Stop(
-            @JsonNames("LocationCode") val locationCode: String,
-            @JsonNames("PublicStopId") val publicStopId: String,
-            @JsonNames("LocationName") val locationName: String,
-            @JsonNames("LocationType") val locationType: String,
+            @SerialName("LocationCode") val locationCode: String,
+            @SerialName("PublicStopId") val publicStopId: String,
+            @SerialName("LocationName") val locationName: String,
+            @SerialName("LocationType") val locationType: String,
         )
     }
 }

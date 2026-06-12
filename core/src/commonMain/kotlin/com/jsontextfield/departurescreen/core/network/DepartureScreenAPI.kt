@@ -2,7 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.network
 
-import com.jsontextfield.departurescreen.core.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.model.AlertsResponse
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBusesResponse
@@ -30,14 +30,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 import co.touchlab.kermit.Logger as Kermit
 
-@OptIn(ExperimentalSerializationApi::class)
+
 class DepartureScreenAPI {
     companion object {
         private const val BASE_HOST = "api.openmetrolinx.com"
@@ -132,15 +131,15 @@ class DepartureScreenAPI {
     }
 
     // Service Update
-    suspend fun getServiceAlerts(): Alerts {
+    suspend fun getServiceAlerts(): AlertsResponse {
         return client.get("ServiceUpdate/ServiceAlert/All").body()
     }
 
-    suspend fun getInformationAlerts(): Alerts {
+    suspend fun getInformationAlerts(): AlertsResponse {
         return client.get("ServiceUpdate/InformationAlert/All").body()
     }
 
-    suspend fun getMarketingAlerts(): Alerts {
+    suspend fun getMarketingAlerts(): AlertsResponse {
         return client.get("ServiceUpdate/MarketingAlert/All").body()
     }
 

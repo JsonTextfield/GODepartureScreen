@@ -3,8 +3,8 @@
 package com.jsontextfield.departurescreen.core.network.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 @Serializable
 data class TripUpdatesResponse(
@@ -13,7 +13,7 @@ data class TripUpdatesResponse(
 ) {
     @Serializable
     data class Header(
-        @JsonNames("gtfs_realtime_version") val gtfsRealtimeVersion: String? = null,
+        @SerialName("gtfs_realtime_version") val gtfsRealtimeVersion: String? = null,
         val incrementality: String? = null,
         val timestamp: Long? = null
     )
@@ -21,8 +21,8 @@ data class TripUpdatesResponse(
     @Serializable
     data class Entity(
         val id: String,
-        @JsonNames("is_deleted") val isDeleted: Boolean = false,
-        @JsonNames("trip_update") val tripUpdate: TripUpdate? = null,
+        @SerialName("is_deleted") val isDeleted: Boolean = false,
+        @SerialName("trip_update") val tripUpdate: TripUpdate? = null,
         val vehicle: Vehicle? = null,
         val alert: String? = null,
     ) {
@@ -30,27 +30,27 @@ data class TripUpdatesResponse(
         data class TripUpdate(
             val trip: Trip,
             val vehicle: Vehicle? = null,
-            @JsonNames("stop_time_update") val stopTimeUpdate: List<StopTimeUpdate>,
+            @SerialName("stop_time_update") val stopTimeUpdate: List<StopTimeUpdate>,
             val timestamp: Long? = null,
             val delay: Int? = null
         ) {
             @Serializable
             data class Trip(
-                @JsonNames("trip_id") val tripId: String,
-                @JsonNames("route_id") val routeId: String,
-                @JsonNames("direction_id") val directionId: Int = 0,
-                @JsonNames("start_time") val startTime: String,
-                @JsonNames("start_date") val startDate: String,
-                @JsonNames("schedule_relationship") val scheduleRelationship: String? = null
+                @SerialName("trip_id") val tripId: String,
+                @SerialName("route_id") val routeId: String,
+                @SerialName("direction_id") val directionId: Int = 0,
+                @SerialName("start_time") val startTime: String,
+                @SerialName("start_date") val startDate: String,
+                @SerialName("schedule_relationship") val scheduleRelationship: String? = null
             )
 
             @Serializable
             data class StopTimeUpdate(
-                @JsonNames("stop_id")
+                @SerialName("stop_id")
                 val stopId: String,
                 val departure: Departure? = null,
                 val arrival: Arrival? = null,
-                @JsonNames("schedule_relationship")
+                @SerialName("schedule_relationship")
                 val scheduleRelationship: String? = null
             ) {
                 @Serializable
@@ -73,7 +73,7 @@ data class TripUpdatesResponse(
         data class Vehicle(
             val id: String,
             val label: String,
-            @JsonNames("license_plate") val licensePlate: String
+            @SerialName("license_plate") val licensePlate: String
         )
     }
 }

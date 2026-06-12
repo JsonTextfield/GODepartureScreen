@@ -10,7 +10,7 @@ import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.core.network.model.Alerts
+import com.jsontextfield.departurescreen.core.network.model.AlertsResponse
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceUpdatesResponse
@@ -33,7 +33,6 @@ import kotlinx.datetime.parse
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -41,7 +40,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalSerializationApi::class)
+
 class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
 ) : ITransitRepository {
@@ -248,7 +247,7 @@ class TransitRepository(
     }
 
     private fun pollAlerts(
-        apiCall: suspend () -> Alerts,
+        apiCall: suspend () -> AlertsResponse,
         getCache: () -> List<Alert>,
         updateCache: (List<Alert>) -> Unit
     ): Flow<List<Alert>> = flow {
@@ -297,7 +296,7 @@ class TransitRepository(
         }
     }
 
-    private fun processAlerts(alerts: Alerts): List<Alert> {
+    private fun processAlerts(alerts: AlertsResponse): List<Alert> {
         val allStops = stops.associate {
             it.code to it.name
         }

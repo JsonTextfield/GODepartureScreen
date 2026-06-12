@@ -3,34 +3,34 @@
 package com.jsontextfield.departurescreen.core.network.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 @Serializable
 data class ExceptionsResponse(
-    @JsonNames("Metadata") val metadata: Metadata? = null,
-    @JsonNames("Trip") val trip: List<Trip> = emptyList(),
+    @SerialName("Metadata") val metadata: Metadata? = null,
+    @SerialName("Trip") val trip: List<Trip> = emptyList(),
 ) {
     @Serializable
     data class Trip(
-        @JsonNames("TripNumber") val tripNumber: String = "",
-        @JsonNames("TripName") val tripName: String = "",
-        @JsonNames("IsCancelled") val isCancelled: String = "",
-        @JsonNames("IsOverride") val isOverride: String = "",
-        @JsonNames("Stop") val stop: List<Stop>? = null,
+        @SerialName("TripNumber") val tripNumber: String = "",
+        @SerialName("TripName") val tripName: String = "",
+        @SerialName("IsCancelled") val isCancelled: String = "",
+        @SerialName("IsOverride") val isOverride: String = "",
+        @SerialName("Stop") val stop: List<Stop>? = null,
     ) {
         @Serializable
         data class Stop(
-            @JsonNames("Order") val order: Int = 0,
-            @JsonNames("ID") val id: String = "",
-            @JsonNames("SchArrival") val schArrival: String? = null,
-            @JsonNames("Name") val name: String = "",
-            @JsonNames("IsStopping") val isStopping: String? = null,
-            @JsonNames("IsCancelled") val isCancelled: String? = null,
-            @JsonNames("IsOverride") val isOverride: String? = null,
-            @JsonNames("Code") val code: String = "",
-            @JsonNames("ActualTime") val actualTime: String? = null,
-            @JsonNames("ServiceType") val serviceType: String? = null,
+            @SerialName("Order") val order: Int = 0,
+            @SerialName("ID") val id: String = "",
+            @SerialName("SchArrival") val schArrival: String? = null,
+            @SerialName("Name") val name: String = "",
+            @SerialName("IsStopping") val isStopping: String? = null,
+            @SerialName("IsCancelled") val isCancelled: String? = null,
+            @SerialName("IsOverride") val isOverride: String? = null,
+            @SerialName("Code") val code: String = "",
+            @SerialName("ActualTime") val actualTime: String? = null,
+            @SerialName("ServiceType") val serviceType: String? = null,
         )
     }
 }
