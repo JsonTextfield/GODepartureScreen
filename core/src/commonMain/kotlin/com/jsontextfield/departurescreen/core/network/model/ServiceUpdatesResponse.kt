@@ -31,9 +31,9 @@ data class ServiceUpdatesResponse(
         @SerialName("Rank") val rank: Int? = null,
         @SerialName("Status") val status: String? = null,
         @SerialName("ServiceMode") val serviceMode: String? = null,
-        @SerialName("TripNumbers") val tripNumbers: String? = null,
-        @SerialName("AffectedLineCodes") val affectedLineCodes: List<String> = emptyList(),
+        @SerialName("TripNumbers") val tripNumbers: List<String>? = null,
     )
+
 
     @Serializable
     data class Trains(
@@ -45,10 +45,42 @@ data class ServiceUpdatesResponse(
         data class Train(
             @SerialName("CorridorName") val corridorName: String? = null,
             @SerialName("CorridorCode") val corridorCode: String? = null,
+            @SerialName("Status") val status: String? = null,
             @SerialName("Notifications") val notifications: Notifications? = null,
+            @SerialName("SaagNotifications") val saagNotifications: SaagNotifications? = null,
             @SerialName("TotalUpdates") val totalUpdates: Int = 0,
             @SerialName("LineColour") val lineColour: String? = null,
-        )
+            @SerialName("NetworkStatus") val networkStatus: NetworkStatus? = null,
+        ) {
+
+            @Serializable
+            data class SaagNotifications(
+                @SerialName("SaagNotification") val saagNotification: List<SaagNotification> = emptyList(),
+            )
+
+            @Serializable
+            data class SaagNotification(
+                @SerialName("DepartureTimeDisplay") val departureTimeDisplay: String? = null,
+                @SerialName("ArrivalTimeTimeDisplay") val arrivalTimeTimeDisplay: String? = null,
+                @SerialName("Direction") val direction: String? = null,
+                @SerialName("HeadSign") val headSign: String? = null,
+                @SerialName("DelayDuration") val delayDuration: String? = null,
+                @SerialName("DelayReason") val delayReason: String? = null,
+                @SerialName("DelayReasonFrench") val delayReasonFrench: String? = null,
+                @SerialName("Status") val status: String? = null,
+                @SerialName("PostedDateTime") val postedDateTime: String? = null,
+                @SerialName("TripNumbers") val tripNumbers: List<String>? = null,
+            )
+
+            @Serializable
+            data class NetworkStatus(
+                @SerialName("LineCode") val lineCode: String? = null,
+                @SerialName("RealTimeStatus") val realTimeStatus: String? = null,
+                @SerialName("RealTimeStatusOverride") val realTimeStatusOverride: String? = null,
+                @SerialName("HistoricalStatus") val historicalStatus: Double? = null,
+                @SerialName("HistoricalMonth") val historicalMonth: String? = null,
+            )
+        }
     }
 
     @Serializable
@@ -64,6 +96,7 @@ data class ServiceUpdatesResponse(
             @SerialName("Notifications") val notifications: Notifications? = null,
             @SerialName("TotalUpdates") val totalUpdates: Int = 0,
             @SerialName("LineColour") val lineColour: String? = null,
+            @SerialName("Status") val status: String? = null,
         )
     }
 

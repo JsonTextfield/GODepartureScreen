@@ -323,16 +323,6 @@ class TransitRepository(
                     subjectFr = message.subjectFrench.orEmpty().trim(),
                     bodyEn = Alert.parseHtmlToAnnotatedString(bodyEn),
                     bodyFr = Alert.parseHtmlToAnnotatedString(bodyFr),
-                    urlEn = if ("Sign up for On The GO alerts" in bodyEn) {
-                        "https://www.gotransit.com/en/service-updates/sign-up-for-on-the-go-alerts"
-                    } else {
-                        null
-                    },
-                    urlFr = if ("Inscrivez-vous aux alertes On the GO" in bodyFr) {
-                        "https://www.gotransit.com/fr/mises-a-jour-des-services/inscrivez-vous-aux-alertes-on-the-go"
-                    } else {
-                        null
-                    },
                 )
             }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {
@@ -377,7 +367,7 @@ class TransitRepository(
             alerts.add(n.toAlert())
         }
         response.busAnnouncements?.notification?.forEach { n ->
-            alerts.add(n.toAlert(affectedLines = n.affectedLineCodes))
+            alerts.add(n.toAlert(affectedLines = listOfNotNull(n.code)))
         }
 
         return alerts.distinctBy { it.id }.sortedByDescending { it.date }
@@ -387,8 +377,8 @@ class TransitRepository(
         affectedLines: List<String> = emptyList(),
         affectedStops: List<String> = emptyList()
     ): Alert {
-        val subject = messageSubject.orEmpty().stripHtml()
-        val body = messageBody.orEmpty() // Keep HTML for AnnotatedString parsing
+        val subject = messageSubject.orEmpty()
+        val body = messageBody.orEmpty()
         val dateStr = postedDateTime.orEmpty()
         val date = try {
             Instant.parse(dateStr, serviceUpdateDateFormatter)
@@ -396,10 +386,9 @@ class TransitRepository(
             Instant.fromEpochMilliseconds(0)
         }
 
-        // If no explicit lines are provided, try to extract them from the subject
-        val finalLines = (affectedLines + extractAffectedLines(subject)).map {
+        val finalLines = affectedLines.map {
             if (it == "GT") "KI" else it
-        }.distinct()
+        }
 
         return Alert(
             id = code ?: (dateStr + subject).hashCode().toString(),
@@ -411,30 +400,6 @@ class TransitRepository(
             bodyEn = Alert.parseHtmlToAnnotatedString(body),
             bodyFr = Alert.parseHtmlToAnnotatedString(body),
         )
-    }
-
-    private fun String.stripHtml(): String {
-        return replace(Regex("<[^>]*>"), "")
-            .replace("&nbsp;", " ")
-            .replace("&amp;", "&")
-            .replace("&lt;", "<")
-            .replace("&gt;", ">")
-            .replace("&quot;", "\"")
-            .replace("&apos;", "'")
-            .trim()
-    }
-
-    private fun extractAffectedLines(text: String): List<String> {
-        val lines = mutableListOf<String>()
-        if (text.contains("Lakeshore West", ignoreCase = true)) lines.add("LW")
-        if (text.contains("Lakeshore East", ignoreCase = true)) lines.add("LE")
-        if (text.contains("Stouffville", ignoreCase = true)) lines.add("ST")
-        if (text.contains("Kitchener", ignoreCase = true)) lines.add("KI")
-        if (text.contains("Milton", ignoreCase = true)) lines.add("MI")
-        if (text.contains("Barrie", ignoreCase = true)) lines.add("BR")
-        if (text.contains("Richmond Hill", ignoreCase = true)) lines.add("RH")
-        if (text.contains("UP Express", ignoreCase = true)) lines.add("UP")
-        return lines.distinct()
     }
 
     companion object {
