@@ -64,10 +64,21 @@ fun StopListItem(
                     },
             )
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                for (code in stop.code.split(",")) {
+                    Text(
+                        text = code,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.background(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(4.dp),
+                        ).padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+                }
                 for (type in stop.types) {
                     Text(
                         text = stringResource(type.stringResId),
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.background(
                             color = MaterialTheme.colorScheme.secondaryContainer,

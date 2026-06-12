@@ -97,7 +97,7 @@ data class StopsUIState(
         if (stopType == null && query.isBlank()) return allStops
         val lowerCaseQuery = query.lowercase()
         return allStops.filter {
-            (stopType == null || stopType in it.types) && lowerCaseQuery in it.name.lowercase()
+            (stopType == null || stopType in it.types) && (lowerCaseQuery in it.name.lowercase() || lowerCaseQuery in it.code.lowercase())
         }
     }
 }
