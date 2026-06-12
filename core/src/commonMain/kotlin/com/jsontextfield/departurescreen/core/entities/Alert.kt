@@ -25,8 +25,8 @@ data class Alert(
     val affectedStops: List<String> = emptyList(),
     private val subjectEn: String = "",
     private val subjectFr: String = "",
-    val bodyEn: AnnotatedString = AnnotatedString(""),
-    val bodyFr: AnnotatedString = AnnotatedString(""),
+    val bodyEn: String = "",
+    val bodyFr: String = "",
     val isRead: Boolean = false,
     val urlEn: String? = null,
     val urlFr: String? = null,
@@ -39,16 +39,16 @@ data class Alert(
         return subjectFr.takeIf { "fr" in language && it.isNotEmpty() } ?: subjectEn
     }
 
-    fun getBody(language: String): AnnotatedString {
+    fun getBody(language: String): String {
         return bodyFr.takeIf { "fr" in language && it.isNotEmpty() } ?: bodyEn
     }
 
-    fun getAnnotatedBody(language: String): AnnotatedString {
-        return getBody(language)
+    fun getAnnotatedBody(language: String, linkColor: Color): AnnotatedString {
+        return parseHtmlToAnnotatedString(getBody(language), linkColor)
     }
 
     companion object {
-        fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
+        fun parseHtmlToAnnotatedString(html: String, linkColour: Color): AnnotatedString {
             return buildAnnotatedString {
                 // Remove style tags and their content
                 val sanitizedHtml = html.replace(Regex("(?s)<style[^>]*>.*?</style>"), "")
@@ -115,7 +115,8 @@ data class Alert(
                                     pushLink(LinkAnnotation.Url(url))
                                     pushStyle(
                                         SpanStyle(
-                                            color = Color.Cyan,
+                                            color = linkColour,
+                                            fontWeight = FontWeight.Bold,
                                             textDecoration = TextDecoration.Underline
                                         )
                                     )

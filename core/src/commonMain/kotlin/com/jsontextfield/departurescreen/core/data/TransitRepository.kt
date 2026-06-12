@@ -3,7 +3,6 @@
 package com.jsontextfield.departurescreen.core.data
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
@@ -333,8 +332,8 @@ class TransitRepository(
                     },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
-                    bodyEn = AnnotatedString(bodyEn),
-                    bodyFr = AnnotatedString(bodyFr),
+                    bodyEn = bodyEn,
+                    bodyFr = bodyFr,
                 )
             }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {
@@ -409,8 +408,8 @@ class TransitRepository(
             affectedStops = affectedStops,
             subjectEn = subject,
             subjectFr = subject,
-            bodyEn = Alert.parseHtmlToAnnotatedString(body),
-            bodyFr = Alert.parseHtmlToAnnotatedString(body),
+            bodyEn = body,
+            bodyFr = body,
         )
     }
 

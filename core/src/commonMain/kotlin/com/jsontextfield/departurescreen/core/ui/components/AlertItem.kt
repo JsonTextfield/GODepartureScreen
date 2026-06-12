@@ -116,7 +116,7 @@ fun AlertItem(
                     }
                 }
                 Text(
-                    text = alert.getAnnotatedBody(language),
+                    text = alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

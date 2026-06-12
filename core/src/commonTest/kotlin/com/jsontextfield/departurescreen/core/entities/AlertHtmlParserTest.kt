@@ -1,36 +1,39 @@
 package com.jsontextfield.departurescreen.core.entities
 
+import androidx.compose.ui.graphics.Color
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AlertHtmlParserTest {
 
+    private val linkColor = Color.Cyan
+
     @Test
     fun testStripStyleTags() {
         val html = "<style>.foo { color: red; }</style>Hello"
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertEquals("Hello", annotatedString.text)
     }
 
     @Test
     fun testStripComments() {
         val html = "Hello<!-- This is a comment --> World"
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertEquals("Hello World", annotatedString.text)
     }
 
     @Test
     fun testDecodeEntities() {
         val html = "Hello&nbsp;&amp;&nbsp;World &#183; here&#8217;s"
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertEquals("Hello & World · here's", annotatedString.text)
     }
 
     @Test
     fun testBoldTag() {
         val html = "<b>Bold</b> Text"
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertEquals("Bold Text", annotatedString.text)
         // Check if bold style is applied (this is harder to test on AnnotatedString without deep inspection, 
         // but we can check if spans exist)
@@ -40,7 +43,7 @@ class AlertHtmlParserTest {
     @Test
     fun testLinkTag() {
         val html = "Click <a href=\"https://google.com\">here</a>"
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertEquals("Click here", annotatedString.text)
         // Check if style is applied for link
         assertTrue(annotatedString.spanStyles.isNotEmpty())
@@ -55,7 +58,7 @@ class AlertHtmlParserTest {
                 Check the <a href="https://example.com">updates</a>.
             </div>
         """.trimIndent()
-        val annotatedString = Alert.parseHtmlToAnnotatedString(html)
+        val annotatedString = Alert.parseHtmlToAnnotatedString(html, linkColor)
         assertTrue(!annotatedString.text.contains("style"))
         assertTrue(annotatedString.text.contains("Important:"))
         assertTrue(annotatedString.text.contains("Check the updates."))
