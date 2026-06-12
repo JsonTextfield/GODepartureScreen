@@ -3,6 +3,7 @@
 package com.jsontextfield.departurescreen.core.data
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import co.touchlab.kermit.Logger
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
@@ -257,7 +258,7 @@ class TransitRepository(
         while (currentCoroutineContext().isActive) {
             try {
                 updateCache(
-                    processAlerts(apiCall()).also { emit(it) }
+                    apiCall().toAlerts().also { emit(it) }
                 )
             } catch (exception: Exception) {
                 Logger.withTag(TransitRepository::class.simpleName.toString()).e { exception.message.toString() }
@@ -277,10 +278,20 @@ class TransitRepository(
             }?.map { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
                 val types = buildSet {
                     for (stop in stops) {
-                        for (stopType in StopType.entries) {
-                            if (stopType.typeString in stop.locationType) {
-                                add(stopType)
-                            }
+                        // Possible stop types: [Bus Stop, Bus Terminal, Park & Ride, Train & Bus Station, Train Station]
+                        if (StopType.TRAIN.typeString in stop.locationType && StopType.BUS.typeString in stop.locationType) {
+                            // Train & Bus Station
+                            add(StopType.TRAIN)
+                            add(StopType.BUS)
+                        } else if (StopType.TRAIN.typeString in stop.locationType) {
+                            // Train Station
+                            add(StopType.TRAIN)
+                        } else if (StopType.BUS.typeString in stop.locationType) {
+                            // Bus Stop, Bus Terminal
+                            add(StopType.BUS)
+                        } else {
+                            // Park & Ride
+                            add(StopType.BUS)
                         }
                     }
                 }
@@ -299,12 +310,12 @@ class TransitRepository(
         }
     }
 
-    private fun processAlerts(alerts: AlertsResponse): List<Alert> {
+    private fun AlertsResponse.toAlerts(): List<Alert> {
         val allStops = stops.associate {
             it.code to it.name
         }
         return try {
-            alerts.messages?.message?.map { message ->
+            messages?.message?.map { message ->
                 val bodyEn = message.bodyEnglish.orEmpty().trim()
                 val bodyFr = message.bodyFrench.orEmpty().trim()
 
@@ -321,8 +332,8 @@ class TransitRepository(
                     },
                     subjectEn = message.subjectEnglish.orEmpty().trim(),
                     subjectFr = message.subjectFrench.orEmpty().trim(),
-                    bodyEn = Alert.parseHtmlToAnnotatedString(bodyEn),
-                    bodyFr = Alert.parseHtmlToAnnotatedString(bodyFr),
+                    bodyEn = AnnotatedString(bodyEn),
+                    bodyFr = AnnotatedString(bodyFr),
                 )
             }?.sortedByDescending { it.date } ?: emptyList()
         } catch (exception: IOException) {
