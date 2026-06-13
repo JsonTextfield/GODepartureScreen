@@ -57,16 +57,13 @@ class AlertsViewModel(
         combine(
             preferencesRepository.getReadAlerts().take(1),
             preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-                if (useLinks) {
+                combine(
+                    goTrainDataSource.getServiceAlerts(),
+                    goTrainDataSource.getInformationAlerts(),
+                    goTrainDataSource.getMarketingAlerts(),
                     goTrainDataSource.getServiceUpdates("all", language)
-                } else {
-                    combine(
-                        goTrainDataSource.getServiceAlerts(),
-                        goTrainDataSource.getInformationAlerts(),
-                        goTrainDataSource.getMarketingAlerts()
-                    ) { service, info, marketing ->
-                        (service + info + marketing).distinctBy { it.id }
-                    }
+                ) { service, info, marketing, serviceUpdates ->
+                    (service + info + marketing + serviceUpdates).distinctBy { it.id }
                 }
             },
         ) { readAlerts, alerts ->
