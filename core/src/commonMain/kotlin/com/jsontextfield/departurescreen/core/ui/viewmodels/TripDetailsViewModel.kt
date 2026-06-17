@@ -75,7 +75,6 @@ class TripDetailsViewModel(
 
                 _uiState.update {
                     it.copy(
-                        status = Status.LOADED,
                         stops = schedules,
                         moreTrips = moreTrips,
                     )
@@ -97,6 +96,7 @@ class TripDetailsViewModel(
                     ) { alerts, timeFormat ->
                         _uiState.update {
                             it.copy(
+                                status = Status.LOADED,
                                 alerts = alerts
                                     .map { it.copy(isRead = true) }
                                     .filter { alert ->
