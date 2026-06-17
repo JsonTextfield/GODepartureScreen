@@ -17,6 +17,8 @@ import kotlin.uuid.Uuid
 
 class FakeTransitRepository : ITransitRepository {
 
+    var shouldThrowError = false
+
     var stops: List<Stop> = listOf(
         Stop(
             code = "UN",
@@ -66,10 +68,12 @@ class FakeTransitRepository : ITransitRepository {
 
 
     override suspend fun getTrips(stopCode: String): List<Trip> {
+        if (shouldThrowError) throw Exception("Test Error")
         return trips
     }
 
     override suspend fun getTripDetails(tripNumber: String): TripDetails? {
+        if (shouldThrowError) throw Exception("Test Error")
         return null
     }
 
@@ -100,6 +104,7 @@ class FakeTransitRepository : ITransitRepository {
     }
 
     override suspend fun getUPExpressTripSchedule(id: String): List<Schedule> {
+        if (shouldThrowError) throw Exception("Test Error")
         return emptyList()
     }
 }
