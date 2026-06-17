@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.core.network
 
 import com.jsontextfield.departurescreen.core.network.model.AlertsResponse
 import com.jsontextfield.departurescreen.core.network.model.ExceptionsResponse
+import com.jsontextfield.departurescreen.core.network.model.JourneyResponse
 import com.jsontextfield.departurescreen.core.network.model.NextServiceResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceBusesResponse
 import com.jsontextfield.departurescreen.core.network.model.ServiceAtAGlanceTrainsResponse
@@ -198,7 +199,7 @@ class DepartureScreenAPI {
         to: String,
         startTime: String,
         maxJourney: Int,
-    ): String {
+    ): JourneyResponse {
         return client.get("Schedule/Journey/$date/$from/$to/$startTime/$maxJourney").body()
     }
 
@@ -208,7 +209,7 @@ class DepartureScreenAPI {
         startTime: String,
         maxJourney: Int,
         to: String? = null,
-    ): String {
+    ): JourneyResponse {
         return client.get("Schedule/Journey/$date/$from/$startTime/$maxJourney") {
             to?.let {
                 url {

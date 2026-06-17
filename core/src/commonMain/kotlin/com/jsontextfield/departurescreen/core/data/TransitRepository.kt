@@ -171,9 +171,10 @@ class TransitRepository(
         }
     }
 
-    override suspend fun getTripDetails(tripNumber: String): TripDetails? {
+    override suspend fun getTripDetails(tripNumber: String, stopCode: String?): TripDetails? {
         return try {
-            val serviceDate = (Clock.System.now() - 5.hours).toLocalDateTime(timeZone).date
+            val now = Clock.System.now()
+            val serviceDate = (now - 5.hours).toLocalDateTime(timeZone).date
             val serviceMidnight = LocalDateTime(serviceDate, LocalTime(0, 0)).toInstant(TimeZone.UTC)
 
             val tripDetailsResponse = departureScreenAPI.getTrip(tripNumber, serviceDate.toString().replace("-", ""))
@@ -183,6 +184,28 @@ class TransitRepository(
             val lastUpdated = LocalDateTime
                 .parse(tripDetailsResponse.metadata?.timestamp.orEmpty(), inFormatter)
                 .toInstant(timeZone)
+
+            val journeyData = if (stopCode != null) {
+                val dateStr = serviceDate.toString().replace("-", "")
+                val startTimeStr = now.toLocalDateTime(timeZone).time.toString().substring(0, 5).replace(":", "")
+                val journeyResponse = departureScreenAPI.getJourney(dateStr, stopCode, startTimeStr, 10)
+                val currentTrip = journeyResponse.schJourneys
+                    .flatMap { it.services }
+                    .flatMap { it.trips?.trip ?: emptyList() }
+                    .find { it.number == tripNumber }
+                val direction = currentTrip?.direction.orEmpty()
+                val lineCode = currentTrip?.line.orEmpty()
+                val sameDirectionTripNumbers = journeyResponse.schJourneys
+                    .flatMap { it.services }
+                    .flatMap { it.trips?.trip ?: emptyList() }
+                    .filter { it.direction == direction && it.line == lineCode }
+                    .map { it.number }
+                    .toSet()
+                Pair(direction, sameDirectionTripNumbers)
+            } else {
+                Pair("", emptySet())
+            }
+
             tripDetailsResponse.trips.map { trip ->
                 TripDetails(
                     id = trip.tripNumber,
@@ -213,6 +236,8 @@ class TransitRepository(
                         stop.time
                     },
                     serviceGuarantee = stops.joinToString("\n"),
+                    direction = journeyData.first,
+                    sameDirectionTripNumbers = journeyData.second,
                 )
             }.firstOrNull()
         } catch (e: Exception) {

@@ -72,7 +72,7 @@ class FakeTransitRepository : ITransitRepository {
         return trips
     }
 
-    override suspend fun getTripDetails(tripNumber: String): TripDetails? {
+    override suspend fun getTripDetails(tripNumber: String, stopCode: String?): TripDetails? {
         if (shouldThrowError) throw Exception("Test Error")
         return null
     }

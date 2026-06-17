@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface ITransitRepository {
     suspend fun getTrips(stopCode: String): List<Trip>
 
-    suspend fun getTripDetails(tripNumber: String) : TripDetails?
+    suspend fun getTripDetails(tripNumber: String, stopCode: String? = null) : TripDetails?
 
     fun getServiceAlerts(): Flow<List<Alert>>
 

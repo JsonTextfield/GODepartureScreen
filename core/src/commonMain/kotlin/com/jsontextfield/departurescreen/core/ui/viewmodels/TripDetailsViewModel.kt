@@ -52,15 +52,27 @@ class TripDetailsViewModel(
                         destination = destination,
                     )
                 }
+
+                val primaryStopCode = stopCode.split(",").first()
+                val tripDetails = if (lineCode == "UP") {
+                    null // UP Express doesn't use the standard trip details endpoint in this way here
+                } else {
+                    transitRepository.getTripDetails(tripId, primaryStopCode)
+                }
+
                 val moreTrips = stopCode.split(",").flatMap { transitRepository.getTrips(it) }
-                    .filter { it.code == lineCode && it.id != tripId }
+                    .filter {
+                        it.code == lineCode && it.id != tripId &&
+                                (tripDetails == null || it.id in tripDetails.sameDirectionTripNumbers)
+                    }
                     .take(4)
 
                 val schedules = if (lineCode == "UP") {
                     transitRepository.getUPExpressTripSchedule(tripId)
                 } else {
-                    transitRepository.getTripDetails(tripId)?.stops
+                    tripDetails?.stops
                 } ?: emptyList()
+
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
