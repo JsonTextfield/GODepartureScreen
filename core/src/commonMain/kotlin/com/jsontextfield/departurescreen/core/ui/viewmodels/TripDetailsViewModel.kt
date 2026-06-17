@@ -22,7 +22,7 @@ import kotlin.time.ExperimentalTime
 
 class TripDetailsViewModel(
     private val preferencesRepository: IPreferencesRepository,
-    private val goTrainDataSource: ITransitRepository,
+    private val transitRepository: ITransitRepository,
     private val selectedStop: String,
     private val stopCode: String,
     private val tripId: String,
@@ -51,14 +51,14 @@ class TripDetailsViewModel(
                     destination = destination,
                 )
             }
-            val moreTrips = stopCode.split(",").flatMap { goTrainDataSource.getTrips(it) }
+            val moreTrips = stopCode.split(",").flatMap { transitRepository.getTrips(it) }
                 .filter { it.code == lineCode && it.id != tripId }
                 .take(4)
 
             val schedules = if (lineCode == "UP") {
-                goTrainDataSource.getUPExpressTripSchedule(tripId)
+                transitRepository.getUPExpressTripSchedule(tripId)
             } else {
-                goTrainDataSource.getTripDetails(tripId)?.stops
+                transitRepository.getTripDetails(tripId)?.stops
             } ?: emptyList()
             _uiState.update {
                 it.copy(
@@ -69,11 +69,11 @@ class TripDetailsViewModel(
             }
             preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
                 val alertsFlow = if (useLinks) {
-                    goTrainDataSource.getServiceUpdates("all", "en")
+                    transitRepository.getServiceUpdates("all", "en")
                 } else {
                     combine(
-                        goTrainDataSource.getServiceAlerts(),
-                        goTrainDataSource.getInformationAlerts()
+                        transitRepository.getServiceAlerts(),
+                        transitRepository.getInformationAlerts()
                     ) { service, info ->
                         service + info
                     }
