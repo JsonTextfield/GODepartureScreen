@@ -70,7 +70,7 @@ class GetSelectedStopUseCaseTest {
                 name = "Test Stop",
             )
             fakeGoTrainDataSource.stops = listOf(preferredStop, otherStop)
-            fakePreferencesRepository.setSelectedStopCode(preferredStop.code)
+            fakePreferencesRepository.setSelectedStop(preferredStop.code)
 
             val result = getSelectedStopUseCase(null).first()
 
@@ -92,7 +92,7 @@ class GetSelectedStopUseCaseTest {
                 name = "Test Stop",
             )
             fakeGoTrainDataSource.stops = listOf(otherStop, preferredStop)
-            fakePreferencesRepository.setSelectedStopCode(preferredStop.code)
+            fakePreferencesRepository.setSelectedStop(preferredStop.code)
 
             val result = getSelectedStopUseCase("invalid").first()
 

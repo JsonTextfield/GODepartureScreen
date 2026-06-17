@@ -12,17 +12,24 @@ class GetSelectedStopUseCase(
 ) {
     /**
      * Returns the selected stop.
-     * If the [stopCode] passed in is `null` or not found, then the selected stop is determined in this order:
+     * If the [stopName] passed in is `null` or not found, then the selected stop is determined in this order:
      *
      * 1. selected stop from the preferences
-     * 2. first stop with code `UN`
-     * 3. first stop in the list
+     * 2. first stop in the list
      */
-    operator fun invoke(stopCode: String? = null): Flow<Stop?> {
-        return preferencesRepository.getSelectedStopCode().map { prefStopCode ->
+    operator fun invoke(stopName: String? = null): Flow<Stop?> {
+        return preferencesRepository.getSelectedStop().map { prefStopName ->
             val allStops = goTrainDataSource.getAllStops()
-            allStops.firstOrNull { stop -> stopCode?.let { stopCode in stop.code } == true }
-                ?: allStops.firstOrNull { stop -> prefStopCode in stop.code }
+                .groupBy { it.name }
+                .map { (name, stops) ->
+                    Stop(
+                        name = name,
+                        code = stops.joinToString(",") { it.code },
+                        types = stops.flatMap { it.types }.toSet(),
+                    )
+                }
+            allStops.firstOrNull { stop -> stopName == stop.name }
+                ?: allStops.firstOrNull { stop -> prefStopName == stop.name }
                 ?: allStops.firstOrNull()
         }
     }

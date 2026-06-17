@@ -225,7 +225,7 @@ fun TripDetailsScreen(
                                                 modifier = Modifier
                                                     .heightIn(min = 60.dp)
                                                     .clickable(onClick = {
-                                                        tripDetailsViewModel.setSelectedStop(stop.code)
+                                                        tripDetailsViewModel.setSelectedStop(stop.name)
                                                         onBackPressed()
                                                     })
                                                     .padding(8.dp)

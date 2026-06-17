@@ -11,4 +11,5 @@ enum class StopType(
 ) {
     BUS(Res.string.bus, "Bus"),
     TRAIN(Res.string.train, "Train"),
+    //PARK_AND_RIDE(Res.string.park_and_ride, "Park & Ride"),
 }

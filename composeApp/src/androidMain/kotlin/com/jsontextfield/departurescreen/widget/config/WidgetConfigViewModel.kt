@@ -29,7 +29,7 @@ class WidgetConfigViewModel(
         widgetId?.let {
             combine(
                 widgetConfigDataStore.getConfig(widgetId),
-                preferencesRepository.getSelectedStopCode(),
+                preferencesRepository.getSelectedStop(),
             ) { widgetConfig, selectedStopCode ->
                 val allStops = goTrainDataSource.getAllStops()
                 _config.update {

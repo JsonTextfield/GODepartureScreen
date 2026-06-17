@@ -7,7 +7,7 @@ import com.jsontextfield.departurescreen.core.data.FAVOURITE_STOPS_KEY
 import com.jsontextfield.departurescreen.core.data.HIDDEN_TRAINS_KEY
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
-import com.jsontextfield.departurescreen.core.data.SELECTED_STOP_CODE_KEY
+import com.jsontextfield.departurescreen.core.data.SELECTED_STOP_KEY
 import com.jsontextfield.departurescreen.core.data.SORT_MODE_KEY
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -30,7 +30,7 @@ actual fun preferencesModule(): Module {
                 dataStore = createDataStore(),
                 onSetStop = { stopCode: String ->
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)
-                    userDefaults.setObject(stopCode, forKey = SELECTED_STOP_CODE_KEY)
+                    userDefaults.setObject(stopCode, forKey = SELECTED_STOP_KEY)
                 },
                 onSetSortMode = { sortMode ->
                     val userDefaults = NSUserDefaults(suiteName = appGroupId)

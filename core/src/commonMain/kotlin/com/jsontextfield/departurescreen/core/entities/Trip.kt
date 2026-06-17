@@ -28,6 +28,8 @@ data class Trip(
     val isBus: Boolean = false,
     val cars: String? = null,
     val busType: String? = null,
+    val stopName: String? = null,
+    val stopCode: String? = null,
 ) {
     val relativeDepartureTime: Int = (departureTime - lastUpdated).toInt(DurationUnit.MINUTES)
 

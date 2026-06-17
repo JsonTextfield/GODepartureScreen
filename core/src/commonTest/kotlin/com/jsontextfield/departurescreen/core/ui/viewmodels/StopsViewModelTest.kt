@@ -75,7 +75,7 @@ class StopsViewModelTest {
         assertEquals(true, "UN" in (stopsViewModel.uiState.value.selectedStop?.code ?: ""))
         stopsViewModel.setSelectedStop(stop)
         advanceUntilIdle()
-        assertEquals(stop.code.split(",").first(), preferencesRepository.getSelectedStopCode().first())
+        assertEquals(stop.code.split(",").first(), preferencesRepository.getSelectedStop().first())
         assertEquals(stop, getSelectedStopUseCase().first())
         stopsViewModel = StopsViewModel(
             getSelectedStopUseCase = getSelectedStopUseCase,

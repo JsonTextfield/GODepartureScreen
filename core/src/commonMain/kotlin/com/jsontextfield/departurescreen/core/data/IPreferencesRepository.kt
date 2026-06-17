@@ -11,8 +11,8 @@ interface IPreferencesRepository {
     suspend fun setVisibleTrains(visibleTrains: Set<String>)
     fun getSortMode(): Flow<SortMode>
     suspend fun setSortMode(sortMode: SortMode)
-    fun getSelectedStopCode(): Flow<String>
-    suspend fun setSelectedStopCode(stopCode: String)
+    fun getSelectedStop(): Flow<String>
+    suspend fun setSelectedStop(stopName: String)
     fun getTheme(): Flow<ThemeMode>
     suspend fun setTheme(theme: ThemeMode)
     fun getDynamicTheme(): Flow<Boolean>
@@ -37,7 +37,7 @@ const val DYNAMIC_THEME_KEY = "dynamicTheme"
 const val CONTRAST_KEY = "contrast"
 const val TIME_FORMAT_KEY = "timeFormat"
 const val OLD_SELECTED_STOP_CODE_KEY = "selectedStationCode"
-const val SELECTED_STOP_CODE_KEY = "selectedStopCode"
+const val SELECTED_STOP_KEY = "selectedStop"
 const val OLD_FAVOURITE_STOPS_KEY = "favouriteStations"
 const val FAVOURITE_STOPS_KEY = "favouriteStops"
 const val HIDDEN_TRAINS_KEY = "hiddenTrains"

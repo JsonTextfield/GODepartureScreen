@@ -49,17 +49,17 @@ class DataStorePreferencesRepository(
         onSetSortMode(sortMode)
     }
 
-    override fun getSelectedStopCode(): Flow<String> {
+    override fun getSelectedStop(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STOP_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "UN"
         }
     }
 
-    override suspend fun setSelectedStopCode(stopCode: String) {
+    override suspend fun setSelectedStop(stopName: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STOP_CODE_KEY)] = stopCode
+            preferences[stringPreferencesKey(SELECTED_STOP_KEY)] = stopName
         }
-        onSetStop(stopCode)
+        onSetStop(stopName)
     }
 
     override suspend fun setTheme(theme: ThemeMode) {

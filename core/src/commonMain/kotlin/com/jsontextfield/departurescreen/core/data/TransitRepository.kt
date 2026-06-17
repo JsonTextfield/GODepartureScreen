@@ -45,7 +45,8 @@ class TransitRepository(
     private val departureScreenAPI: DepartureScreenAPI
 ) : ITransitRepository {
     private val timeZone = TimeZone.of("America/Toronto")
-    private var stops: List<Stop> = emptyList()
+    private var stopsByName: Map<String, List<Stop>> = emptyMap()
+    private var stopsMap: Map<String, String> = emptyMap()
     private var serviceAlerts: List<Alert> = emptyList()
     private var informationAlerts: List<Alert> = emptyList()
     private var marketingAlerts: List<Alert> = emptyList()
@@ -64,7 +65,8 @@ class TransitRepository(
         }
         return try {
             val nextService = departureScreenAPI.getNextService(stopCode)
-            val lastUpdated = LocalDateTime.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter).toInstant(timeZone)
+            val lastUpdated =
+                LocalDateTime.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter).toInstant(timeZone)
             val lines = nextService.nextService?.lines
             val cancelledTrips =
                 exceptions?.trip?.filter { it.isCancelled == "1" }?.map { it.tripNumber } ?: emptyList()
@@ -97,6 +99,8 @@ class TransitRepository(
                             isCancelled = trip.tripId in cancelledTrips,
                             departureTime = departureTime,
                             platform = "-",
+                            stopCode = stopCode,
+                            stopName = stopsMap[stopCode],
                         )
                     }
                 }
@@ -114,7 +118,8 @@ class TransitRepository(
                 ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
-                val updateTime = LocalDateTime.parse(line.updateTime, inFormatter).toInstant(TimeZone.UTC) ?: lastUpdated
+                val updateTime =
+                    LocalDateTime.parse(line.updateTime, inFormatter).toInstant(TimeZone.UTC) ?: lastUpdated
                 Trip(
                     id = line.tripNumber,
                     code = lineCode,
@@ -296,51 +301,47 @@ class TransitRepository(
     }
 
     override suspend fun getAllStops(): List<Stop> {
-        if (stops.isNotEmpty()) {
-            return stops
+        if (stopsByName.isNotEmpty()) {
+            return stopsByName.values.flatten()
         }
         return try {
             departureScreenAPI.getAllStops().stations?.stops?.groupBy {
                 it.locationName
-            }?.map { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
-                val types = buildSet {
-                    for (stop in stops) {
-                        // Possible stop types: [Bus Stop, Bus Terminal, Park & Ride, Train & Bus Station, Train Station]
+            }?.flatMap { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
+                stops.map { stop ->
+                    // Possible stop types: [Bus Stop, Bus Terminal, Park & Ride, Train & Bus Station, Train Station]
+                    val type =
                         if (StopType.TRAIN.typeString in stop.locationType && StopType.BUS.typeString in stop.locationType) {
                             // Train & Bus Station
-                            add(StopType.TRAIN)
-                            add(StopType.BUS)
+                            setOf(StopType.TRAIN, StopType.BUS)
                         } else if (StopType.TRAIN.typeString in stop.locationType) {
                             // Train Station
-                            add(StopType.TRAIN)
+                            setOf(StopType.TRAIN)
                         } else if (StopType.BUS.typeString in stop.locationType) {
                             // Bus Stop, Bus Terminal
-                            add(StopType.BUS)
+                            setOf(StopType.BUS)
                         } else {
                             // Park & Ride
-                            add(StopType.BUS)
+                            setOf(StopType.BUS)
                         }
-                    }
+                    Stop(
+                        name = stopName,
+                        code = stop.locationCode,
+                        types = type,
+                    )
                 }
-                Stop(
-                    name = stopName,
-                    code = stops.joinToString(",") { it.locationCode },
-                    types = types,
-                )
             } ?: emptyList()
         } catch (exception: IOException) {
             throw exception
         } catch (_: Exception) {
             emptyList()
         }.also {
-            stops = it
+            stopsMap = it.associate { stop -> stop.code to stop.name }
+            stopsByName = it.groupBy { stop -> stop.name }
         }
     }
 
     private fun AlertsResponse.toAlerts(): List<Alert> {
-        val allStops = stops.associate {
-            it.code to it.name
-        }
         return try {
             messages?.message?.map { message ->
                 val bodyEn = message.bodyEnglish.orEmpty().trim()
@@ -352,7 +353,7 @@ class TransitRepository(
                     id = message.code,
                     date = date,
                     affectedLines = message.lines.map { if (it.code == "GT") "KI" else it.code },
-                    affectedStops = allStops.mapNotNull {
+                    affectedStops = stopsMap.mapNotNull {
                         if (message.stops.any { stop -> stop.code in it.key }) {
                             it.value
                         } else {

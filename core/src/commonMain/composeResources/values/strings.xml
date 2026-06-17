@@ -42,6 +42,7 @@
     <string name="scroll_to_top">Scroll to top</string>
     <string name="bus">Bus</string>
     <string name="train">Train</string>
+    <string name="park_and_ride">Park &amp; Ride</string>
     <string name="day_difference">%1$sd</string>
     <string name="hour_difference">%1$sh</string>
     <string name="minute_difference">%1$sm</string>

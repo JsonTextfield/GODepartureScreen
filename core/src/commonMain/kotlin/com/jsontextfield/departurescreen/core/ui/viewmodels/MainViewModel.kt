@@ -83,11 +83,10 @@ class MainViewModel(
             getSelectedStopUseCase(),
             preferencesRepository.getFavouriteStops(),
         ) { selectedStop, favouriteStops ->
-            val stopCodes = selectedStop?.code?.split(",") ?: emptySet()
             _uiState.update {
                 it.copy(
                     selectedStop = selectedStop?.copy(
-                        isFavourite = stopCodes.any { code -> code in favouriteStops }
+                        isFavourite = selectedStop.name in favouriteStops
                     )
                 )
             }
@@ -212,9 +211,9 @@ class MainViewModel(
         }
     }
 
-    fun setSelectedStop(stopCode: String?) {
+    fun setSelectedStop(stopName: String?) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStopCode(stopCode ?: "UN")
+            preferencesRepository.setSelectedStop(stopName.orEmpty())
         }
     }
 

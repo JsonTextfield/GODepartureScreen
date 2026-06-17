@@ -23,9 +23,9 @@ class FakePreferencesRepository : IPreferencesRepository {
     }
 
     private val selectedStopCodeFlow = MutableStateFlow("UN")
-    override fun getSelectedStopCode(): Flow<String> = selectedStopCodeFlow
-    override suspend fun setSelectedStopCode(stopCode: String) {
-        selectedStopCodeFlow.value = stopCode
+    override fun getSelectedStop(): Flow<String> = selectedStopCodeFlow
+    override suspend fun setSelectedStop(stopName: String) {
+        selectedStopCodeFlow.value = stopName
     }
 
     private val themeFlow = MutableStateFlow(ThemeMode.DEFAULT)

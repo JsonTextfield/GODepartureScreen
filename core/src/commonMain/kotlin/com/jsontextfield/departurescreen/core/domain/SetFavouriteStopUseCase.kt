@@ -8,12 +8,11 @@ class SetFavouriteStopUseCase(
     private val preferencesRepository: IPreferencesRepository,
 ) {
     suspend operator fun invoke(stop: Stop) {
-        val favouriteStopCodes = preferencesRepository.getFavouriteStops().first()
-        val stopCodes = stop.code.split(",").toSet()
-        val updatedStops = if (stopCodes.any { it in favouriteStopCodes }) {
-            favouriteStopCodes - stopCodes
+        val favouriteStops = preferencesRepository.getFavouriteStops().first()
+        val updatedStops = if (stop.name in favouriteStops) {
+            favouriteStops - stop.name
         } else {
-            favouriteStopCodes + stopCodes
+            favouriteStops + stop.name
         }
         preferencesRepository.setFavouriteStops(updatedStops)
     }

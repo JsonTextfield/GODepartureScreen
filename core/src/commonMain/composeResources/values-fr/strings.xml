@@ -42,6 +42,7 @@
     <string name="scroll_to_top">Faire défiler vers le haut</string>
     <string name="bus">Autobus</string>
     <string name="train">Train</string>
+    <string name="park_and_ride">Stationnement-relais</string>
     <string name="day_difference">%1$s j</string>
     <string name="hour_difference">%1$s h</string>
     <string name="minute_difference">%1$s m</string>

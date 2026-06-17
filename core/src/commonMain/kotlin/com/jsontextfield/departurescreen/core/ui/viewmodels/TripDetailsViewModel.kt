@@ -118,9 +118,9 @@ class TripDetailsViewModel(
         }
     }
 
-    fun setSelectedStop(stopCode: String) {
+    fun setSelectedStop(stopName: String) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStopCode(stopCode)
+            preferencesRepository.setSelectedStop(stopName)
         }
     }
 }

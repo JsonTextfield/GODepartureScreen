@@ -23,35 +23,41 @@ class StopsViewModel(
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
     private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
-    selectedStopCode: String? = null,
+    selectedStopName: String? = null,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<StopsUIState> = MutableStateFlow(StopsUIState())
     val uiState: StateFlow<StopsUIState> = _uiState.asStateFlow()
 
     init {
-        loadData(selectedStopCode)
+        loadData(selectedStopName)
     }
 
-    fun loadData(selectedStopCode: String? = null) {
+    fun loadData(selectedStopName: String? = null) {
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
             )
         }
         combine(
-            getSelectedStopUseCase(selectedStopCode),
+            getSelectedStopUseCase(selectedStopName),
             preferencesRepository.getFavouriteStops(),
-        ) { selectedStop, favouriteStopCodes ->
+        ) { selectedStop, favouriteStops ->
             val allStops = goTrainDataSource.getAllStops()
-            val updatedStops = allStops.map { stop ->
-                stop.copy(
-                    isFavourite = stop.code.split(",").any { code -> code in favouriteStopCodes }
+            val updatedStops = allStops
+                .groupBy {
+                    it.name
+                }.map { (name, stops) ->
+                    Stop(
+                        name = name,
+                        code = stops.joinToString(",") { it.code },
+                        types = stops.flatMap { it.types }.toSet(),
+                        isFavourite = name in favouriteStops,
+                    )
+                }.sortedWith(
+                    compareByDescending<Stop> { it.isFavourite }
+                        .thenByDescending { "UN" in it.code || "02300" in it.code }
+                        .thenBy { it.name }
                 )
-            }.sortedWith(
-                compareByDescending<Stop> { it.isFavourite }
-                    .thenByDescending { "UN" in it.code || "02300" in it.code }
-                    .thenBy { it.name }
-            )
 
             _uiState.update {
                 it.copy(
@@ -67,7 +73,7 @@ class StopsViewModel(
 
     fun setSelectedStop(stop: Stop) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStopCode(stop.code.split(",").first())
+            preferencesRepository.setSelectedStop(stop.name)
         }
     }
 

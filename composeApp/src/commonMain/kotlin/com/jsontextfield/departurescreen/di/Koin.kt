@@ -57,7 +57,7 @@ val viewModelModule = module {
             setFavouriteStopUseCase = get<SetFavouriteStopUseCase>(),
             goTrainDataSource = get<ITransitRepository>(),
             preferencesRepository = get<IPreferencesRepository>(),
-            selectedStopCode = params.getOrNull(String::class),
+            selectedStopName = params.getOrNull(String::class),
         )
     }
     viewModel { params ->
