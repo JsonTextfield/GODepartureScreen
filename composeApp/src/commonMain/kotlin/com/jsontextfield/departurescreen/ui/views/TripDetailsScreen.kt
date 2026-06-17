@@ -49,6 +49,7 @@ import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListHeader
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListItem
+import com.jsontextfield.departurescreen.core.ui.components.TripListHeader
 import com.jsontextfield.departurescreen.core.ui.components.TripListItem
 import com.jsontextfield.departurescreen.core.ui.components.isEven
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
@@ -168,6 +169,7 @@ fun TripDetailsScreen(
                                 RoundedCornerShape(8.dp)
                             ).animateItem()
                     ) {
+                        TripListHeader(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                         uiState.moreTrips.forEachIndexed { index, trip ->
                             Surface(
                                 tonalElevation = if (index.isEven) 1.dp else 0.dp,
