@@ -1,14 +1,10 @@
 package com.jsontextfield.departurescreen.ui.menu
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,12 +29,7 @@ fun OverflowMenuItem(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(text = tooltip, modifier = Modifier.weight(1f))
                     if (isAlertIndicatorVisible) {
-                        Box(
-                            modifier = Modifier.size(8.dp).background(
-                                color = MaterialTheme.colorScheme.error,
-                                shape = CircleShape,
-                            ),
-                        )
+                        Badge()
                     }
                 }
             },
