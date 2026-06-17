@@ -115,6 +115,71 @@ fun TripDetailsScreen(
                             bottom = 100.dp,
                         )
                     ) {
+                        if (uiState.alerts.isNotEmpty()) {
+                            item {
+                                SectionHeader(stringResource(Res.string.alerts))
+                            }
+                            items(
+                                items = uiState.alerts,
+                                key = { alert -> alert.id },
+                            ) { alert ->
+                                AlertItem(
+                                    alert = alert,
+                                    modifier = Modifier
+                                        .widthIn(max = 400.dp)
+                                        .animateItem(),
+                                    onClick = {
+                                        if ("fr" in Locale.current.language) {
+                                            alert.urlFr
+                                        } else {
+                                            alert.urlEn
+                                        }?.let(uriHandler::openUri)
+                                    },
+                                )
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
+                        if (uiState.moreTrips.isNotEmpty()) {
+                            item {
+                                SectionHeader(stringResource(Res.string.more_trips, uiState.selectedStop))
+                            }
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .widthIn(max = 400.dp)
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.outline.copy(alpha = .5f),
+                                            RoundedCornerShape(8.dp)
+                                        ).animateItem()
+                                ) {
+                                    TripListHeader(
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
+                                    uiState.moreTrips.forEachIndexed { index, trip ->
+                                        Surface(
+                                            tonalElevation = if (index.isEven) 1.dp else 0.dp,
+                                        ) {
+                                            TripListItem(
+                                                trip = trip,
+                                                timeFormat = uiState.timeFormat,
+                                                modifier = Modifier
+                                                    .heightIn(min = 80.dp)
+                                                    .fillMaxWidth()
+                                                    .clickable { onTripSelected(trip) }
+                                                    .padding(8.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
                         if (uiState.serviceGuarantee.isNotEmpty()) {
                             item {
                                 Column(modifier = Modifier.animateItem()) {
@@ -169,73 +234,6 @@ fun TripDetailsScreen(
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
-                        if (uiState.moreTrips.isNotEmpty()) {
-                            item {
-                                SectionHeader(
-                                    stringResource(
-                                        Res.string.more_trips,
-                                        uiState.selectedStop
-                                    )
-                                )
-                            }
-                            item {
-                                Column(
-                                    modifier = Modifier
-                                        .widthIn(max = 400.dp)
-                                        .border(
-                                            1.dp,
-                                            MaterialTheme.colorScheme.outline.copy(alpha = .5f),
-                                            RoundedCornerShape(8.dp)
-                                        ).animateItem()
-                                ) {
-                                    TripListHeader(
-                                        modifier = Modifier.padding(
-                                            horizontal = 8.dp,
-                                            vertical = 4.dp
-                                        )
-                                    )
-                                    uiState.moreTrips.forEachIndexed { index, trip ->
-                                        Surface(
-                                            tonalElevation = if (index.isEven) 1.dp else 0.dp,
-                                        ) {
-                                            TripListItem(
-                                                trip = trip,
-                                                timeFormat = uiState.timeFormat,
-                                                modifier = Modifier
-                                                    .heightIn(min = 80.dp)
-                                                    .fillMaxWidth()
-                                                    .clickable { onTripSelected(trip) }
-                                                    .padding(8.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
-                        if (uiState.alerts.isNotEmpty()) {
-                            item {
-                                SectionHeader(stringResource(Res.string.alerts))
-                            }
-                            items(
-                                items = uiState.alerts,
-                                key = { alert -> alert.id },
-                            ) { alert ->
-                                AlertItem(
-                                    alert = alert,
-                                    modifier = Modifier
-                                        .widthIn(max = 400.dp)
-                                        .animateItem(),
-                                    onClick = {
-                                        if ("fr" in Locale.current.language) {
-                                            alert.urlFr
-                                        } else {
-                                            alert.urlEn
-                                        }?.let(uriHandler::openUri)
-                                    },
-                                )
                             }
                         }
                     }
