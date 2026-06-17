@@ -93,7 +93,7 @@ class TransitRepository(
                             name = UP_EXPRESS,
                             destination = vehicle?.label?.split(" - ")?.last().orEmpty(),
                             color = lineColours[trip.routeId] ?: Color.Gray,
-                            lastUpdated = lastUpdated,
+                            lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC),
                             isCancelled = trip.tripId in cancelledTrips,
                             departureTime = departureTime,
                             platform = "-",
@@ -207,7 +207,7 @@ class TransitRepository(
                                 ?: "",
                             code = stop.code,
                             time = stopTime,
-                            lastUpdated = lastUpdated,
+                            lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC),
                         )
                     }.sortedBy { stop ->
                         stop.time
