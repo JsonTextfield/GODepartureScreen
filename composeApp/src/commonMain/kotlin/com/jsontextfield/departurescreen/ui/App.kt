@@ -84,8 +84,8 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
                                 is TripDetails -> {
                                     navController.navigate(
                                         TripDetailsRoute(
-                                            selectedStop = uiState.selectedStop?.name.orEmpty(),
-                                            stopCode = uiState.selectedStop?.code.orEmpty(),
+                                            selectedStop = action.trip.stopName.orEmpty(),
+                                            stopCode = action.trip.stopCode.orEmpty(),
                                             tripId = action.trip.id,
                                             lineCode = action.trip.code,
                                             destination = action.trip.destination,

@@ -14,7 +14,7 @@ data class JourneyResponse(
         @SerialName("Time") val time: String = "",
         @SerialName("To") val to: String = "",
         @SerialName("From") val from: String = "",
-        @SerialName("Services") val services: List<Service> = emptyList(),
+        @SerialName("Services") val services: List<Service>? = emptyList(),
     ) {
         @Serializable
         data class Service(

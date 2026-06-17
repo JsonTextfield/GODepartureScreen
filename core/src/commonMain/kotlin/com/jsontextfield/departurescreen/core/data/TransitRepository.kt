@@ -25,6 +25,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
@@ -134,6 +135,8 @@ class TransitRepository(
                     isBus = line.serviceType == "B",
                     info = trip?.info.orEmpty(),
                     cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
+                    stopCode = stopCode,
+                    stopName = stopsMap[stopCode],
                     //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
                 )
             } ?: emptyList()
@@ -192,18 +195,23 @@ class TransitRepository(
 
             val journeyData = if (stopCode != null) {
                 val dateStr = serviceDate.toString().replace("-", "")
-                val startTimeStr = now.toLocalDateTime(timeZone).time.toString().substring(0, 5).replace(":", "")
-                val journeyResponse = departureScreenAPI.getJourney(dateStr, stopCode, startTimeStr, 10)
-                val currentTrip = journeyResponse.schJourneys
-                    .flatMap { it.services }
-                    .flatMap { it.trips?.trip ?: emptyList() }
-                    .find { it.number == tripNumber }
+                val startTimeStr = now.toLocalDateTime(timeZone).time.format(LocalTime.Format {
+                    hour()
+                    minute()
+                })
+                val journeyResponse = departureScreenAPI.getJourney(
+                    date = dateStr,
+                    from = stopCode,
+                    startTime = startTimeStr,
+                    maxJourney = 10
+                )
+                val trips = journeyResponse.schJourneys
+                    .flatMap { schJourney -> schJourney.services ?: emptyList() }
+                    .flatMap { service -> service.trips?.trip ?: emptyList() }
+                val currentTrip = trips.firstOrNull { it.number == tripNumber }
                 val direction = currentTrip?.direction.orEmpty()
-                val lineCode = currentTrip?.line.orEmpty()
-                val sameDirectionTripNumbers = journeyResponse.schJourneys
-                    .flatMap { it.services }
-                    .flatMap { it.trips?.trip ?: emptyList() }
-                    .filter { it.direction == direction && it.line == lineCode }
+                val sameDirectionTripNumbers = trips
+                    .filter { (it.direction == currentTrip?.direction) && (it.line == currentTrip?.line) }
                     .map { it.number }
                     .toSet()
                 Pair(direction, sameDirectionTripNumbers)
