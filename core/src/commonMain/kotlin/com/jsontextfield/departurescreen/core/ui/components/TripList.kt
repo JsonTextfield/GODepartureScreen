@@ -69,7 +69,7 @@ fun TripList(
                     )
             )
         }
-        itemsIndexed(trips, key = { _, train -> train.id }) { index, trip ->
+        itemsIndexed(trips, key = { _, trip -> trip.id + trip.stopCode }) { index, trip ->
             val useAlternateColor = if (columns.isOdd) {
                 index.isEven
             } else {
