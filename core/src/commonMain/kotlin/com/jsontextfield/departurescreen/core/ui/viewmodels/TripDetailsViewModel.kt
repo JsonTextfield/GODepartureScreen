@@ -80,7 +80,7 @@ class TripDetailsViewModel(
                 }
                 preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
                     val alertsFlow = if (useLinks) {
-                        transitRepository.getServiceUpdates("all", "en")
+                        transitRepository.getServiceUpdates("en")
                     } else {
                         combine(
                             transitRepository.getServiceAlerts(),

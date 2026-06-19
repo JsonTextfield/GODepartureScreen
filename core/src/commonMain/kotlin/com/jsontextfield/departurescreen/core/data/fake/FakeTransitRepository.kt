@@ -89,7 +89,7 @@ class FakeTransitRepository : ITransitRepository {
         return flowOf(emptyList())
     }
 
-    override fun getServiceUpdates(type: String, language: String): Flow<List<Alert>> {
+    override fun getServiceUpdates(language: String): Flow<List<Alert>> {
         return flowOf(listOf(
             Alert(
                 id = "1",

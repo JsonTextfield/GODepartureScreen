@@ -61,7 +61,7 @@ class AlertsViewModel(
                     goTrainDataSource.getServiceAlerts(),
                     goTrainDataSource.getInformationAlerts(),
                     goTrainDataSource.getMarketingAlerts(),
-                    goTrainDataSource.getServiceUpdates("all", language)
+                    goTrainDataSource.getServiceUpdates(language)
                 ) { service, info, marketing, serviceUpdates ->
                     (service + info + marketing + serviceUpdates).distinctBy { it.id }
                 }

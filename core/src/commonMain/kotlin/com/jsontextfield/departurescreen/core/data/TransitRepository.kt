@@ -277,11 +277,13 @@ class TransitRepository(
         updateCache = { marketingAlerts = it }
     )
 
-    override fun getServiceUpdates(type: String, language: String): Flow<List<Alert>> = flow {
+    override fun getServiceUpdates(language: String): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
-                val response = departureScreenAPI.getServiceUpdates(type, language)
-                emit(processServiceUpdates(response))
+                val responseAll = departureScreenAPI.getServiceUpdates("all", language)
+                val responseGeneral = departureScreenAPI.getServiceUpdates("general", language)
+                val result = processServiceUpdates(responseAll) + processServiceUpdates(responseGeneral)
+                emit(result)
             } catch (exception: Exception) {
                 Logger.withTag(TransitRepository::class.simpleName.toString()).e { exception.message.toString() }
                 emit(emptyList())
@@ -354,9 +356,13 @@ class TransitRepository(
             messages?.message?.map { message ->
                 val bodyEn = message.bodyEnglish.orEmpty().trim()
                 val bodyFr = message.bodyFrench.orEmpty().trim()
-                val date = LocalDateTime
-                    .parse(message.postedDateTime, inFormatter)
-                    .toInstant(timeZone)
+                val date = try {
+                    LocalDateTime
+                        .parse(message.postedDateTime, inFormatter)
+                        .toInstant(timeZone)
+                } catch (e: Exception) {
+                    Instant.fromEpochMilliseconds(0L)
+                }
                 Alert(
                     id = message.code,
                     date = date,
@@ -424,7 +430,7 @@ class TransitRepository(
 
     private fun ServiceUpdatesResponse.Notification.toAlert(
         affectedLines: List<String> = emptyList(),
-        affectedStops: List<String> = emptyList()
+        affectedStops: List<String> = emptyList(),
     ): Alert {
         val subject = messageSubject.orEmpty()
         val body = messageBody.orEmpty()

@@ -225,7 +225,7 @@ class MainViewModel(
     fun getUnreadAlertsCount() {
         preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
             val alertsFlow = if (useLinks) {
-                goTrainDataSource.getServiceUpdates("all", "en")
+                goTrainDataSource.getServiceUpdates("en")
             } else {
                 combine(
                     goTrainDataSource.getServiceAlerts(),
