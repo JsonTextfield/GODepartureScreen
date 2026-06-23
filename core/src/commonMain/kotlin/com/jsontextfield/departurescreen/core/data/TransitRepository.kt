@@ -28,6 +28,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.char
+import kotlinx.datetime.parseOrNull
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
@@ -65,6 +66,7 @@ class TransitRepository(
             lastUpdated = currentTime
         }
         return try {
+            val lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC)
             val nextService = departureScreenAPI.getNextService(stopCode)
             val lines = nextService.nextService?.lines
             val cancelledTrips =
@@ -92,9 +94,9 @@ class TransitRepository(
                             id = trip.tripId,
                             code = trip.routeId,
                             name = UP_EXPRESS,
-                            destination = vehicle?.label?.split(" - ")?.last().orEmpty(),
+                            destination = vehicle?.label?.substringAfter("- ").orEmpty(),
                             color = lineColours[trip.routeId] ?: Color.Gray,
-                            lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC),
+                            lastUpdated = lastUpdated,
                             isCancelled = trip.tripId in cancelledTrips,
                             departureTime = departureTime,
                             platform = "-",
@@ -107,34 +109,35 @@ class TransitRepository(
                 emptyList()
             }
 
-            val trips = lines?.map { line ->
+            val trips = lines?.mapNotNull { line ->
                 val trip = tripsMap[line.tripNumber]
-                val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
-                    LocalDateTime.parse(it, inFormatter).toInstant(TimeZone.UTC)
-                } ?: Instant.fromEpochMilliseconds(0)
                 val platform = trip?.platform ?: line.actualPlatform.takeIf { !it.isNullOrBlank() }
                 ?: line.scheduledPlatform.takeIf { !it.isNullOrBlank() }
                 ?: "-"
-
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
-                Trip(
-                    id = line.tripNumber,
-                    code = lineCode,
-                    name = line.lineName,
-                    destination = line.directionName.split(" - ").last(),
-                    color = lineColours[lineCode] ?: Color.Gray,
-                    tripOrder = line.tripOrder,
-                    lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC),
-                    isCancelled = line.tripNumber in cancelledTrips,
-                    departureTime = departureTime,
-                    platform = platform,
-                    isBus = line.serviceType == "B",
-                    info = trip?.info.orEmpty(),
-                    cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
-                    stopCode = stopCode,
-                    stopName = stopsMap[stopCode],
-                    //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
-                )
+                val departureTime = (trip?.time ?: line.computedDepartureTime ?: line.scheduledDepartureTime)?.let {
+                    LocalDateTime.parseOrNull(it, inFormatter)?.toInstant(TimeZone.UTC)
+                }
+                departureTime?.let {
+                    Trip(
+                        id = line.tripNumber,
+                        code = lineCode,
+                        name = line.lineName,
+                        destination = line.directionName.substringAfter("- "),
+                        color = lineColours[lineCode] ?: Color.Gray,
+                        tripOrder = line.tripOrder,
+                        lastUpdated = lastUpdated,
+                        isCancelled = line.tripNumber in cancelledTrips,
+                        departureTime = departureTime,
+                        platform = platform,
+                        isBus = line.serviceType == "B",
+                        info = trip?.info.orEmpty(),
+                        cars = serviceAtAGlanceTrains?.get(line.tripNumber)?.cars,
+                        stopCode = stopCode,
+                        stopName = stopsMap[stopCode],
+                        //busType = serviceAtAGlanceBuses?.get(line.tripNumber)?.busType,
+                    )
+                }
             } ?: emptyList()
             (upExpressTrips + trips).sortedBy { it.departureTime }
         } catch (exception: IOException) {
