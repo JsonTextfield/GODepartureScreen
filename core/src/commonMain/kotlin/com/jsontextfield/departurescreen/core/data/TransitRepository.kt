@@ -58,7 +58,7 @@ class TransitRepository(
 
     override suspend fun getTrips(stopCode: String): List<Trip> {
         val currentTime = Clock.System.now()
-        if (currentTime - lastUpdated > 60.seconds) {
+        if (currentTime - lastUpdated >= 60.seconds) {
             serviceAtAGlanceTrains =
                 departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
             exceptions = departureScreenAPI.getAllExceptions()
