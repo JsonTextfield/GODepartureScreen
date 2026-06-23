@@ -52,13 +52,13 @@ class TransitRepository(
     private var informationAlerts: List<Alert> = emptyList()
     private var marketingAlerts: List<Alert> = emptyList()
 
-    private var lastUpdated: Long = 0L
+    private var lastUpdated: Instant = Instant.fromEpochMilliseconds(0)
     private var serviceAtAGlanceTrains: Map<String, ServiceAtAGlanceTrainsResponse.Trips.Trip>? = null
     private var exceptions: ExceptionsResponse? = null
 
     override suspend fun getTrips(stopCode: String): List<Trip> {
-        val currentTime = Clock.System.now().toEpochMilliseconds()
-        if (currentTime - lastUpdated > 60_000) {
+        val currentTime = Clock.System.now()
+        if (currentTime - lastUpdated > 60.seconds) {
             serviceAtAGlanceTrains =
                 departureScreenAPI.getServiceAtAGlanceTrains().trips?.trip?.associateBy { it.tripNumber }
             exceptions = departureScreenAPI.getAllExceptions()
@@ -66,8 +66,6 @@ class TransitRepository(
         }
         return try {
             val nextService = departureScreenAPI.getNextService(stopCode)
-            val lastUpdated =
-                LocalDateTime.parse(nextService.metadata?.timestamp.orEmpty(), inFormatter).toInstant(timeZone)
             val lines = nextService.nextService?.lines
             val cancelledTrips =
                 exceptions?.trip?.filter { it.isCancelled == "1" }?.map { it.tripNumber } ?: emptyList()
@@ -119,8 +117,6 @@ class TransitRepository(
                 ?: "-"
 
                 val lineCode = if (line.lineCode == "GT") "KI" else line.lineCode
-                val updateTime =
-                    LocalDateTime.parse(line.updateTime, inFormatter).toInstant(TimeZone.UTC) ?: lastUpdated
                 Trip(
                     id = line.tripNumber,
                     code = lineCode,
@@ -128,7 +124,7 @@ class TransitRepository(
                     destination = line.directionName.split(" - ").last(),
                     color = lineColours[lineCode] ?: Color.Gray,
                     tripOrder = line.tripOrder,
-                    lastUpdated = updateTime,
+                    lastUpdated = lastUpdated.toLocalDateTime(timeZone).toInstant(TimeZone.UTC),
                     isCancelled = line.tripNumber in cancelledTrips,
                     departureTime = departureTime,
                     platform = platform,

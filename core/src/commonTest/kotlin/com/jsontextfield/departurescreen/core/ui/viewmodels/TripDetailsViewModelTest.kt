@@ -44,8 +44,6 @@ class TripDetailsViewModelTest {
             stopCode = "UN",
             tripId = "123",
             lineCode = "LW",
-            directionCode = "W",
-            direction = "W",
             destination = "Niagara Falls",
         )
 
@@ -64,8 +62,6 @@ class TripDetailsViewModelTest {
             stopCode = "UN",
             tripId = "123",
             lineCode = "LW",
-            directionCode = "W",
-            direction = "W",
             destination = "Niagara Falls",
         )
 
