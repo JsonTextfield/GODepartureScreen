@@ -4,6 +4,4 @@ data class TripDetails(
     val id: String,
     val stops: List<Schedule>,
     val serviceGuarantee: String = "",
-    val direction: String = "",
-    val sameDirectionTripNumbers: Set<String> = emptySet(),
 )

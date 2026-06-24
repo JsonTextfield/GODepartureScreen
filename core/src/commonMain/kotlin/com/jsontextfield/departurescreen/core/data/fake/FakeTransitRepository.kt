@@ -72,9 +72,16 @@ class FakeTransitRepository : ITransitRepository {
         return trips
     }
 
-    override suspend fun getTripDetails(tripNumber: String, stopCode: String?): TripDetails? {
+    override suspend fun getTripDetails(tripId: String, stopCode: String): TripDetails? {
         if (shouldThrowError) throw Exception("Test Error")
         return null
+    }
+
+    override suspend fun getMoreTrips(
+        tripId: String,
+        stopCode: String
+    ): Set<String> {
+        TODO("Not yet implemented")
     }
 
     override fun getServiceAlerts(): Flow<List<Alert>> {

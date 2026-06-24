@@ -13,9 +13,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
@@ -41,73 +42,85 @@ class TripDetailsViewModel(
         _uiState.update {
             it.copy(
                 status = Status.LOADING,
+                lineCode = lineCode,
+                selectedStop = selectedStop,
+                destination = destination,
             )
         }
         viewModelScope.launch {
+            preferencesRepository.getTimeFormat().collectLatest { timeFormat ->
+                _uiState.update {
+                    it.copy(
+                        timeFormat = timeFormat,
+                    )
+                }
+            }
+        }
+        preferencesRepository.getUseAlertsWithLinks().map { useLinks ->
+            val alertsFlow = combine(
+                transitRepository.getServiceAlerts(),
+                transitRepository.getInformationAlerts(),
+                transitRepository.getMarketingAlerts(),
+            ) { service, info, marketing ->
+                service + info + marketing
+            }
+            val allAlerts = if (useLinks) {
+                combine(
+                    alertsFlow,
+                    transitRepository.getServiceUpdates("en"),
+                ) { alerts, serviceUpdates ->
+                    alerts + serviceUpdates
+                }
+            } else {
+                alertsFlow
+            }
+            allAlerts.map { alerts ->
+                _uiState.update {
+                    it.copy(
+                        status = Status.LOADED,
+                        alerts = alerts
+                            .map { it.copy(isRead = true) }
+                            .filter { alert ->
+                                alert.affectedLines.any { line -> line == lineCode } ||
+                                        alert.affectedStops.any { stop -> stop == selectedStop }
+                            },
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
             try {
-                _uiState.update {
-                    it.copy(
-                        lineCode = lineCode,
-                        selectedStop = selectedStop,
-                        destination = destination,
-                    )
-                }
+                if (lineCode == "UP") {
+                    val moreTrips = transitRepository.getTrips(stopCode)
+                        .filter { it.code == lineCode && it.id != tripId }
+                        .take(4)
 
-                val tripDetails = if (lineCode == "UP") {
-                    null // UP Express doesn't use the standard trip details endpoint in this way here
+                    val schedules = transitRepository.getUPExpressTripSchedule(tripId)
+
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADED,
+                            stops = schedules,
+                            moreTrips = moreTrips,
+                        )
+                    }
                 } else {
-                     transitRepository.getTripDetails(tripId, stopCode)
+                    val tripDetails = transitRepository.getTripDetails(tripId, stopCode)
+                    val sameDirectionTripNumbers = transitRepository.getMoreTrips(tripId, stopCode)
+                    val moreTrips = transitRepository.getTrips(stopCode)
+                        .filter { trip -> trip.code == lineCode && trip.id != tripId && trip.id in sameDirectionTripNumbers }
+                        .take(4)
+
+                    _uiState.update {
+                        it.copy(
+                            status = Status.LOADED,
+                            stops = tripDetails?.stops.orEmpty(),
+                            moreTrips = moreTrips,
+                        )
+                    }
                 }
-
-                val moreTrips = transitRepository.getTrips(stopCode)
-                    .filter {
-                        it.code == lineCode && it.id != tripId &&
-                                (tripDetails == null || it.id in tripDetails.sameDirectionTripNumbers)
-                    }
-                    .take(4)
-
-                val schedules = if (lineCode == "UP") {
-                    transitRepository.getUPExpressTripSchedule(tripId)
-                } else {
-                    tripDetails?.stops
-                } ?: emptyList()
-
-                _uiState.update {
-                    it.copy(
-                        stops = schedules,
-                        moreTrips = moreTrips,
-                    )
-                }
-                preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-                    val alertsFlow = if (useLinks) {
-                        transitRepository.getServiceUpdates("en")
-                    } else {
-                        combine(
-                            transitRepository.getServiceAlerts(),
-                            transitRepository.getInformationAlerts()
-                        ) { service, info ->
-                            service + info
-                        }
-                    }
-                    combine(
-                        alertsFlow,
-                        preferencesRepository.getTimeFormat(),
-                    ) { alerts, timeFormat ->
-                        _uiState.update {
-                            it.copy(
-                                status = Status.LOADED,
-                                alerts = alerts
-                                    .map { it.copy(isRead = true) }
-                                    .filter { alert ->
-                                        alert.affectedLines.any { line -> line == lineCode } ||
-                                                alert.affectedStops.any { stop -> stop == selectedStop }
-                                    },
-                                timeFormat = timeFormat,
-                            )
-                        }
-                    }
-                }.collect()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.update {
                     it.copy(
                         status = Status.ERROR,

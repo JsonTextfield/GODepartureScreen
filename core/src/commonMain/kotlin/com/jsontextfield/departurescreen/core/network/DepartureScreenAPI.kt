@@ -43,7 +43,7 @@ class DepartureScreenAPI {
         private const val BASE_HOST = "api.openmetrolinx.com"
         private const val BASE_HOST2 = "api.metrolinx.com"
         private const val V1_API_PATH = "/OpenDataAPI/api/V1/"
-        private const val DEFAULT_TIMEOUT_MS = 6000L
+        private const val DEFAULT_TIMEOUT_MS = 12000L
     }
 
     private val json = Json {
