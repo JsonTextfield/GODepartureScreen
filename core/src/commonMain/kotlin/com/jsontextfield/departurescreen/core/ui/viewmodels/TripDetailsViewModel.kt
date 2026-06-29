@@ -9,16 +9,20 @@ import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.ExperimentalTime
 
 class TripDetailsViewModel(
@@ -56,7 +60,7 @@ class TripDetailsViewModel(
                 }
             }
         }
-        preferencesRepository.getUseAlertsWithLinks().map { useLinks ->
+        preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
             val alertsFlow = combine(
                 transitRepository.getServiceAlerts(),
                 transitRepository.getInformationAlerts(),
@@ -75,15 +79,18 @@ class TripDetailsViewModel(
                 alertsFlow
             }
             allAlerts.map { alerts ->
+                val filteredAlerts = withContext(Dispatchers.Default) {
+                    alerts
+                        .map { it.copy(isRead = true) }
+                        .filter { alert ->
+                            alert.affectedLines.any { line -> line == lineCode } ||
+                                    alert.affectedStops.any { stop -> stop == selectedStop }
+                        }
+                }
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,
-                        alerts = alerts
-                            .map { it.copy(isRead = true) }
-                            .filter { alert ->
-                                alert.affectedLines.any { line -> line == lineCode } ||
-                                        alert.affectedStops.any { stop -> stop == selectedStop }
-                            },
+                        alerts = filteredAlerts,
                     )
                 }
             }
@@ -91,33 +98,35 @@ class TripDetailsViewModel(
 
         viewModelScope.launch {
             try {
-                if (lineCode == "UP") {
-                    val moreTrips = transitRepository.getTrips(stopCode)
-                        .filter { it.code == lineCode && it.id != tripId }
-                        .take(4)
+                withContext(Dispatchers.Default) {
+                    if (lineCode == "UP") {
+                        val moreTrips = transitRepository.getTrips(stopCode)
+                            .filter { it.code == lineCode && it.id != tripId }
+                            .take(4)
 
-                    val schedules = transitRepository.getUPExpressTripSchedule(tripId)
+                        val schedules = transitRepository.getUPExpressTripSchedule(tripId)
 
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADED,
-                            stops = schedules,
-                            moreTrips = moreTrips,
-                        )
-                    }
-                } else {
-                    val tripDetails = transitRepository.getTripDetails(tripId, stopCode)
-                    val sameDirectionTripNumbers = transitRepository.getMoreTrips(tripId, stopCode)
-                    val moreTrips = transitRepository.getTrips(stopCode)
-                        .filter { trip -> trip.code == lineCode && trip.id != tripId && trip.id in sameDirectionTripNumbers }
-                        .take(4)
+                        _uiState.update {
+                            it.copy(
+                                status = Status.LOADED,
+                                stops = schedules,
+                                moreTrips = moreTrips,
+                            )
+                        }
+                    } else {
+                        val tripDetails = transitRepository.getTripDetails(tripId, stopCode)
+                        val sameDirectionTripNumbers = transitRepository.getMoreTrips(tripId, stopCode)
+                        val moreTrips = transitRepository.getTrips(stopCode)
+                            .filter { trip -> trip.code == lineCode && trip.id != tripId && trip.id in sameDirectionTripNumbers }
+                            .take(4)
 
-                    _uiState.update {
-                        it.copy(
-                            status = Status.LOADED,
-                            stops = tripDetails?.stops.orEmpty(),
-                            moreTrips = moreTrips,
-                        )
+                        _uiState.update {
+                            it.copy(
+                                status = Status.LOADED,
+                                stops = tripDetails?.stops.orEmpty(),
+                                moreTrips = moreTrips,
+                            )
+                        }
                     }
                 }
             } catch (_: Exception) {
@@ -132,7 +141,9 @@ class TripDetailsViewModel(
 
     fun setSelectedStop(stopName: String) {
         viewModelScope.launch {
-            preferencesRepository.setSelectedStop(stopName)
+            withContext(Dispatchers.IO) {
+                preferencesRepository.setSelectedStop(stopName)
+            }
         }
     }
 }
