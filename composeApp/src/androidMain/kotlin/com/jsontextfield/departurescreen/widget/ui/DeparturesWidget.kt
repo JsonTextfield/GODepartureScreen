@@ -160,7 +160,7 @@ fun DepartureScreenWidget(
                     modifier = GlanceModifier.clickable(
                         actionStartActivity<MainActivity>(
                             parameters = actionParametersOf(
-                                selectedStopKey to uiState.selectedStop?.code.orEmpty()
+                                selectedStopKey to uiState.selectedStop?.name.orEmpty()
                             )
                         ),
                     ),
@@ -221,7 +221,18 @@ fun DepartureScreenWidget(
                                     timeFormat = config?.timeFormat ?: TimeFormat.RELATIVE,
                                     modifier = GlanceModifier
                                         .fillMaxWidth()
-                                        .padding(8.dp),
+                                        .padding(8.dp)
+                                        .clickable(
+                                            actionStartActivity<MainActivity>(
+                                                parameters = actionParametersOf(
+                                                    tripIdKey to trip.id,
+                                                    lineCodeKey to trip.code,
+                                                    destinationKey to trip.destination,
+                                                    stopCodeKey to (trip.stopCode ?: uiState.selectedStop?.code ?: ""),
+                                                    selectedStopKey to (trip.stopName ?: uiState.selectedStop?.name ?: ""),
+                                                )
+                                            )
+                                        ),
                                 )
                             }
                         }
@@ -237,3 +248,7 @@ fun DepartureScreenWidget(
 }
 
 private val selectedStopKey = ActionParameters.Key<String>("selectedStop")
+private val stopCodeKey = ActionParameters.Key<String>("stopCode")
+private val tripIdKey = ActionParameters.Key<String>("tripId")
+private val lineCodeKey = ActionParameters.Key<String>("lineCode")
+private val destinationKey = ActionParameters.Key<String>("destination")

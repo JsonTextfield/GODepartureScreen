@@ -38,7 +38,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
+fun App(
+    mainViewModel: MainViewModel = koinViewModel<MainViewModel>(),
+    initialTripDetails: TripDetailsRoute? = null,
+) {
     val uiState by mainViewModel.uiState.collectAsState()
     val navController = rememberNavController()
     var isNavigating by remember { mutableStateOf(false) }
@@ -53,6 +56,13 @@ fun App(mainViewModel: MainViewModel = koinViewModel<MainViewModel>()) {
         if (isNavigating) {
             delay(500)
             isNavigating = false
+        }
+    }
+    LaunchedEffect(initialTripDetails) {
+        initialTripDetails?.let {
+            navController.navigate(it) {
+                launchSingleTop = true
+            }
         }
     }
     AppTheme(uiState.theme, uiState.contrast, uiState.useDynamicTheme) {
