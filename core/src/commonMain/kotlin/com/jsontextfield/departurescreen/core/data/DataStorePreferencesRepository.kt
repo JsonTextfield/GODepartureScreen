@@ -157,4 +157,28 @@ class DataStorePreferencesRepository(
             preferences[booleanPreferencesKey(USE_ALERTS_WITH_LINKS_KEY)] = useAlertsWithLinks
         }
     }
+
+    override fun getVisibleAlertLines(): Flow<Set<String>> {
+        return dataStore.data.map { preferences ->
+            preferences[stringSetPreferencesKey(VISIBLE_ALERT_LINES_KEY)] ?: emptySet()
+        }
+    }
+
+    override suspend fun setVisibleAlertLines(lines: Set<String>) {
+        dataStore.edit { preferences ->
+            preferences[stringSetPreferencesKey(VISIBLE_ALERT_LINES_KEY)] = lines
+        }
+    }
+
+    override fun getIsUnreadAlertsSelected(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[booleanPreferencesKey(IS_UNREAD_ALERTS_SELECTED_KEY)] ?: false
+        }
+    }
+
+    override suspend fun setIsUnreadAlertsSelected(isSelected: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(IS_UNREAD_ALERTS_SELECTED_KEY)] = isSelected
+        }
+    }
 }

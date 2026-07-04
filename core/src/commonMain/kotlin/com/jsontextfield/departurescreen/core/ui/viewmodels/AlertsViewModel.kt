@@ -16,7 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +32,17 @@ class AlertsViewModel(
     val uiState: StateFlow<AlertsUIState> = _uiState.asStateFlow()
 
     init {
+        combine(
+            preferencesRepository.getVisibleAlertLines().distinctUntilChanged(),
+            preferencesRepository.getIsUnreadAlertsSelected().distinctUntilChanged(),
+        ) { visibleAlertLines, isUnreadSelected ->
+            _uiState.update {
+                it.copy(
+                    selectedLines = visibleAlertLines,
+                    isUnreadSelected = isUnreadSelected,
+                )
+            }
+        }.launchIn(viewModelScope)
         loadData()
     }
 
@@ -116,6 +129,10 @@ class AlertsViewModel(
                 selectedLines = lines,
                 isUnreadSelected = isUnreadSelected,
             )
+        }
+        viewModelScope.launch {
+            preferencesRepository.setVisibleAlertLines(lines)
+            preferencesRepository.setIsUnreadAlertsSelected(isUnreadSelected)
         }
     }
 

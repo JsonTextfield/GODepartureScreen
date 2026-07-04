@@ -70,4 +70,16 @@ class FakePreferencesRepository : IPreferencesRepository {
     override suspend fun setUseAlertsWithLinks(useAlertsWithLinks: Boolean) {
         useAlertsWithLinksFlow.value = useAlertsWithLinks
     }
+
+    private val visibleAlertLinesFlow = MutableStateFlow(emptySet<String>())
+    override fun getVisibleAlertLines(): Flow<Set<String>> = visibleAlertLinesFlow
+    override suspend fun setVisibleAlertLines(lines: Set<String>) {
+        visibleAlertLinesFlow.value = lines
+    }
+
+    private val isUnreadAlertsSelectedFlow = MutableStateFlow(false)
+    override fun getIsUnreadAlertsSelected(): Flow<Boolean> = isUnreadAlertsSelectedFlow
+    override suspend fun setIsUnreadAlertsSelected(isSelected: Boolean) {
+        isUnreadAlertsSelectedFlow.value = isSelected
+    }
 }

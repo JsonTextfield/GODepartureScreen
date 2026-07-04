@@ -70,4 +70,45 @@ class AlertsViewModelTest {
         assertEquals(Status.LOADED, alertsViewModel.uiState.value.status)
 
     }
+
+    @Test
+    fun testSetFilter() = runTest(testDispatcher) {
+        val goTrainDataSource = FakeTransitRepository()
+        val preferencesRepository = FakePreferencesRepository()
+        val alertsViewModel = AlertsViewModel(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+
+        advanceUntilIdle()
+
+        val selectedLines = setOf("LE", "LW")
+        alertsViewModel.setFilter(selectedLines, true)
+
+        advanceUntilIdle()
+
+        assertEquals(selectedLines, alertsViewModel.uiState.value.selectedLines)
+        assertEquals(true, alertsViewModel.uiState.value.isUnreadSelected)
+    }
+
+    @Test
+    fun testPersistence() = runTest(testDispatcher) {
+        val goTrainDataSource = FakeTransitRepository()
+        val preferencesRepository = FakePreferencesRepository()
+
+        // Pre-set some preferences
+        val preSelectedLines = setOf("GT", "RH")
+        preferencesRepository.setVisibleAlertLines(preSelectedLines)
+        preferencesRepository.setIsUnreadAlertsSelected(true)
+
+        val alertsViewModel = AlertsViewModel(
+            goTrainDataSource = goTrainDataSource,
+            preferencesRepository = preferencesRepository,
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(preSelectedLines, alertsViewModel.uiState.value.selectedLines)
+        assertEquals(true, alertsViewModel.uiState.value.isUnreadSelected)
+    }
 }

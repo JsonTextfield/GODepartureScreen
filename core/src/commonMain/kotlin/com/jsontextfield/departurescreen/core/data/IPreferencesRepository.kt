@@ -29,6 +29,12 @@ interface IPreferencesRepository {
 
     fun getUseAlertsWithLinks(): Flow<Boolean>
     suspend fun setUseAlertsWithLinks(useAlertsWithLinks: Boolean)
+
+    fun getVisibleAlertLines(): Flow<Set<String>>
+    suspend fun setVisibleAlertLines(lines: Set<String>)
+
+    fun getIsUnreadAlertsSelected(): Flow<Boolean>
+    suspend fun setIsUnreadAlertsSelected(isSelected: Boolean)
 }
 
 const val SORT_MODE_KEY = "sortMode"
@@ -43,3 +49,5 @@ const val FAVOURITE_STOPS_KEY = "favouriteStops"
 const val HIDDEN_TRAINS_KEY = "hiddenTrains"
 const val READ_ALERTS_KEY = "readAlerts"
 const val USE_ALERTS_WITH_LINKS_KEY = "useAlertsWithLinks"
+const val VISIBLE_ALERT_LINES_KEY = "visibleAlertLines"
+const val IS_UNREAD_ALERTS_SELECTED_KEY = "isUnreadAlertsSelected"
