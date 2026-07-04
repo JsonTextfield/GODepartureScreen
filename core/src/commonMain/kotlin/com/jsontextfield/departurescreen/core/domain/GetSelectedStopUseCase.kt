@@ -30,6 +30,7 @@ class GetSelectedStopUseCase(
                 }
             allStops.firstOrNull { stop -> stopName == stop.name }
                 ?: allStops.firstOrNull { stop -> prefStopName == stop.name }
+                ?: allStops.firstOrNull { stop -> "UN" == stop.code }
                 ?: allStops.firstOrNull()
         }
     }
