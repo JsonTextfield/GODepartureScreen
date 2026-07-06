@@ -91,7 +91,12 @@ class MainViewModel(
                 )
             }
         }.catch {
-            _uiState.value = errorState
+            _uiState.update {
+                it.copy(
+                    status = Status.ERROR,
+                    isRefreshing = false,
+                )
+            }
         }.launchIn(viewModelScope)
         loadData()
 
@@ -109,7 +114,12 @@ class MainViewModel(
             getSelectedStopUseCase()
                 .distinctUntilChanged()
                 .catch {
-                    _uiState.value = errorState
+                    _uiState.update {
+                        it.copy(
+                            status = Status.ERROR,
+                            isRefreshing = false,
+                        )
+                    }
                     stop()
                 }.collectLatest { selectedStop ->
                     _uiState.update {
@@ -276,8 +286,3 @@ data class MainUIState(
         }
     )
 }
-
-private val errorState = MainUIState(
-    status = Status.ERROR,
-    isRefreshing = false,
-)
