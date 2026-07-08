@@ -4,14 +4,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,7 +32,6 @@ import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.components.BackButton
 import com.jsontextfield.departurescreen.core.ui.theme.isDynamicThemeEnabled
 import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
-import com.jsontextfield.departurescreen.ui.menu.RadioMenuItem
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.appearance
 import departure_screen.composeapp.generated.resources.contrast
@@ -97,19 +101,17 @@ private fun SettingsScreen(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
-            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                ThemeSetting(
-                    themeMode,
-                    onThemeChanged = onThemeChanged,
-                    modifier = Modifier.weight(1f),
-                )
-                ContrastSetting(
-                    contrastMode,
-                    onContrastChanged = onContrastChanged,
-                    isEnabled = !useDynamicTheme,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            ThemeSetting(
+                themeMode,
+                onThemeChanged = onThemeChanged,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            ContrastSetting(
+                contrastMode,
+                onContrastChanged = onContrastChanged,
+                isEnabled = !useDynamicTheme,
+                modifier = Modifier.fillMaxWidth()
+            )
             if (isDynamicThemeEnabled()) {
                 SettingsSwitchItem(
                     text = stringResource(Res.string.dynamic_theme),
@@ -117,8 +119,13 @@ private fun SettingsScreen(
                     onCheckedChange = onDynamicThemeChanged,
                 )
             }
-            TimeSetting(timeFormat, onTimeFormatChanged = onTimeFormatChanged)
+            TimeSetting(
+                timeFormat,
+                onTimeFormatChanged = onTimeFormatChanged,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Text(
                 stringResource(Res.string.experimental),
                 style = MaterialTheme.typography.titleMedium,
@@ -141,11 +148,17 @@ private fun ThemeSetting(
 ) {
     Column(modifier = modifier) {
         Text(stringResource(Res.string.theme))
-        ThemeMode.entries.forEach {
-            RadioMenuItem(
-                title = stringResource(it.key),
-                isSelected = themeMode == it,
-                onClick = { onThemeChanged(it) })
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            ThemeMode.entries.forEach {
+                SegmentedButton(
+                    selected = themeMode == it,
+                    onClick = { onThemeChanged(it) },
+                    shape = SegmentedButtonDefaults.itemShape(it.ordinal, ThemeMode.entries.size),
+                    label = {
+                        Text(stringResource(it.key))
+                    },
+                )
+            }
         }
     }
 }
@@ -159,25 +172,41 @@ private fun ContrastSetting(
 ) {
     Column(modifier = modifier) {
         Text(stringResource(Res.string.contrast))
-        ContrastMode.entries.forEach {
-            RadioMenuItem(
-                title = stringResource(it.key),
-                isSelected = contrastMode == it,
-                isEnabled = isEnabled,
-                onClick = { onContrastChanged(it) })
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            ContrastMode.entries.forEach {
+                SegmentedButton(
+                    selected = contrastMode == it,
+                    onClick = { onContrastChanged(it) },
+                    shape = SegmentedButtonDefaults.itemShape(it.ordinal, ContrastMode.entries.size),
+                    label = {
+                        Text(stringResource(it.key))
+                    },
+                    enabled = isEnabled,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun TimeSetting(timeFormat: TimeFormat, onTimeFormatChanged: (TimeFormat) -> Unit = {}) {
-    Column {
+private fun TimeSetting(
+    timeFormat: TimeFormat,
+    modifier: Modifier = Modifier,
+    onTimeFormatChanged: (TimeFormat) -> Unit = {},
+) {
+    Column(modifier = modifier) {
         Text(stringResource(Res.string.time_format))
-        TimeFormat.entries.forEach {
-            RadioMenuItem(
-                title = stringResource(it.key),
-                isSelected = timeFormat == it,
-                onClick = { onTimeFormatChanged(it) })
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            TimeFormat.entries.forEach {
+                SegmentedButton(
+                    selected = timeFormat == it,
+                    onClick = { onTimeFormatChanged(it) },
+                    shape = SegmentedButtonDefaults.itemShape(it.ordinal, TimeFormat.entries.size),
+                    label = {
+                        Text(stringResource(it.key))
+                    }
+                )
+            }
         }
     }
 }
