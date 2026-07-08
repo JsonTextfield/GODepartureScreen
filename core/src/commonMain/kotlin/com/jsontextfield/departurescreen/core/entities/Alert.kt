@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.entities
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -14,6 +15,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Immutable
 data class Alert(
     val id: String,
     val date: Instant = Instant.fromEpochMilliseconds(0),

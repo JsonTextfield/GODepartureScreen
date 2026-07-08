@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
@@ -138,6 +139,7 @@ class AlertsViewModel(
 
 }
 
+@Immutable
 data class AlertsUIState(
     val status: Status = Status.LOADING,
     val allAlerts: List<Alert> = emptyList(),

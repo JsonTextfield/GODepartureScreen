@@ -22,13 +22,14 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun CountdownTimer(
-    timeRemaining: Int = 20_000,
+    timeRemaining: () -> Int = { 20_000 },
     totalTime: Int = 20_000,
 ) {
+    val time = timeRemaining()
     val progress by animateFloatAsState(
-        targetValue = timeRemaining.toFloat() / totalTime,
+        targetValue = time.toFloat() / totalTime,
         animationSpec = tween(
-            durationMillis = if (timeRemaining == totalTime) 100 else 1100,
+            durationMillis = if (time == totalTime) 100 else 1100,
             easing = LinearEasing
         )
     )
@@ -40,7 +41,7 @@ fun CountdownTimer(
             progress = { progress },
         )
         Text(
-            (timeRemaining / 1000).toString(),
+            (time / 1000).toString(),
             style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center)
         )
     }

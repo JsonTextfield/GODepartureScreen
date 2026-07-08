@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
@@ -93,6 +94,7 @@ class StopsViewModel(
 
 }
 
+@Immutable
 data class StopsUIState(
     val status: Status = Status.LOADING,
     val allStops: List<Stop> = emptyList(),

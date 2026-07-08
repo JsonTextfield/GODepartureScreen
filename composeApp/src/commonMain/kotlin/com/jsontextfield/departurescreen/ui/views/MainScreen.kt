@@ -59,7 +59,7 @@ fun MainScreen(
     val timeRemaining by mainViewModel.timeRemaining.collectAsState()
     MainScreen(
         uiState = uiState,
-        timeRemaining = timeRemaining,
+        timeRemaining = { timeRemaining },
         onRetryClicked = mainViewModel::loadData,
         onRefresh = mainViewModel::refresh,
         onSetVisibleTrains = mainViewModel::setVisibleTrains,
@@ -84,7 +84,7 @@ fun MainScreen(
 @Composable
 fun MainScreen(
     uiState: MainUIState,
-    timeRemaining: Int,
+    timeRemaining: () -> Int,
     onRetryClicked: () -> Unit,
     onRefresh: () -> Unit,
     onSetVisibleTrains: (Set<String>) -> Unit,
