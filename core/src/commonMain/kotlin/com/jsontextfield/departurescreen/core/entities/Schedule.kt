@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.entities
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.Padding
@@ -10,6 +11,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Immutable
 data class Schedule(
     val name: String,
     val code: String,

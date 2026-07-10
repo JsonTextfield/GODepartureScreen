@@ -2,6 +2,7 @@
 
 package com.jsontextfield.departurescreen.core.entities
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
@@ -12,6 +13,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Immutable
 data class Trip(
     val id: String,
     val code: String = "",
