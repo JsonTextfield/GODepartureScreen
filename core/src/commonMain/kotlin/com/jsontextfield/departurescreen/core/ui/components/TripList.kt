@@ -2,6 +2,7 @@ package com.jsontextfield.departurescreen.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -57,17 +58,24 @@ fun TripList(
             bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding() + 100.dp,
         )
     ) {
-        items(columns) {
-            TripListHeader(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(
-                        start = WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateStartPadding(LayoutDirection.Ltr),
-                        end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
-                    )
-            )
+        stickyHeader {
+            Surface {
+                Row {
+                    repeat(columns) {
+                        TripListHeader(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                                .padding(
+                                    start = WindowInsets.safeDrawing.asPaddingValues()
+                                        .calculateStartPadding(LayoutDirection.Ltr),
+                                    end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LayoutDirection.Ltr),
+                                )
+                        )
+                    }
+                }
+            }
         }
         itemsIndexed(trips, key = { _, trip -> trip.id + trip.stopCode }) { index, trip ->
             val useAlternateColor = if (columns.isOdd) {
