@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,7 +43,6 @@ import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
 import com.jsontextfield.departurescreen.ui.views.tripdetails.AlertsSection
 import com.jsontextfield.departurescreen.ui.views.tripdetails.MoreTripsSection
-import com.jsontextfield.departurescreen.ui.views.tripdetails.SectionHeader
 import com.jsontextfield.departurescreen.ui.views.tripdetails.StopsSection
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.more_trips
@@ -107,7 +105,7 @@ fun TripDetailsScreen(
                     ) {
                         if (uiState.alerts.isNotEmpty()) {
                             item {
-                                AlertsSection(uiState.alerts, modifier = Modifier.animateItem())
+                                AlertsSection(uiState.alerts)
                             }
                         }
                         if (uiState.moreTrips.isNotEmpty()) {
@@ -117,21 +115,7 @@ fun TripDetailsScreen(
                                     title = stringResource(Res.string.more_trips, uiState.selectedStop),
                                     timeFormat = uiState.timeFormat,
                                     onTripSelected = onTripSelected,
-                                    modifier = Modifier.animateItem(),
                                 )
-                            }
-                        }
-                        if (uiState.serviceGuarantee.isNotEmpty()) {
-                            item {
-                                Column(modifier = Modifier.animateItem()) {
-                                    SectionHeader("Service Guarantee")
-                                    Text(
-                                        text = uiState.serviceGuarantee,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier
-                                            .padding(vertical = 8.dp)
-                                    )
-                                }
                             }
                         }
                         if (uiState.stops.isNotEmpty()) {
@@ -144,7 +128,6 @@ fun TripDetailsScreen(
                                         tripDetailsViewModel.setSelectedStop(stopName)
                                         onBackPressed()
                                     },
-                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
