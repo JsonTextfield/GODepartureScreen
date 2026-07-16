@@ -37,7 +37,7 @@ class TripDetailsViewModel(
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, _ ->
         _uiState.update {
             it.copy(
                 status = if (it.status == Status.LOADING) Status.ERROR else Status.LOADED,
