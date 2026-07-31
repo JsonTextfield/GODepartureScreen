@@ -60,9 +60,6 @@ fun MainScreen(
     MainScreen(
         uiState = uiState,
         timeRemaining = { timeRemaining },
-        onRetryClicked = mainViewModel::loadData,
-        onRefresh = mainViewModel::refresh,
-        onSetVisibleTrains = mainViewModel::setVisibleTrains,
         onAction = { action ->
             when (action) {
                 Refresh -> mainViewModel.refresh()
@@ -85,9 +82,6 @@ fun MainScreen(
 fun MainScreen(
     uiState: MainUIState,
     timeRemaining: () -> Int,
-    onRetryClicked: () -> Unit,
-    onRefresh: () -> Unit,
-    onSetVisibleTrains: (Set<String>) -> Unit,
     onAction: (MainScreenAction) -> Unit = {},
 ) {
     Scaffold(
@@ -141,7 +135,7 @@ fun MainScreen(
             }
 
             Status.ERROR -> {
-                ErrorScreen(onRetry = onRetryClicked)
+                ErrorScreen(onRetry = { onAction(Retry) })
             }
 
             Status.LOADED -> {
@@ -149,7 +143,7 @@ fun MainScreen(
                     val pullToRefreshState = rememberPullToRefreshState()
                     PullToRefreshBox(
                         isRefreshing = uiState.isRefreshing,
-                        onRefresh = onRefresh,
+                        onRefresh = { onAction(Refresh) },
                         state = pullToRefreshState,
                         modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
                         indicator = {
@@ -167,7 +161,7 @@ fun MainScreen(
                                     TripFilterChipStrip(
                                         data = data.sortedBy { it.code },
                                         selectedItems = uiState.visibleTrains,
-                                        onSelectionChanged = onSetVisibleTrains,
+                                        onSelectionChanged = { onAction(SetVisibleTrains(it)) },
                                     )
                                 }
                             }
