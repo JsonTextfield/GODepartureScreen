@@ -4,7 +4,8 @@ import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Stop
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 
 class GetSelectedStopUseCase(
     private val preferencesRepository: IPreferencesRepository,
@@ -18,20 +19,29 @@ class GetSelectedStopUseCase(
      * 2. first stop in the list
      */
     operator fun invoke(stopName: String? = null): Flow<Stop?> {
-        return preferencesRepository.getSelectedStop().map { prefStopName ->
-            val allStops = goTrainDataSource.getAllStops()
-                .groupBy { it.name }
-                .map { (name, stops) ->
-                    Stop(
-                        name = name,
-                        code = stops.joinToString(",") { it.code },
-                        types = stops.flatMap { it.types }.toSet(),
-                    )
-                }
-            allStops.firstOrNull { stop -> stopName == stop.name }
-                ?: allStops.firstOrNull { stop -> prefStopName == stop.name }
-                ?: allStops.firstOrNull { stop -> "UN" == stop.code }
+        val allStopsFlow = flow {
+            emit(
+                goTrainDataSource.getAllStops()
+                    .groupBy { it.name }
+                    .map { (name, stops) ->
+                        Stop(
+                            name = name,
+                            code = stops.joinToString(",") { it.code },
+                            types = stops.flatMap { it.types }.toSet(),
+                        )
+                    })
+        }
+        return combine(
+            allStopsFlow,
+            preferencesRepository.getSelectedStop(),
+            preferencesRepository.getFavouriteStops(),
+        ) { allStops, prefStopName, favouriteStops ->
+            val selectedStop = allStops.firstOrNull { it.name == stopName }
+                ?: allStops.firstOrNull { it.name == prefStopName }
+                ?: allStops.firstOrNull { it.code == "UN" }
                 ?: allStops.firstOrNull()
+
+            selectedStop?.copy(isFavourite = selectedStop.name in favouriteStops)
         }
     }
 }

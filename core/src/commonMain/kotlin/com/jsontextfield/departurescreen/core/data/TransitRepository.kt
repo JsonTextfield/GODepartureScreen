@@ -312,41 +312,35 @@ class TransitRepository(
         if (stopsByName.isNotEmpty()) {
             return stopsByName.values.flatten()
         }
-        return try {
-            departureScreenAPI.getAllStops().stations?.stops?.groupBy {
-                it.locationName
-            }?.flatMap { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
-                stops.map { stop ->
-                    // Possible stop types: [Bus Stop, Bus Terminal, Park & Ride, Train & Bus Station, Train Station]
-                    val type =
-                        if (StopType.TRAIN.typeString in stop.locationType && StopType.BUS.typeString in stop.locationType) {
-                            // Train & Bus Station
-                            setOf(StopType.TRAIN, StopType.BUS)
-                        } else if (StopType.TRAIN.typeString in stop.locationType) {
-                            // Train Station
-                            setOf(StopType.TRAIN)
-                        } else if (StopType.BUS.typeString in stop.locationType) {
-                            // Bus Stop, Bus Terminal
-                            setOf(StopType.BUS)
-                        } else {
-                            // Park & Ride
-                            setOf(StopType.BUS)
-                        }
-                    Stop(
-                        name = stopName,
-                        code = stop.locationCode,
-                        types = type,
-                    )
-                }
-            } ?: emptyList()
-        } catch (exception: IOException) {
-            throw exception
-        } catch (_: Exception) {
-            emptyList()
-        }.also {
+        return departureScreenAPI.getAllStops().stations?.stops?.groupBy {
+            it.locationName
+        }?.flatMap { (stopName: String, stops: List<StopResponse.Stations.Stop>) ->
+            stops.map { stop ->
+                // Possible stop types: [Bus Stop, Bus Terminal, Park & Ride, Train & Bus Station, Train Station]
+                val type =
+                    if (StopType.TRAIN.typeString in stop.locationType && StopType.BUS.typeString in stop.locationType) {
+                        // Train & Bus Station
+                        setOf(StopType.TRAIN, StopType.BUS)
+                    } else if (StopType.TRAIN.typeString in stop.locationType) {
+                        // Train Station
+                        setOf(StopType.TRAIN)
+                    } else if (StopType.BUS.typeString in stop.locationType) {
+                        // Bus Stop, Bus Terminal
+                        setOf(StopType.BUS)
+                    } else {
+                        // Park & Ride
+                        setOf(StopType.BUS)
+                    }
+                Stop(
+                    name = stopName,
+                    code = stop.locationCode,
+                    types = type,
+                )
+            }
+        }?.also {
             stopsMap = it.associate { stop -> stop.code to stop.name }
             stopsByName = it.groupBy { stop -> stop.name }
-        }
+        } ?: emptyList()
     }
 
     private fun AlertsResponse.toAlerts(): List<Alert> {

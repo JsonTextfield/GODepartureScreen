@@ -79,25 +79,6 @@ class MainViewModel(
             }
         }.launchIn(viewModelScope)
 
-        combine(
-            getSelectedStopUseCase(),
-            preferencesRepository.getFavouriteStops(),
-        ) { selectedStop, favouriteStops ->
-            _uiState.update {
-                it.copy(
-                    selectedStop = selectedStop?.copy(
-                        isFavourite = selectedStop.name in favouriteStops
-                    )
-                )
-            }
-        }.catch {
-            _uiState.update {
-                it.copy(
-                    status = Status.ERROR,
-                    isRefreshing = false,
-                )
-            }
-        }.launchIn(viewModelScope)
         loadData()
 
         getUnreadAlertsCount()
