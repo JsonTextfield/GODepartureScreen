@@ -3,6 +3,7 @@
     <base-config>
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
             <certificates src="@raw/openmetrolinx" />
         </trust-anchors>
     </base-config>
@@ -11,6 +12,7 @@
         <domain includeSubdomains="true">openmetrolinx.com</domain>
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
             <certificates src="@raw/openmetrolinx" />
         </trust-anchors>
     </domain-config>

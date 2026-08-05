@@ -1,10 +1,10 @@
 [versions]
-versionName = "1.15.1"
-versionCode = "53"
+versionName = "1.15.2"
+versionCode = "54"
 minSdk = "28"
 compileSdk = "37"
 targetSdk = "37"
-agp = "9.2.1"
+agp = "9.3.1"
 datastore = "1.2.1"
 kotlin = "2.4.0"
 koin = "4.2.2"
