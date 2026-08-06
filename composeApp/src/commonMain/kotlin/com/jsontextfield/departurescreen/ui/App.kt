@@ -126,7 +126,7 @@ fun App(
                     enterTransition = { slideInHorizontally { it } },
                     exitTransition = { slideOutHorizontally { it } },
                 ) {
-                    val selectedStopCode = it.toRoute<StopsRoute>().selectedStopCode
+                    val selectedStopCode = it.toRoute<StopsRoute>().selectedStopName
                     val stopsViewModel = koinViewModel<StopsViewModel> {
                         parametersOf(selectedStopCode)
                     }

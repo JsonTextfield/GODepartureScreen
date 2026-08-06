@@ -52,7 +52,7 @@ fun WidgetConfigControls(
                 onClick = onStopButtonClicked,
                 modifier = Modifier.fillMaxWidth(9 / 12f),
             ) {
-                Text(text = widgetConfig.selectedStop?.name.orEmpty(), modifier = Modifier.basicMarquee())
+                Text(text = widgetConfig.selectedStopName.orEmpty(), modifier = Modifier.basicMarquee())
             }
         }
         Row(

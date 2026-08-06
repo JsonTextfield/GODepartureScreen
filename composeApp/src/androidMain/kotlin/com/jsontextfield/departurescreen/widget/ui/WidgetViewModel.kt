@@ -63,7 +63,7 @@ class WidgetViewModel(
         }.launchIn(viewModelScope)
         viewModelScope.launch {
             configDataStore.getConfig(widgetId).collectLatest { widgetConfig ->
-                getSelectedStopUseCase(widgetConfig.selectedStopCode)
+                getSelectedStopUseCase(widgetConfig.selectedStopName)
                     .distinctUntilChanged()
                     .catch { _ ->
                         _uiState.update {

@@ -30,7 +30,7 @@ class WidgetConfigDataStore(private val context: Context) {
     fun getConfig(appWidgetId: Int): Flow<WidgetConfig> = context.dataStore.data
         .map { preferences ->
             WidgetConfig(
-                selectedStopCode = preferences[PreferenceKeys.selectedStop(appWidgetId)] ?: "UN",
+                selectedStopName = preferences[PreferenceKeys.selectedStop(appWidgetId)] ?: "Union Station GO",
                 sortMode = SortMode.entries.firstOrNull {
                     preferences[PreferenceKeys.sortMode(appWidgetId)] == it.ordinal
                 } ?: SortMode.TIME,
@@ -44,7 +44,7 @@ class WidgetConfigDataStore(private val context: Context) {
     // Save the config for a specific widget
     suspend fun saveConfig(appWidgetId: Int, config: WidgetConfig) {
         context.dataStore.edit { preferences ->
-            config.selectedStopCode?.let {
+            config.selectedStopName?.let {
                 preferences[PreferenceKeys.selectedStop(appWidgetId)] = it
             }
             preferences[PreferenceKeys.sortMode(appWidgetId)] = config.sortMode.ordinal

@@ -2,16 +2,21 @@
 
 package com.jsontextfield.departurescreen.widget.config
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -37,16 +42,22 @@ class WidgetConfigActivity : ComponentActivity() {
         val widgetId = glanceId?.let { glanceWidgetManager.getAppWidgetId(glanceId) }
 
         setContent {
+            val view = LocalView.current
             val haptic = LocalHapticFeedback.current
             val navController = rememberNavController()
             val configViewModel = koinViewModel<WidgetConfigViewModel> {
                 parametersOf(widgetId)
             }
+            val widgetConfig by configViewModel.config.collectAsStateWithLifecycle()
+            val scope = rememberCoroutineScope()
+            val isAppearanceLightStatusBars = !isSystemInDarkTheme()
+            SideEffect {
+                val window = (view.context as Activity).window
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isAppearanceLightStatusBars
+            }
             AppTheme {
                 NavHost(navController, startDestination = WidgetSettingsRoute) {
                     composable<WidgetSettingsRoute> {
-                        val widgetConfig by configViewModel.config.collectAsStateWithLifecycle()
-                        val scope = rememberCoroutineScope()
                         WidgetConfigScreen(
                             widgetConfig = widgetConfig,
                             onSortModeChanged = configViewModel::onSortModeChanged,
@@ -56,7 +67,7 @@ class WidgetConfigActivity : ComponentActivity() {
                                 configViewModel.onOpacityChanged(it)
                             },
                             onStopButtonClicked = {
-                                navController.navigate(StopsRoute(widgetConfig.selectedStopCode))
+                                navController.navigate(StopsRoute(widgetConfig.selectedStopName))
                             },
                             onCancel = {
                                 glanceId?.let {
@@ -89,7 +100,7 @@ class WidgetConfigActivity : ComponentActivity() {
                         )
                     }
                     composable<StopsRoute> {
-                        val selectedStopCode = it.toRoute<StopsRoute>().selectedStopCode
+                        val selectedStopCode = it.toRoute<StopsRoute>().selectedStopName
                         val stopsViewModel = koinViewModel<StopsViewModel> {
                             parametersOf(selectedStopCode)
                         }

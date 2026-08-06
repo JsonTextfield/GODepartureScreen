@@ -3,7 +3,6 @@ package com.jsontextfield.departurescreen.widget.config
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
-import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WidgetConfigViewModel(
-    private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     private val widgetConfigDataStore: WidgetConfigDataStore,
     private val widgetId: Int? = null,
@@ -31,14 +29,10 @@ class WidgetConfigViewModel(
                 widgetConfigDataStore.getConfig(widgetId),
                 preferencesRepository.getSelectedStop(),
             ) { widgetConfig, selectedStopCode ->
-                val allStops = goTrainDataSource.getAllStops()
                 _config.update {
-                    val stopCode = widgetConfig.selectedStopCode ?: selectedStopCode
+                    val stopName = widgetConfig.selectedStopName ?: selectedStopCode
                     widgetConfig.copy(
-                        selectedStop = allStops.firstOrNull {
-                            stopCode in it.code
-                        },
-                        selectedStopCode = stopCode,
+                        selectedStopName = stopName,
                     )
                 }
             }.launchIn(viewModelScope)
@@ -78,16 +72,14 @@ class WidgetConfigViewModel(
     fun onStopChanged(stop: Stop) {
         _config.update {
             it.copy(
-                selectedStop = stop,
-                selectedStopCode = stop.code.split(",").first()
+                selectedStopName = stop.name
             )
         }
     }
 }
 
 data class WidgetConfig(
-    val selectedStop: Stop? = null,
-    val selectedStopCode: String? = null,
+    val selectedStopName: String? = null,
     val sortMode: SortMode = SortMode.TIME,
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val opacity: Float = 0.8f,

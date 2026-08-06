@@ -51,7 +51,7 @@ class DataStorePreferencesRepository(
 
     override fun getSelectedStop(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[stringPreferencesKey(SELECTED_STOP_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "UN"
+            preferences[stringPreferencesKey(SELECTED_STOP_KEY)] ?: preferences[stringPreferencesKey(OLD_SELECTED_STOP_CODE_KEY)] ?: "Union Station GO"
         }
     }
 
