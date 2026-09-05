@@ -143,6 +143,8 @@ struct Provider: AppIntentTimelineProvider {
                     isBus: true,
                     cars: nil,
                     busType: nil,
+                    stopName: "Union Station GO",
+                    stopCode: "UN",
                     )
             ],
             timeFormat: .relative
