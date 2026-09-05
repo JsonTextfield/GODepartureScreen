@@ -1,6 +1,8 @@
 [versions]
-versionName = "1.15.3"
-versionCode = "55"
+material3 = "1.9.0"
+jetbrains = "1.12.0"
+versionName = "1.15.4"
+versionCode = "56"
 minSdk = "28"
 compileSdk = "37"
 targetSdk = "37"
@@ -44,6 +46,8 @@ androidx-glance = { module = "androidx.glance:glance", version.ref = "glanceAppw
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceMaterial3" }
 androidx-glance-wear-tiles = { module = "androidx.glance:glance-wear-tiles", version.ref = "glanceWearTiles" }
+components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrains" }
+foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -60,6 +64,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -79,7 +84,10 @@ horologist-compose-tools = { group = "com.google.android.horologist", name = "ho
 horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
 androidx-watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
+runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains" }
 touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrains" }
+ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

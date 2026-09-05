@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
@@ -42,7 +43,6 @@ import departure_screen.composeapp.generated.resources.theme
 import departure_screen.composeapp.generated.resources.time_format
 import departure_screen.composeapp.generated.resources.use_alerts_with_links
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -52,7 +52,7 @@ fun SettingsScreen(
     onBackPressed: () -> Unit = {},
 ) {
     val uiState by settingsViewModel.uiState.collectAsState()
-    SettingsScreen(
+    SettingsScreenContent(
         themeMode = uiState.themeMode,
         contrastMode = uiState.contrastMode,
         useDynamicTheme = uiState.useDynamicTheme,
@@ -69,7 +69,7 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsScreen(
+private fun SettingsScreenContent(
     themeMode: ThemeMode = ThemeMode.DEFAULT,
     contrastMode: ContrastMode = ContrastMode.NORMAL,
     useDynamicTheme: Boolean = false,
@@ -241,5 +241,5 @@ private fun SettingsSwitchItem(
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen()
+    SettingsScreenContent()
 }

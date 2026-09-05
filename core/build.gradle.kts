@@ -7,18 +7,20 @@ plugins {
     alias(libs.plugins.androidLint)
 }
 
+compose.resources {
+    publicResClass = true
+    generateResClass = auto
+}
+
 kotlin {
 
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
-    androidLibrary {
+    android {
         namespace = "com.jsontextfield.departurescreen.core"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
-
-        withHostTestBuilder {
-        }
 
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
@@ -59,7 +61,6 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
-            implementation("androidx.work:work-runtime-ktx:2.9.0")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
