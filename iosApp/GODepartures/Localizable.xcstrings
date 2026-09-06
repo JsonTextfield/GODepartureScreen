@@ -47,6 +47,16 @@
         }
       }
     },
+    "12-hour" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 h"
+          }
+        }
+      }
+    },
     "24-hour" : {
       "localizations" : {
         "fr" : {
@@ -111,7 +121,7 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mis à jour à %@"
           }
         }
@@ -217,7 +227,7 @@
         }
       }
     },
-    "Upcoming Departures" : {
+    "Upcoming departures" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {

@@ -16,7 +16,7 @@ struct TimeBox: View {
         self.trip = trip
         self.timeFormat = timeFormat
     }
-
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             if timeFormat == .relative {
@@ -27,8 +27,13 @@ struct TimeBox: View {
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .bold()
-            } else {
+            } else if timeFormat == .twentyFourHour {
                 Text("\(trip.twentyFourHourDepartureTime)")
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .bold()
+            } else {
+                Text("\(trip.twelveHourDepartureTime)")
                     .font(.caption)
                     .multilineTextAlignment(.center)
                     .bold()

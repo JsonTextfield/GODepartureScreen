@@ -17,13 +17,11 @@ struct ConfigurationIntent: WidgetConfigurationIntent {
     @Parameter(title: "Stop")
     var selectedStop: StopDetail?
 
-    @Parameter(title: "Sort by…")
-    var sortMode: SortMode?
+    @Parameter(title: "Sort by…", default: .time)
+    var sortMode: SortMode
     
-    @Parameter(title: "Time format")
-    var timeFormat: TimeFormat?
-
-    init() {}
+    @Parameter(title: "Time format", default: .relative)
+    var timeFormat: TimeFormat
 
     init(
         selectedStop: StopDetail? = nil,
@@ -34,4 +32,6 @@ struct ConfigurationIntent: WidgetConfigurationIntent {
         self.sortMode = sortMode
         self.timeFormat = timeFormat
     }
+    
+    init() {}
 }

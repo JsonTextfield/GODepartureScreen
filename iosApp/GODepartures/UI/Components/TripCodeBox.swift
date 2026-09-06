@@ -11,9 +11,7 @@ import SwiftUI
 
 struct TripCodeBox: View {
     let trip: CoreTrip
-    init(trip: CoreTrip) {
-        self.trip = trip
-    }
+
     var body: some View {
         ZStack(alignment: .center) {
             SquircleShape()

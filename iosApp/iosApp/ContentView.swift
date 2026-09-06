@@ -15,6 +15,10 @@ struct ComposeView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     var body: some View {
-        ComposeView().ignoresSafeArea()
+        ComposeView().ignoresSafeArea().onOpenURL { url in
+            print("Widget link tapped: \(url)")
+            // parse and navigate
+            // send this
+        }
     }
 }

@@ -8,6 +8,7 @@
 
 import Algorithms
 import AppIntents
+import ComposeApp
 import SwiftUI
 import WidgetKit
 
@@ -21,15 +22,23 @@ struct GODeparturesEntryView: View {
 
     var body: some View {
         VStack {
-            Text(entry.stopName)
-                .lineLimit(1)
-                .font(.footnote)
-                .bold()
+            Link(
+                destination: URL(
+                    string: "departures://stop/\(entry.stopName)"
+                )!
+            ) {
+                Text(entry.stopName)
+                    .lineLimit(1)
+                    .font(.footnote)
+                    .bold()
+                    .padding(.vertical, 4)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+            }
             if widgetFamily == .systemSmall {
                 SmallWidgetView(entry: entry)
             } else {
                 let columnCount = widgetFamily == .systemExtraLarge ? 2 : 1
-                let rowCount = widgetFamily == .systemMedium ? 1 : 5
+                let rowCount = widgetFamily == .systemMedium ? 1 : 4
                 Grid {
                     GridRow {
                         ForEach(
@@ -47,22 +56,22 @@ struct GODeparturesEntryView: View {
                     ) { trips in
                         GridRow {
                             ForEach(trips, id: \.self.id) { trip in
-                                TripListItemView(
-                                    trip: trip,
-                                    timeFormat: entry.timeFormat,
-                                )
+                                Link(
+                                    destination: URL(
+                                        string: "departures://trip/\(trip.id)"
+                                    )!
+                                ) {
+                                    TripListItemView(
+                                        trip: trip,
+                                        timeFormat: entry.timeFormat,
+                                    )
+                                }
                             }
                         }.frame(maxHeight: .infinity, alignment: .top)
                     }
                 }
                 Spacer()
-                Button(intent: RefreshIntent()) {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text("Last updated: \(entry.date, style: .time)")
-                            .font(.footnote)
-                    }
-                }
+                UpdateButton(title: "Last updated: \(entry.date, style: .time)")
             }
         }.frame(maxHeight: .infinity).padding(4)
     }
