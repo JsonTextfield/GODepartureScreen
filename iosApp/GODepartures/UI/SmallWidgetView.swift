@@ -32,9 +32,7 @@ struct SmallWidgetView: View {
         if let trip = entry.trips.first {
             VStack {
                 Link(
-                    destination: URL(
-                        string: "departures://trip/\(trip.id)"
-                    )!
+                    destination: entry.getTripDestination(trip: trip)
                 ) {
                     HStack {
                         TripCodeBox(trip: trip)

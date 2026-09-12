@@ -24,10 +24,10 @@ struct GODeparturesEntryView: View {
         VStack {
             Link(
                 destination: URL(
-                    string: "departures://stop/\(entry.stopName)"
+                    string: "go-departures://app/stops/\(entry.stop.name)"
                 )!
             ) {
-                Text(entry.stopName)
+                Text(entry.stop.name)
                     .lineLimit(1)
                     .font(.footnote)
                     .bold()
@@ -57,9 +57,9 @@ struct GODeparturesEntryView: View {
                         GridRow {
                             ForEach(trips, id: \.self.id) { trip in
                                 Link(
-                                    destination: URL(
-                                        string: "departures://trip/\(trip.id)"
-                                    )!
+                                    destination: entry.getTripDestination(
+                                        trip: trip
+                                    )
                                 ) {
                                     TripListItemView(
                                         trip: trip,

@@ -24,6 +24,9 @@ import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
+import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkDestination
+import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkHolder
+import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkParser
 import com.jsontextfield.departurescreen.ui.intents.Alerts
 import com.jsontextfield.departurescreen.ui.intents.Settings
 import com.jsontextfield.departurescreen.ui.intents.Stops
@@ -52,6 +55,38 @@ fun App(
             navigation()
         }
     }
+
+    val pendingUrl by DeepLinkHolder.pendingUrl.collectAsState()
+
+    LaunchedEffect(pendingUrl) {
+        pendingUrl?.let { url ->
+            DeepLinkParser.parse(url)?.let { destination ->
+                when (destination) {
+                    is DeepLinkDestination.Stop -> {
+                        mainViewModel.setSelectedStop(destination.stopName)
+                        navController.navigate(HomeRoute(destination.stopName)) {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    is DeepLinkDestination.Trip -> {
+                        navController.navigate(
+                            TripDetailsRoute(
+                                selectedStop = destination.stopName,
+                                stopCode = destination.stopCode,
+                                tripId = destination.tripId,
+                                lineCode = destination.code,
+                                destination = destination.destination,
+                            )
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            }
+            DeepLinkHolder.consume()
+        }
+    }
     LaunchedEffect(isNavigating) {
         if (isNavigating) {
             delay(500)
@@ -69,9 +104,10 @@ fun App(
         Surface {
             NavHost(
                 navController = navController,
-                startDestination = HomeRoute,
+                startDestination = HomeRoute(),
             ) {
                 composable<HomeRoute> {
+                    it.toRoute<HomeRoute>().selectedStop?.let(mainViewModel::setSelectedStop)
                     MainScreen(
                         mainViewModel = mainViewModel,
                         onNavigationAction = { action ->
@@ -81,16 +117,19 @@ fun App(
                                         launchSingleTop = true
                                     }
                                 }
+
                                 Settings -> {
                                     navController.navigate(SettingsRoute) {
                                         launchSingleTop = true
                                     }
                                 }
+
                                 is Stops -> {
                                     navController.navigate(StopsRoute(action.selectedStopCode)) {
                                         launchSingleTop = true
                                     }
                                 }
+
                                 is TripDetails -> {
                                     navController.navigate(
                                         TripDetailsRoute(

@@ -3,7 +3,7 @@ package com.jsontextfield.departurescreen.core.ui.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HomeRoute
+data class HomeRoute(val selectedStop: String? = null)
 
 @Serializable
 data object AlertsRoute
@@ -19,5 +19,6 @@ data class TripDetailsRoute(
     val lineCode: String,
     val destination: String,
 )
+
 @Serializable
 data object SettingsRoute
