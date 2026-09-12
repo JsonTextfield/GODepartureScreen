@@ -96,7 +96,7 @@ struct Provider: AppIntentTimelineProvider {
                 })
                 return SimpleEntry(
                     date: Date(),
-                    stop: stop,
+                    stopName: stop.name,
                     trips: trips,
                     timeFormat: timeFormat
                 )
@@ -106,13 +106,7 @@ struct Provider: AppIntentTimelineProvider {
 
         return SimpleEntry(
             date: Date(),
-            stop: CoreStop(
-                name: "",
-                code: "",
-                types: [],
-                isEnabled: false,
-                isFavourite: false
-            ),
+            stopName: "",
             trips: [],
             timeFormat: .relative
         )
@@ -129,13 +123,7 @@ struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            stop: CoreStop(
-                name: "Union Station GO",
-                code: "UN",
-                types: [.train],
-                isEnabled: true,
-                isFavourite: false
-            ),
+            stopName: "Union Station GO",
             trips: [
                 CoreTrip(
                     id: "X1234",
@@ -170,21 +158,29 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let stop: CoreStop
+    let stopName: String
     let trips: [CoreTrip]
     let timeFormat: TimeFormat
 }
 
 extension SimpleEntry {
     func getTripDestination(trip: CoreTrip) -> URL {
-        let data: [String: String] = [
-            "stopName": stop.name,
-            "stopCode": stop.code,
+        let data: [String: String?] = [
+            "tripId": trip.id,
+            "stopName": trip.stopName,
+            "stopCode": trip.stopCode,
             "lineCode": trip.code,
             "destination": trip.destination,
         ]
-        var components = URLComponents(string: "go-departures://app/trips/\(trip.id)")!
-        components.queryItems = data.map { URLQueryItem(name: $0.key, value: $0.value) }
+        var components = URLComponents(
+            string: AppKt.TRIPS_URL,
+        )!
+        components.queryItems =
+            data
+            .filter { $0.value != nil }
+            .map {
+                URLQueryItem(name: $0.key, value: $0.value)
+            }
 
         return components.url!
     }

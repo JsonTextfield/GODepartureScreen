@@ -24,10 +24,10 @@ struct GODeparturesEntryView: View {
         VStack {
             Link(
                 destination: URL(
-                    string: "go-departures://app/stops/\(entry.stop.name)"
+                    string: "\(AppKt.BASE_URL)/?selectedStop=\(entry.stopName)",
                 )!
             ) {
-                Text(entry.stop.name)
+                Text(entry.stopName)
                     .lineLimit(1)
                     .font(.footnote)
                     .bold()

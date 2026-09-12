@@ -14,7 +14,7 @@ data object Retry : MainScreenAction
 
 data object Alerts : MainScreenNavigationAction, ActionBarAction
 data object Settings : MainScreenNavigationAction, ActionBarAction
-data class Stops(val selectedStopCode: String? = null) : MainScreenNavigationAction
+data class Stops(val selectedStopName: String? = null) : MainScreenNavigationAction
 data class TripDetails(val trip: Trip) : MainScreenNavigationAction
 
 data class SetSortMode(val sortMode: SortMode) : ActionBarAction

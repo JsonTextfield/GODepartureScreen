@@ -1,4 +1,4 @@
-package com.jsontextfield.departurescreen.ui.deeplink
+package com.jsontextfield.departurescreen.ui
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
