@@ -67,7 +67,7 @@ struct GODeparturesEntryView: View {
                                     )
                                 }
                             }
-                        }.frame(maxHeight: .infinity, alignment: .top)
+                        }.frame(maxHeight: 60, alignment: .top)
                     }
                 }
                 Spacer()

@@ -21,7 +21,7 @@ struct StopDetail: AppEntity {
     static var defaultQuery = StopQuery()
 
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
+        DisplayRepresentation(title: "\(name)", subtitle: "\(id)")
     }
 
     static var allStops: [StopDetail] = []
@@ -37,26 +37,27 @@ struct StopQuery: EntityQuery {
     func suggestedEntities() async throws -> [StopDetail] {
         let userDefaults = UserDefaults(suiteName: "group.com.jsontextfield.godepartures")
         let favourites = userDefaults?.object(forKey: "favouriteStops") as? String ?? userDefaults?.object(forKey: "favouriteStations") as? String ?? ""
-        let descriptors: [SortDescriptor<CoreStop>] = [
-            .transform({ trip in
-                let codes: [String] = trip.code.components(separatedBy: ",")
+        let descriptors: [SortDescriptor<StopDetail>] = [
+            .transform({ stop in
+                let codes: [String] = stop.id.components(separatedBy: ", ")
                 return codes.contains(where: { code in
                     favourites.contains(code)
                 }) ? 1 : 0
             }, order: .reverse),
             .transform({
-                ($0.code.contains("UN") || $0.code.contains("02300")) ? 1 : 0
+                ($0.id.contains("UN") || $0.id.contains("02300")) ? 1 : 0
             }, order: .reverse),
             .string(\.name, compare: { $0.localizedCaseInsensitiveCompare($1) })
         ]
         
         let widgetHelper = WidgetHelper()
-        StopDetail.allStops =
-        try await widgetHelper.goTrainDataSource.getAllStops()
-            .sorted(using: descriptors)
-            .map { stop in
-                StopDetail(id: stop.code, name: stop.name)
+        let allStops = try await widgetHelper.transitRepository.getAllStops()
+        let groupedStops = Dictionary(grouping: allStops, by: { $0.name })
+            .map {
+                StopDetail(id: $0.value.map{$0.code}.joined(separator: ", "), name: $0.key)
             }
+            .sorted(using: descriptors)
+        StopDetail.allStops = groupedStops
         return StopDetail.allStops
     }
 

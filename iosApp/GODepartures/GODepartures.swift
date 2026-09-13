@@ -18,7 +18,7 @@ struct Provider: AppIntentTimelineProvider {
     let departureScreenUseCase: CoreGetSelectedStopUseCase
 
     init() {
-        transitRepository = widgetHelper.goTrainDataSource
+        transitRepository = widgetHelper.transitRepository
         departureScreenUseCase = widgetHelper.getSelectedStopUseCase
     }
 
@@ -29,40 +29,22 @@ struct Provider: AppIntentTimelineProvider {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
-        let selectedStopCode =
-            configuration.selectedStop?.id
-            ?? userDefaults?.object(
-                forKey: "selectedStopCode"
-            ) as? String
-            ?? userDefaults?.object(
-                forKey: "selectedStationCode"
-            ) as? String
-            ?? "UN"
 
         let timeFormat: TimeFormat = configuration.timeFormat
         let sortMode: SortMode = configuration.sortMode
 
         do {
             let allStops = try await transitRepository.getAllStops()
-            if let stop =
-                allStops
-                .first(where: {
-                    $0.code.contains(selectedStopCode)
-                })
-                ?? allStops
-                .first(where: {
-                    $0.code.contains("UN")
-                })
-                ?? allStops.first
+            if let stopName = configuration.selectedStop?.name
+                ?? allStops.first(where: { $0.code.contains("UN") })?.name
             {
-                let trips: [CoreTrip]
                 let visibleTrains: String =
-                    userDefaults?.object(forKey: "hiddenTrains")
-                    as? String ?? ""
+                    userDefaults?.object(forKey: "hiddenTrains") as? String
+                    ?? ""
 
                 // Parse comma-separated stop codes
-                let codes: [String] = stop.code
-                    .split(separator: ",")
+                let codes: [String] = (configuration.selectedStop?.id ?? "UN")
+                    .split(separator: ", ")
                     .map {
                         String($0)
                     }
@@ -76,9 +58,8 @@ struct Provider: AppIntentTimelineProvider {
                     fetchedTrips.append(contentsOf: result)
                 }
                 // Sort according to mode
-                trips = fetchedTrips.filter { trip in
-                    visibleTrains.isEmpty
-                        || visibleTrains.contains(trip.code)
+                let trips = fetchedTrips.filter { trip in
+                    visibleTrains.isEmpty || visibleTrains.contains(trip.code)
                 }
                 .sorted(by: {
                     switch sortMode {
@@ -96,7 +77,7 @@ struct Provider: AppIntentTimelineProvider {
                 })
                 return SimpleEntry(
                     date: Date(),
-                    stopName: stop.name,
+                    stopName: stopName,
                     trips: trips,
                     timeFormat: timeFormat
                 )
