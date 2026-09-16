@@ -38,7 +38,12 @@ struct GODeparturesEntryView: View {
                 SmallWidgetView(entry: entry)
             } else {
                 let columnCount = widgetFamily == .systemExtraLarge ? 2 : 1
-                let rowCount = widgetFamily == .systemMedium ? 1 : 4
+                let rowCount =
+                    switch widgetFamily {
+                    case .systemMedium: 1
+                    case .systemExtraLargePortrait: 8
+                    default: 4
+                    }
                 Grid {
                     GridRow {
                         ForEach(

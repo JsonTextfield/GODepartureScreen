@@ -5,10 +5,13 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -38,6 +41,7 @@ import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TripList
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.ui.BannerAd
 import com.jsontextfield.departurescreen.ui.intents.MainScreenAction
 import com.jsontextfield.departurescreen.ui.intents.MainScreenNavigationAction
 import com.jsontextfield.departurescreen.ui.intents.Refresh
@@ -112,7 +116,22 @@ fun MainScreen(
                     modifier = Modifier.shadow(4.dp)
                 )
             }
-
+        },
+        bottomBar = {
+            if (uiState.isAdEnabled) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    BannerAd(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                    LayoutDirection.Ltr
+                                ),
+                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                            ),
+                    )
+                }
+            }
         },
         floatingActionButton = {
             if (uiState.status == Status.LOADED) {

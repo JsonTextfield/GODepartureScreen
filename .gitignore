@@ -18,3 +18,6 @@ xcuserdata
 /iosApp/AppIcons/Assets.xcassets/AppIcon.appiconset/Contents.json
 /iosApp/iosApp.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 /gradle/gradle-daemon-jvm.properties
+/.swiftpm-locks/
+/core/src/commonMain/kotlin/com/jsontextfield/departurescreen/core/network/SupabaseApiKey.kt
+/composeApp/src/iosMain/kotlin/com/jsontextfield/departurescreen/ui/BannerAdId.kt

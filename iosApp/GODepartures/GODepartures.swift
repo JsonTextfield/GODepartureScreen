@@ -170,7 +170,13 @@ extension SimpleEntry {
 @main
 struct GODepartures: Widget {
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(
+        var supportedFamilies: [WidgetFamily] = [
+                .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
+        ]
+        if #available(iOS 27.0, *) {
+            supportedFamilies.append(.systemExtraLargePortrait)
+        }
+        return AppIntentConfiguration(
             kind: "com.jsontextfield.godepartures.GODepartures",
             intent: ConfigurationIntent.self,
             provider: Provider()
@@ -182,9 +188,7 @@ struct GODepartures: Widget {
         }
         .configurationDisplayName("Upcoming departures")
         .description("Shows departure information for a stop")
-        .supportedFamilies([
-            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
-        ])
+        .supportedFamilies(supportedFamilies)
         .contentMarginsDisabled()
     }
 

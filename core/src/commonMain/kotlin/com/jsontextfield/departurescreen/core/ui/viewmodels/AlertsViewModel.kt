@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
+import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.Status
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -28,11 +30,24 @@ import kotlin.time.ExperimentalTime
 class AlertsViewModel(
     private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
+    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())
     val uiState: StateFlow<AlertsUIState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            val isAdEnabled = try {
+                isAdEnabled(featureFlagApi)
+            } catch (_: Exception) {
+                false
+            }
+            _uiState.update {
+                it.copy(
+                    isAdEnabled = isAdEnabled
+                )
+            }
+        }
         combine(
             preferencesRepository.getVisibleAlertLines().distinctUntilChanged(),
             preferencesRepository.getIsUnreadAlertsSelected().distinctUntilChanged(),
@@ -147,6 +162,7 @@ data class AlertsUIState(
     val selectedLines: Set<String> = emptySet(),
     val isUnreadSelected: Boolean = false,
     val isRefreshing: Boolean = false,
+    val isAdEnabled: Boolean = false,
 ) {
     private val filterPredicate: (Alert) -> Boolean = { alert ->
         (isUnreadSelected && alert.isRead) xor (selectedLines.isEmpty() || alert.affectedLines.any { lineCode ->

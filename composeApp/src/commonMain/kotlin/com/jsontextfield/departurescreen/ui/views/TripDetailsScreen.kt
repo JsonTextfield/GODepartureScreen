@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -41,6 +43,7 @@ import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
+import com.jsontextfield.departurescreen.ui.BannerAd
 import com.jsontextfield.departurescreen.ui.views.tripdetails.AlertsSection
 import com.jsontextfield.departurescreen.ui.views.tripdetails.MoreTripsSection
 import com.jsontextfield.departurescreen.ui.views.tripdetails.StopsSection
@@ -81,6 +84,22 @@ fun TripDetailsScreen(
                 modifier = Modifier.shadow(4.dp)
             )
         },
+        bottomBar = {
+            if (uiState.isAdEnabled) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    BannerAd(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                    LayoutDirection.Ltr
+                                ),
+                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                            ),
+                    )
+                }
+            }
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
             when (uiState.status) {

@@ -7,6 +7,8 @@ import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
+import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -33,6 +35,7 @@ class TripDetailsViewModel(
     private val tripId: String,
     private val lineCode: String,
     private val destination: String,
+    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
@@ -46,6 +49,18 @@ class TripDetailsViewModel(
     }
 
     init {
+        viewModelScope.launch {
+            val isAdEnabled = try {
+                isAdEnabled(featureFlagApi)
+            } catch (_: Exception) {
+                false
+            }
+            _uiState.update {
+                it.copy(
+                    isAdEnabled = isAdEnabled
+                )
+            }
+        }
         loadData()
     }
 
@@ -173,4 +188,5 @@ data class TripUIState(
     val serviceGuarantee: String = "",
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val moreTrips: List<Trip> = emptyList(),
+    val isAdEnabled: Boolean = false,
 )

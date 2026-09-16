@@ -12,6 +12,8 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
+import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -41,6 +43,7 @@ class MainViewModel(
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
     private val goTrainDataSource: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
+    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
@@ -51,6 +54,18 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
+        viewModelScope.launch {
+            val isAdEnabled = try {
+                isAdEnabled(featureFlagApi)
+            } catch (_: Exception) {
+                false
+            }
+            _uiState.update {
+                it.copy(
+                    isAdEnabled = isAdEnabled
+                )
+            }
+        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -257,6 +272,7 @@ data class MainUIState(
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val isRefreshing: Boolean = false,
     val unreadAlertsCount: Int = 0,
+    val isAdEnabled: Boolean = false,
 ) {
     val allTrips: List<Trip> = _allTrips.map { train ->
         train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())

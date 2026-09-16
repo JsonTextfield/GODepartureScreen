@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -59,6 +60,7 @@ import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.ScrollToTopButton
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
+import com.jsontextfield.departurescreen.ui.BannerAd
 import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.alerts
 import kotlinx.coroutines.launch
@@ -112,6 +114,22 @@ fun AlertsScreen(
                 },
                 modifier = Modifier.shadow(4.dp)
             )
+        },
+        bottomBar = {
+            if (uiState.isAdEnabled) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    BannerAd(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                    LayoutDirection.Ltr
+                                ),
+                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                            ),
+                    )
+                }
+            }
         },
         floatingActionButton = {
             Box(
