@@ -14,13 +14,7 @@ interface ITransitRepository {
 
     suspend fun getMoreTrips(tripId: String, stopCode: String) : Set<String>
 
-    fun getServiceAlerts(): Flow<List<Alert>>
-
-    fun getInformationAlerts(): Flow<List<Alert>>
-
-    fun getMarketingAlerts(): Flow<List<Alert>>
-
-    fun getServiceUpdates(language: String): Flow<List<Alert>>
+    fun getAllAlerts(language: String): Flow<List<Alert>>
 
     suspend fun getAllStops(): List<Stop>
 

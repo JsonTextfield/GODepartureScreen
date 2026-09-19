@@ -77,6 +77,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun AlertsScreen(
     alertsViewModel: AlertsViewModel,
     onBackPressed: () -> Unit = {},
+    onAlertClicked: (String) -> Unit = {},
 ) {
     val language = Locale.current.language
     LaunchedEffect(language) {
@@ -90,6 +91,7 @@ fun AlertsScreen(
         onRetryClicked = { alertsViewModel.loadData(language) },
         onLinesSelected = alertsViewModel::setFilter,
         onReadAlert = alertsViewModel::readAlert,
+        onAlertClicked = onAlertClicked,
     )
 }
 
@@ -102,6 +104,7 @@ fun AlertsScreen(
     onRefresh: () -> Unit = {},
     onReadAlert: (String) -> Unit = {},
     onLinesSelected: (Set<String>, Boolean) -> Unit = { _, _ -> },
+    onAlertClicked: (String) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val gridState = rememberLazyStaggeredGridState()
@@ -250,6 +253,7 @@ fun AlertsScreen(
                                 ) { index, alert ->
                                     AlertItem(
                                         alert,
+                                        timeFormat = uiState.timeFormat,
                                         modifier = Modifier.semantics {
                                             collectionItemInfo = CollectionItemInfo(
                                                 rowIndex = index / columns,
@@ -258,13 +262,7 @@ fun AlertsScreen(
                                                 columnSpan = 1,
                                             )
                                         }.animateItem(),
-                                        onClick = {
-                                            if ("fr" in Locale.current.language) {
-                                                alert.urlFr
-                                            } else {
-                                                alert.urlEn
-                                            }?.let(uriHandler::openUri)
-                                        }
+                                        onClick = { onAlertClicked(alert.id) }
                                     )
                                 }
                                 item {

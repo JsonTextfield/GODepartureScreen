@@ -11,6 +11,7 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
 import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertDetailsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.SettingsViewModel
@@ -72,6 +73,14 @@ val viewModelModule = module {
             tripId = params[2],
             lineCode = params[3],
             destination = params[4],
+        )
+    }
+    viewModel { params ->
+        AlertDetailsViewModel(
+            featureFlagApi = get<FeatureFlagApi>(),
+            transitRepository = get<ITransitRepository>(),
+            preferencesRepository = get<IPreferencesRepository>(),
+            alertId = params[0],
         )
     }
 }

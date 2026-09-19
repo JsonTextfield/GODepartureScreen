@@ -11,24 +11,24 @@ import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.Status
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 class AlertsViewModel(
-    private val goTrainDataSource: ITransitRepository,
+    private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
@@ -48,6 +48,11 @@ class AlertsViewModel(
                 )
             }
         }
+        preferencesRepository.getTimeFormat().map { timeFormat ->
+            _uiState.update {
+                it.copy(timeFormat = timeFormat)
+            }
+        }.launchIn(viewModelScope)
         combine(
             preferencesRepository.getVisibleAlertLines().distinctUntilChanged(),
             preferencesRepository.getIsUnreadAlertsSelected().distinctUntilChanged(),
@@ -83,54 +88,33 @@ class AlertsViewModel(
     }
 
     private fun loadAlerts(language: String = "en") {
-        viewModelScope.launch {
-            val alertsFlow = combine(
-                goTrainDataSource.getServiceAlerts(),
-                goTrainDataSource.getInformationAlerts(),
-                goTrainDataSource.getMarketingAlerts(),
-            ) { service, info, marketing ->
-                service + info + marketing
+        combine(
+            transitRepository.getAllAlerts(language),
+            preferencesRepository.getReadAlerts().take(1)
+        ) { alerts, readAlerts ->
+            val allLines = alerts
+                .flatMap { it.affectedLines }
+                .distinct()
+                .sorted()
+            val allAlerts = alerts
+                .map { it.copy(isRead = it.id in readAlerts) }
+                .sortedByDescending { it.date }
+            _uiState.update { uiState ->
+                uiState.copy(
+                    status = Status.LOADED,
+                    isRefreshing = false,
+                    allAlerts = allAlerts,
+                    allLines = allLines,
+                )
             }
-            combine(
-                preferencesRepository.getReadAlerts().take(1),
-                preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-                    if (useLinks) {
-                        combine(
-                            alertsFlow,
-                            goTrainDataSource.getServiceUpdates(language),
-                        ) { alerts, serviceUpdates ->
-                            alerts + serviceUpdates
-                        }
-                    } else {
-                        alertsFlow
-                    }
-                },
-            ) { readAlerts, alerts ->
-                val allLines = alerts
-                    .flatMap { it.affectedLines }
-                    .distinct()
-                    .sorted()
-                val allAlerts = alerts
-                    .distinctBy { it.id }
-                    .map { it.copy(isRead = it.id in readAlerts) }
-                    .sortedByDescending { it.date }
-                _uiState.update { uiState ->
-                    uiState.copy(
-                        status = Status.LOADED,
-                        isRefreshing = false,
-                        allAlerts = allAlerts,
-                        allLines = allLines,
-                    )
-                }
-            }.catch {
-                _uiState.update {
-                    it.copy(
-                        status = Status.ERROR,
-                        isRefreshing = false,
-                    )
-                }
-            }.collect()
-        }
+        }.catch {
+            _uiState.update {
+                it.copy(
+                    status = Status.ERROR,
+                    isRefreshing = false,
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun readAlert(id: String) {
@@ -163,6 +147,7 @@ data class AlertsUIState(
     val isUnreadSelected: Boolean = false,
     val isRefreshing: Boolean = false,
     val isAdEnabled: Boolean = false,
+    val timeFormat: TimeFormat = TimeFormat.RELATIVE,
 ) {
     private val filterPredicate: (Alert) -> Boolean = { alert ->
         (isUnreadSelected && alert.isRead) xor (selectedLines.isEmpty() || alert.affectedLines.any { lineCode ->

@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -41,7 +40,7 @@ import kotlin.time.ExperimentalTime
 class MainViewModel(
     private val getSelectedStopUseCase: GetSelectedStopUseCase,
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
-    private val goTrainDataSource: ITransitRepository,
+    private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
     private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
@@ -170,7 +169,7 @@ class MainViewModel(
         val stopCodes = stop.code.split(",")
         viewModelScope.launch {
             runCatching {
-                stopCodes.flatMap { goTrainDataSource.getTrips(it) }
+                stopCodes.flatMap { transitRepository.getTrips(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
@@ -229,23 +228,11 @@ class MainViewModel(
     }
 
     fun getUnreadAlertsCount() {
-        preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-            val alertsFlow = if (useLinks) {
-                goTrainDataSource.getServiceUpdates("en")
-            } else {
-                combine(
-                    goTrainDataSource.getServiceAlerts(),
-                    goTrainDataSource.getInformationAlerts()
-                ) { service, info ->
-                    service + info
-                }
-            }
-            combine(
-                preferencesRepository.getReadAlerts(),
-                alertsFlow
-            ) { readAlerts, alertsList ->
-                alertsList.count { it.id !in readAlerts }
-            }
+        combine(
+            preferencesRepository.getReadAlerts(),
+            transitRepository.getAllAlerts("en"),
+        ) { readAlerts, alertsList ->
+            alertsList.count { it.id !in readAlerts }
         }.onEach { count ->
             _uiState.update {
                 it.copy(unreadAlertsCount = count)

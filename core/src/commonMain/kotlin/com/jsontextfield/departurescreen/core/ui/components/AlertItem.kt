@@ -28,10 +28,15 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.relativeDate
+import com.jsontextfield.departurescreen.core.entities.twelveHourDate
+import com.jsontextfield.departurescreen.core.entities.twentyFourHourDate
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
+import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import departure_screen.core.generated.resources.Res
 import departure_screen.core.generated.resources.day_difference
@@ -44,16 +49,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AlertItem(
     alert: Alert,
+    timeFormat: TimeFormat = TimeFormat.RELATIVE,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
     val language = Locale.current.language
     val fontScale = LocalDensity.current.fontScale
     Card(
-        modifier = modifier.clickable(
-            enabled = false, // alert.urlEn != null || alert.urlFr != null,
-            onClick = onClick,
-        ),
+        modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         border = BorderStroke(
@@ -69,22 +72,54 @@ fun AlertItem(
                     .semantics(mergeDescendants = true) {},
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Row(verticalAlignment = Alignment.Top) {
-                    Text(
-                        text = alert.affectedStops.takeIf { it.isNotEmpty() }
-                            ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
+                Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
                         modifier = Modifier
-                            .weight(10 / 12f)
-                            .semantics { heading() },
-                        style = MaterialTheme.typography.titleSmall,
-                    )
+                            .weight(10 / 12f),
+                    ) {
+                        Text(
+                            text = alert.affectedStops.takeIf { it.isNotEmpty() }
+                                ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
+                            modifier = Modifier
+                                .semantics { heading() },
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            for (line in alert.affectedLines) {
+                                TripCodeBox(
+                                    tripCode = line,
+                                    modifier = Modifier
+                                        .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
+                                        .background(
+                                            color = lineColours[line] ?: Color.Gray,
+                                            shape = SquircleShape,
+                                        )
+                                )
+                            }
+                        }
+                    }
                     Text(
-                        text = if (alert.dateDifference.inWholeDays > 0) {
-                            stringResource(Res.string.day_difference, alert.dateDifference.inWholeDays)
-                        } else if (alert.dateDifference.inWholeHours > 0) {
-                            stringResource(Res.string.hour_difference, alert.dateDifference.inWholeHours)
-                        } else {
-                            stringResource(Res.string.minute_difference, alert.dateDifference.inWholeMinutes)
+                        text = when (timeFormat) {
+                            TimeFormat.RELATIVE -> {
+                                if (alert.relativeDate.inWholeDays > 0) {
+                                    stringResource(Res.string.day_difference, alert.relativeDate.inWholeDays)
+                                } else if (alert.relativeDate.inWholeHours > 0) {
+                                    stringResource(Res.string.hour_difference, alert.relativeDate.inWholeHours)
+                                } else {
+                                    stringResource(Res.string.minute_difference, alert.relativeDate.inWholeMinutes)
+                                }
+                            }
+
+                            TimeFormat.TWELVE_HOUR -> {
+                                alert.twelveHourDate
+                            }
+
+                            TimeFormat.TWENTY_FOUR_HOUR -> {
+                                alert.twentyFourHourDate
+                            }
                         },
                         style = MaterialTheme.typography.labelSmall,
                         textAlign = TextAlign.Center,
@@ -94,22 +129,11 @@ fun AlertItem(
                         Badge()
                     }
                 }
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    for (line in alert.affectedLines) {
-                        TripCodeBox(
-                            tripCode = line,
-                            modifier = Modifier
-                                .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
-                                .background(
-                                    color = lineColours[line] ?: Color.Gray,
-                                    shape = SquircleShape,
-                                )
-                        )
-                    }
-                }
                 Text(
                     text = alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

@@ -60,7 +60,7 @@ class MainViewModelTest {
         preferencesRepository.setSortMode(SortMode.TIME)
 
         val mainViewModel = MainViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
@@ -115,7 +115,7 @@ class MainViewModelTest {
         preferencesRepository.setSortMode(SortMode.LINE)
 
         val mainViewModel = MainViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
@@ -164,7 +164,7 @@ class MainViewModelTest {
         preferencesRepository.setVisibleTrains(setOf("LE"))
 
         val mainViewModel = MainViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
@@ -199,7 +199,7 @@ class MainViewModelTest {
         preferencesRepository.setVisibleTrains(setOf("LW"))
 
         val mainViewModel = MainViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,
@@ -224,7 +224,7 @@ class MainViewModelTest {
         val preferencesRepository = FakePreferencesRepository()
 
         val mainViewModel = MainViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = goTrainDataSource,
             preferencesRepository = preferencesRepository,
             getSelectedStopUseCase = GetSelectedStopUseCase(
                 goTrainDataSource = goTrainDataSource,

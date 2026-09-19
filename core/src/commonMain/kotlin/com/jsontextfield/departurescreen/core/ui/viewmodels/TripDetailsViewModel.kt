@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -30,12 +28,12 @@ import kotlinx.coroutines.withContext
 class TripDetailsViewModel(
     private val preferencesRepository: IPreferencesRepository,
     private val transitRepository: ITransitRepository,
+    private val featureFlagApi: FeatureFlagApi,
     private val selectedStop: String,
     private val stopCode: String,
     private val tripId: String,
     private val lineCode: String,
     private val destination: String,
-    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
@@ -82,46 +80,26 @@ class TripDetailsViewModel(
             }
         }.launchIn(viewModelScope)
 
-        loadAlerts()
         loadStops()
         loadMoreTrips()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadAlerts() {
-        preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-            val alertsFlow = combine(
-                transitRepository.getServiceAlerts(),
-                transitRepository.getInformationAlerts(),
-                transitRepository.getMarketingAlerts(),
-            ) { service, info, marketing ->
-                service + info + marketing
+    fun loadAlerts(language: String = "en") {
+        transitRepository.getAllAlerts(language).map { alerts ->
+            val filteredAlerts = withContext(Dispatchers.IO) {
+                alerts
+                    .map { it.copy(isRead = true) }
+                    .filter { alert ->
+                        alert.affectedLines.any { line -> line == lineCode } ||
+                                alert.affectedStops.any { stop -> stop == selectedStop }
+                    }
             }
-            val allAlerts = if (useLinks) {
-                combine(
-                    alertsFlow,
-                    transitRepository.getServiceUpdates("en"),
-                ) { alerts, serviceUpdates ->
-                    alerts + serviceUpdates
-                }
-            } else {
-                alertsFlow
-            }
-            allAlerts.map { alerts ->
-                val filteredAlerts = withContext(Dispatchers.IO) {
-                    alerts
-                        .map { it.copy(isRead = true) }
-                        .filter { alert ->
-                            alert.affectedLines.any { line -> line == lineCode } ||
-                                    alert.affectedStops.any { stop -> stop == selectedStop }
-                        }
-                }
-                _uiState.update {
-                    it.copy(
-                        status = Status.LOADED,
-                        alerts = filteredAlerts,
-                    )
-                }
+            _uiState.update {
+                it.copy(
+                    status = Status.LOADED,
+                    alerts = filteredAlerts,
+                )
             }
         }.catch {
             _uiState.update {

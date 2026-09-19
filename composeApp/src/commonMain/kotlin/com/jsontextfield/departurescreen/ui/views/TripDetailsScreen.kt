@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -62,8 +64,13 @@ fun TripDetailsScreen(
     tripDetailsViewModel: TripDetailsViewModel,
     onBackPressed: () -> Unit,
     onTripSelected: (Trip) -> Unit,
+    onAlertClicked: (String) -> Unit,
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
+    val language = Locale.current.language
+    LaunchedEffect(language) {
+        tripDetailsViewModel.loadAlerts(language)
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -136,7 +143,7 @@ fun TripDetailsScreen(
                         ) {
                             if (uiState.alerts.isNotEmpty()) {
                                 item {
-                                    AlertsSection(uiState.alerts)
+                                    AlertsSection(uiState.alerts, onAlertClicked = onAlertClicked)
                                 }
                             }
                             if (uiState.moreTrips.isNotEmpty()) {

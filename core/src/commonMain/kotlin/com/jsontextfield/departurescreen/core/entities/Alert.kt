@@ -9,7 +9,13 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -29,8 +35,6 @@ data class Alert(
     val urlEn: String? = null,
     val urlFr: String? = null,
 ) {
-    val dateDifference: Duration = Clock.System.now() - date
-
     fun getSubject(language: String): String {
         return subjectFr.takeIf { "fr" in language && it.isNotEmpty() } ?: subjectEn
     }
@@ -49,7 +53,7 @@ data class Alert(
                 // Remove style tags and their content
                 val sanitizedHtml = html.replace(Regex("(?s)<style[^>]*>.*?</style>"), "")
                     .replace(Regex("(?s)<!--.*?-->"), "")
-                
+
                 var currentPos = 0
                 val tagStack = mutableListOf<String>()
 
@@ -173,3 +177,63 @@ data class Alert(
         }
     }
 }
+
+private val frenchMonthNames = MonthNames(
+    "janv.",
+    "févr.",
+    "mars",
+    "avr.",
+    "mai",
+    "juin",
+    "juil.",
+    "août",
+    "sept.",
+    "oct.",
+    "nov.",
+    "déc."
+)
+
+val Alert.relativeDate: Duration
+    get() = Clock.System.now() - date
+
+val Alert.twelveHourDate: String
+    get() {
+        return date.format(DateTimeComponents.Format {
+            day()
+            char(' ')
+            if (Locale.current.language == "fr") {
+                monthName(frenchMonthNames)
+            } else {
+                monthName(MonthNames.ENGLISH_ABBREVIATED)
+            }
+            char(' ')
+            amPmHour(Padding.NONE)
+            char(':')
+            minute()
+            char(' ')
+            if (Locale.current.language == "fr") {
+                amPmMarker("a.m.", "p.m.")
+            } else {
+                amPmMarker("AM", "PM")
+            }
+        })
+    }
+
+val Alert.twentyFourHourDate: String
+    get() {
+        return date.format(DateTimeComponents.Format {
+            day()
+            char(' ')
+            if (Locale.current.language == "fr") {
+                monthName(frenchMonthNames)
+            } else {
+                monthName(MonthNames.ENGLISH_ABBREVIATED)
+            }
+            char(' ')
+            hour()
+            char(':')
+            minute()
+            char(' ')
+        })
+    }
+

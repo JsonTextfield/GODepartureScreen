@@ -16,12 +16,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.AlertDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.SettingsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertDetailsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
@@ -30,6 +32,7 @@ import com.jsontextfield.departurescreen.ui.intents.Alerts
 import com.jsontextfield.departurescreen.ui.intents.Settings
 import com.jsontextfield.departurescreen.ui.intents.Stops
 import com.jsontextfield.departurescreen.ui.intents.TripDetails
+import com.jsontextfield.departurescreen.ui.views.AlertDetailsScreen
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.SettingsScreen
@@ -133,6 +136,25 @@ fun App(
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
+                        onAlertClicked = { alertId ->
+                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
+                        }
+                    )
+                }
+
+                composable<AlertDetailsRoute> (
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    val alertId = it.toRoute<AlertDetailsRoute>().alertId
+                    val alertDetailsViewModel = koinViewModel<AlertDetailsViewModel> {
+                        parametersOf(alertId)
+                    }
+                    AlertDetailsScreen(
+                        alertDetailsViewModel = alertDetailsViewModel,
+                        onBackPressed = {
+                            safeNavigation { navController.popBackStack() }
+                        },
                     )
                 }
 
@@ -175,17 +197,22 @@ fun App(
                             safeNavigation { navController.popBackStack() }
                         },
                         onTripSelected = { trip ->
-                            navController.navigate(
-                                TripDetailsRoute(
-                                    stopName = route.stopName,
-                                    stopCode = route.stopCode,
-                                    tripId = trip.id,
-                                    lineCode = trip.code,
-                                    destination = trip.destination,
-                                )
-                            ) {
-                                popUpTo<TripDetailsRoute> { inclusive = true }
+                            safeNavigation {
+                                navController.navigate(
+                                    TripDetailsRoute(
+                                        stopName = route.stopName,
+                                        stopCode = route.stopCode,
+                                        tripId = trip.id,
+                                        lineCode = trip.code,
+                                        destination = trip.destination,
+                                    )
+                                ) {
+                                    popUpTo<TripDetailsRoute> { inclusive = true }
+                                }
                             }
+                        },
+                        onAlertClicked = { alertId ->
+                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
                         }
                     )
                 }

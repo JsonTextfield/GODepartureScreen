@@ -84,26 +84,8 @@ class FakeTransitRepository : ITransitRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getServiceAlerts(): Flow<List<Alert>> {
-        return flowOf(serviceAlerts)
-    }
-
-    override fun getInformationAlerts(): Flow<List<Alert>> {
-        return flowOf(informationAlerts)
-    }
-
-    override fun getMarketingAlerts(): Flow<List<Alert>> {
+    override fun getAllAlerts(language: String): Flow<List<Alert>> {
         return flowOf(emptyList())
-    }
-
-    override fun getServiceUpdates(language: String): Flow<List<Alert>> {
-        return flowOf(listOf(
-            Alert(
-                id = "1",
-                subjectEn = "Test Alert",
-                bodyEn = "Test Body",
-            )
-        ))
     }
 
     override suspend fun getAllStops(): List<Stop> {

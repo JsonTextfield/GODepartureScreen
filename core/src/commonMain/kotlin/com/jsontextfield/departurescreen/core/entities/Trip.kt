@@ -4,6 +4,7 @@ package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
@@ -40,7 +41,11 @@ data class Trip(
         char(':')
         minute()
         char(' ')
-        amPmMarker("AM", "PM")
+        if (Locale.current.language == "fr") {
+            amPmMarker("a.m.", "p.m.")
+        } else {
+            amPmMarker("AM", "PM")
+        }
     })
     val twentyFourHourDepartureTime: String = departureTime.format(DateTimeComponents.Format {
         hour()
