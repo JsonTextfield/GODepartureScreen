@@ -1,5 +1,10 @@
 package com.jsontextfield.departurescreen.ui.views
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -151,113 +156,120 @@ fun AlertsScreen(
             }
         },
     ) { innerPadding ->
-        when (uiState.status) {
-            Status.LOADING -> {
-                LoadingScreen()
-            }
-
-            Status.ERROR -> {
-                ErrorScreen(onRetry = onRetryClicked)
-            }
-
-            Status.LOADED -> {
-                val density = LocalDensity.current
-                val widthDp =
-                    (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
-                        .calculateLeftPadding(
-                            LayoutDirection.Ltr
-                        ).value - WindowInsets.safeDrawing.asPaddingValues()
-                        .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-                val columns = (widthDp / 320).coerceAtLeast(1)
-
-                val visibleItems by remember {
-                    derivedStateOf {
-                        gridState.layoutInfo.visibleItemsInfo
-                    }
+        AnimatedContent(
+            uiState.status,
+            transitionSpec = {
+                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+            },
+        ) { state ->
+            when (state) {
+                Status.LOADING -> {
+                    LoadingScreen()
                 }
-                LaunchedEffect(visibleItems) {
-                    for (item in visibleItems) {
-                        val alert = if (item.key in uiState.alerts.map { it.id }) {
-                            uiState.alerts.firstOrNull { it.id == item.key }
-                        } else {
-                            null
-                        }
-                        if (alert?.isRead == false) {
-                            onReadAlert(alert.id)
+
+                Status.ERROR -> {
+                    ErrorScreen(onRetry = onRetryClicked)
+                }
+
+                Status.LOADED -> {
+                    val density = LocalDensity.current
+                    val widthDp =
+                        (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateLeftPadding(
+                                LayoutDirection.Ltr
+                            ).value - WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
+                    val columns = (widthDp / 320).coerceAtLeast(1)
+
+                    val visibleItems by remember {
+                        derivedStateOf {
+                            gridState.layoutInfo.visibleItemsInfo
                         }
                     }
-                }
-                val pullToRefreshState = rememberPullToRefreshState()
-                PullToRefreshBox(
-                    isRefreshing = uiState.isRefreshing,
-                    onRefresh = onRefresh,
-                    state = pullToRefreshState,
-                    modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-                    indicator = {
-                        PullToRefreshDefaults.Indicator(
-                            state = pullToRefreshState,
-                            isRefreshing = uiState.isRefreshing,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                ) {
-                    Column {
-                        AlertFilterChipStrip(
-                            data = uiState.allLines,
-                            selectedItems = uiState.selectedLines,
-                            onSelectionChanged = onLinesSelected,
-                            isUnreadSelected = uiState.isUnreadSelected,
-                        )
-                        LazyVerticalStaggeredGrid(
-                            state = gridState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .semantics {
-                                    collectionInfo = CollectionInfo(
-                                        rowCount = uiState.alerts.size,
-                                        columnCount = columns,
-                                    )
-                                },
-                            verticalItemSpacing = 8.dp,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(
-                                top = 16.dp,
-                                start = WindowInsets.safeDrawing.asPaddingValues()
-                                    .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
-                                end = WindowInsets.safeDrawing.asPaddingValues()
-                                    .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
-                                bottom = 100.dp,
-                            ),
-                            columns = StaggeredGridCells.Fixed(columns),
-                        ) {
-                            itemsIndexed(
-                                items = uiState.alerts,
-                                span = { _, _ -> StaggeredGridItemSpan.SingleLane },
-                                key = { _, item -> item.id },
-                                contentType = { _, _ -> Alert::class },
-                            ) { index, alert ->
-                                AlertItem(
-                                    alert,
-                                    modifier = Modifier.semantics {
-                                        collectionItemInfo = CollectionItemInfo(
-                                            rowIndex = index / columns,
-                                            columnIndex = index % columns,
-                                            rowSpan = 1,
-                                            columnSpan = 1,
-                                        )
-                                    }.animateItem(),
-                                    onClick = {
-                                        if ("fr" in Locale.current.language) {
-                                            alert.urlFr
-                                        } else {
-                                            alert.urlEn
-                                        }?.let(uriHandler::openUri)
-                                    }
-                                )
+                    LaunchedEffect(visibleItems) {
+                        for (item in visibleItems) {
+                            val alert = if (item.key in uiState.alerts.map { it.id }) {
+                                uiState.alerts.firstOrNull { it.id == item.key }
+                            } else {
+                                null
                             }
-                            item {
-                                Spacer(modifier = Modifier.height(100.dp))
+                            if (alert?.isRead == false) {
+                                onReadAlert(alert.id)
+                            }
+                        }
+                    }
+                    val pullToRefreshState = rememberPullToRefreshState()
+                    PullToRefreshBox(
+                        isRefreshing = uiState.isRefreshing,
+                        onRefresh = onRefresh,
+                        state = pullToRefreshState,
+                        modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+                        indicator = {
+                            PullToRefreshDefaults.Indicator(
+                                state = pullToRefreshState,
+                                isRefreshing = uiState.isRefreshing,
+                                modifier = Modifier.align(Alignment.TopCenter),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    ) {
+                        Column {
+                            AlertFilterChipStrip(
+                                data = uiState.allLines,
+                                selectedItems = uiState.selectedLines,
+                                onSelectionChanged = onLinesSelected,
+                                isUnreadSelected = uiState.isUnreadSelected,
+                            )
+                            LazyVerticalStaggeredGrid(
+                                state = gridState,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .semantics {
+                                        collectionInfo = CollectionInfo(
+                                            rowCount = uiState.alerts.size,
+                                            columnCount = columns,
+                                        )
+                                    },
+                                verticalItemSpacing = 8.dp,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                contentPadding = PaddingValues(
+                                    top = 16.dp,
+                                    start = WindowInsets.safeDrawing.asPaddingValues()
+                                        .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                                    end = WindowInsets.safeDrawing.asPaddingValues()
+                                        .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
+                                    bottom = 100.dp,
+                                ),
+                                columns = StaggeredGridCells.Fixed(columns),
+                            ) {
+                                itemsIndexed(
+                                    items = uiState.alerts,
+                                    span = { _, _ -> StaggeredGridItemSpan.SingleLane },
+                                    key = { _, item -> item.id },
+                                    contentType = { _, _ -> Alert::class },
+                                ) { index, alert ->
+                                    AlertItem(
+                                        alert,
+                                        modifier = Modifier.semantics {
+                                            collectionItemInfo = CollectionItemInfo(
+                                                rowIndex = index / columns,
+                                                columnIndex = index % columns,
+                                                rowSpan = 1,
+                                                columnSpan = 1,
+                                            )
+                                        }.animateItem(),
+                                        onClick = {
+                                            if ("fr" in Locale.current.language) {
+                                                alert.urlFr
+                                            } else {
+                                                alert.urlEn
+                                            }?.let(uriHandler::openUri)
+                                        }
+                                    )
+                                }
+                                item {
+                                    Spacer(modifier = Modifier.height(100.dp))
+                                }
                             }
                         }
                     }

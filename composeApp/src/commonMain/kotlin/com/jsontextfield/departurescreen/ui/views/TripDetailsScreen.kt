@@ -2,7 +2,13 @@
 
 package com.jsontextfield.departurescreen.ui.views
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,7 +81,7 @@ fun TripDetailsScreen(
                                     shape = SquircleShape
                                 )
                         )
-                        Text(text = uiState.destination)
+                        Text(text = uiState.destination, modifier = Modifier.basicMarquee())
                     }
                 },
                 navigationIcon = {
@@ -102,52 +108,59 @@ fun TripDetailsScreen(
         }
     ) { padding ->
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
-            when (uiState.status) {
-                Status.LOADING -> LoadingScreen()
-                Status.ERROR -> ErrorScreen(onRetry = { tripDetailsViewModel.loadData() })
-                Status.LOADED -> {
-                    val density = LocalDensity.current
-                    val widthDp = (LocalWindowInfo.current.containerSize.width / density.density).toInt()
-                    val columns = (widthDp / 320).coerceIn(1, 4)
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalItemSpacing = 8.dp,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        columns = StaggeredGridCells.Fixed(columns),
-                        contentPadding = PaddingValues(
-                            start = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
-                            end = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
-                            bottom = 100.dp,
-                        )
-                    ) {
-                        if (uiState.alerts.isNotEmpty()) {
-                            item {
-                                AlertsSection(uiState.alerts)
+            AnimatedContent(
+                uiState.status,
+                transitionSpec = {
+                    fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                },
+            ) { state ->
+                when (state) {
+                    Status.LOADING -> LoadingScreen()
+                    Status.ERROR -> ErrorScreen(onRetry = { tripDetailsViewModel.loadData() })
+                    Status.LOADED -> {
+                        val density = LocalDensity.current
+                        val widthDp = (LocalWindowInfo.current.containerSize.width / density.density).toInt()
+                        val columns = (widthDp / 320).coerceIn(1, 4)
+                        LazyVerticalStaggeredGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalItemSpacing = 8.dp,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            columns = StaggeredGridCells.Fixed(columns),
+                            contentPadding = PaddingValues(
+                                start = WindowInsets.safeDrawing.asPaddingValues()
+                                    .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                                end = WindowInsets.safeDrawing.asPaddingValues()
+                                    .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
+                                bottom = 100.dp,
+                            )
+                        ) {
+                            if (uiState.alerts.isNotEmpty()) {
+                                item {
+                                    AlertsSection(uiState.alerts)
+                                }
                             }
-                        }
-                        if (uiState.moreTrips.isNotEmpty()) {
-                            item {
-                                MoreTripsSection(
-                                    moreTrips = uiState.moreTrips,
-                                    title = stringResource(Res.string.more_trips, uiState.selectedStop),
-                                    timeFormat = uiState.timeFormat,
-                                    onTripSelected = onTripSelected,
-                                )
+                            if (uiState.moreTrips.isNotEmpty()) {
+                                item {
+                                    MoreTripsSection(
+                                        moreTrips = uiState.moreTrips,
+                                        title = stringResource(Res.string.more_trips, uiState.selectedStop),
+                                        timeFormat = uiState.timeFormat,
+                                        onTripSelected = onTripSelected,
+                                    )
+                                }
                             }
-                        }
-                        if (uiState.stops.isNotEmpty()) {
-                            item {
-                                StopsSection(
-                                    stops = uiState.stops,
-                                    timeFormat = uiState.timeFormat,
-                                    selectedStop = uiState.selectedStop,
-                                    onStopSelected = { stopName ->
-                                        tripDetailsViewModel.setSelectedStop(stopName)
-                                        onBackPressed()
-                                    },
-                                )
+                            if (uiState.stops.isNotEmpty()) {
+                                item {
+                                    StopsSection(
+                                        stops = uiState.stops,
+                                        timeFormat = uiState.timeFormat,
+                                        selectedStop = uiState.selectedStop,
+                                        onStopSelected = { stopName ->
+                                            tripDetailsViewModel.setSelectedStop(stopName)
+                                            onBackPressed()
+                                        },
+                                    )
+                                }
                             }
                         }
                     }

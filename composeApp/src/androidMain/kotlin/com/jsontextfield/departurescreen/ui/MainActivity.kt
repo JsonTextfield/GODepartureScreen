@@ -1,23 +1,18 @@
 package com.jsontextfield.departurescreen.ui
 
-import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalView
 import androidx.core.util.Consumer
-import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +22,7 @@ import com.jsontextfield.departurescreen.widget.MyAppWidgetReceiver
 import io.ktor.http.URLProtocol
 import io.ktor.http.buildUrl
 import io.ktor.http.encodeURLParameter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val glanceAppWidgetManager = GlanceAppWidgetManager(this@MainActivity)
                 glanceAppWidgetManager.setWidgetPreviews(MyAppWidgetReceiver::class)
             }
@@ -48,13 +44,6 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.DARK -> false
                 ThemeMode.DEFAULT -> !isSystemInDarkTheme()
             }
-            val view = LocalView.current
-            var isIntentProcessed by rememberSaveable { mutableStateOf(false) }
-
-            LaunchedEffect(Unit) {
-                handleIntent(intent)
-                isIntentProcessed = true
-            }
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
                     handleIntent(intent)
@@ -63,14 +52,19 @@ class MainActivity : ComponentActivity() {
                 addOnNewIntentListener(listener)
                 onDispose { removeOnNewIntentListener(listener) }
             }
-            SideEffect {
-                val window = (view.context as Activity).window
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isAppearanceLightStatusBars
+            LaunchedEffect(isAppearanceLightStatusBars) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isAppearanceLightStatusBars) {
+                        SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.dark(Color.TRANSPARENT)
+                    }
+                )
             }
             App(mainViewModel)
         }
     }
-    fun handleIntent(intent: Intent) {
+    private fun handleIntent(intent: Intent) {
         val selectedStop = intent.getStringExtra("selectedStop")
         val stopCode = intent.getStringExtra("stopCode")
         val tripId = intent.getStringExtra("tripId")
