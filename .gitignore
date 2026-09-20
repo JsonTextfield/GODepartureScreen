@@ -21,3 +21,4 @@ xcuserdata
 /.swiftpm-locks/
 /core/src/commonMain/kotlin/com/jsontextfield/departurescreen/core/network/SupabaseApiKey.kt
 /composeApp/src/iosMain/kotlin/com/jsontextfield/departurescreen/ui/BannerAdId.kt
+/iosApp/KotlinMultiplatformLinkedPackage/
