@@ -141,33 +141,29 @@ fun TripDetailsScreen(
                                 bottom = 100.dp,
                             )
                         ) {
-                            if (uiState.alerts.isNotEmpty()) {
-                                item {
-                                    AlertsSection(uiState.alerts, onAlertClicked = onAlertClicked)
-                                }
+                            item {
+                                AlertsSection(uiState.alerts, status = uiState.alertsStatus, onAlertClicked = onAlertClicked)
                             }
-                            if (uiState.moreTrips.isNotEmpty()) {
-                                item {
-                                    MoreTripsSection(
-                                        moreTrips = uiState.moreTrips,
-                                        title = stringResource(Res.string.more_trips, uiState.selectedStop),
-                                        timeFormat = uiState.timeFormat,
-                                        onTripSelected = onTripSelected,
-                                    )
-                                }
+                            item {
+                                MoreTripsSection(
+                                    moreTrips = uiState.moreTrips,
+                                    status = uiState.moreTripsStatus,
+                                    title = stringResource(Res.string.more_trips, uiState.selectedStop),
+                                    timeFormat = uiState.timeFormat,
+                                    onTripSelected = onTripSelected,
+                                )
                             }
-                            if (uiState.stops.isNotEmpty()) {
-                                item {
-                                    StopsSection(
-                                        stops = uiState.stops,
-                                        timeFormat = uiState.timeFormat,
-                                        selectedStop = uiState.selectedStop,
-                                        onStopSelected = { stopName ->
-                                            tripDetailsViewModel.setSelectedStop(stopName)
-                                            onBackPressed()
-                                        },
-                                    )
-                                }
+                            item {
+                                StopsSection(
+                                    stops = uiState.stops,
+                                    status = uiState.stopsStatus,
+                                    timeFormat = uiState.timeFormat,
+                                    selectedStop = uiState.selectedStop,
+                                    onStopSelected = { stopName ->
+                                        tripDetailsViewModel.setSelectedStop(stopName)
+                                        onBackPressed()
+                                    },
+                                )
                             }
                         }
                     }

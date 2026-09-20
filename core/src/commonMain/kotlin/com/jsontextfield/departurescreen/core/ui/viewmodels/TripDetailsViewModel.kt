@@ -38,14 +38,6 @@ class TripDetailsViewModel(
     private val _uiState: MutableStateFlow<TripUIState> = MutableStateFlow(TripUIState())
     val uiState: StateFlow<TripUIState> = _uiState.asStateFlow()
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, _ ->
-        _uiState.update {
-            it.copy(
-                status = if (it.status == Status.LOADING) Status.ERROR else Status.LOADED,
-            )
-        }
-    }
-
     init {
         viewModelScope.launch {
             val isAdEnabled = try {
@@ -65,7 +57,9 @@ class TripDetailsViewModel(
     fun loadData() {
         _uiState.update {
             it.copy(
-                status = Status.LOADING,
+                stopsStatus = Status.LOADING,
+                moreTripsStatus = Status.LOADING,
+                alertsStatus = Status.LOADING,
                 lineCode = lineCode,
                 selectedStop = selectedStop,
                 destination = destination,
@@ -86,6 +80,11 @@ class TripDetailsViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun loadAlerts(language: String = "en") {
+        _uiState.update {
+            it.copy(
+                alertsStatus = Status.LOADING,
+            )
+        }
         transitRepository.getAllAlerts(language).map { alerts ->
             val filteredAlerts = withContext(Dispatchers.IO) {
                 alerts
@@ -97,21 +96,32 @@ class TripDetailsViewModel(
             }
             _uiState.update {
                 it.copy(
-                    status = Status.LOADED,
+                    alertsStatus = Status.LOADED,
                     alerts = filteredAlerts,
                 )
             }
         }.catch {
             _uiState.update {
                 it.copy(
-                    status = if (it.status == Status.LOADING) Status.ERROR else Status.LOADED,
+                    alertsStatus = Status.ERROR,
                 )
             }
         }.launchIn(viewModelScope)
     }
 
     private fun loadStops() {
-        viewModelScope.launch(coroutineExceptionHandler) {
+        _uiState.update {
+            it.copy(
+                stopsStatus = Status.LOADING,
+            )
+        }
+        viewModelScope.launch(CoroutineExceptionHandler { _, _ ->
+            _uiState.update {
+                it.copy(
+                    stopsStatus = Status.ERROR,
+                )
+            }
+        }) {
             val schedules = withContext(Dispatchers.IO) {
                 if (lineCode == "UP") {
                     transitRepository.getUPExpressTripSchedule(tripId)
@@ -121,7 +131,7 @@ class TripDetailsViewModel(
             }
             _uiState.update {
                 it.copy(
-                    status = Status.LOADED,
+                    stopsStatus = Status.LOADED,
                     stops = schedules,
                 )
             }
@@ -129,7 +139,18 @@ class TripDetailsViewModel(
     }
 
     private fun loadMoreTrips() {
-        viewModelScope.launch(coroutineExceptionHandler) {
+        _uiState.update {
+            it.copy(
+                moreTripsStatus = Status.LOADING,
+            )
+        }
+        viewModelScope.launch(CoroutineExceptionHandler { _, _ ->
+            _uiState.update {
+                it.copy(
+                    moreTripsStatus = Status.ERROR,
+                )
+            }
+        }) {
             val moreTrips = withContext(Dispatchers.IO) {
                 if (lineCode == "UP") {
                     transitRepository.getTrips(stopCode)
@@ -142,7 +163,7 @@ class TripDetailsViewModel(
             }
             _uiState.update {
                 it.copy(
-                    status = Status.LOADED,
+                    moreTripsStatus = Status.LOADED,
                     moreTrips = moreTrips,
                 )
             }
@@ -157,7 +178,9 @@ class TripDetailsViewModel(
 }
 
 data class TripUIState(
-    val status: Status = Status.LOADING,
+    val alertsStatus: Status = Status.LOADING,
+    val stopsStatus: Status = Status.LOADING,
+    val moreTripsStatus: Status = Status.LOADING,
     val lineCode: String = "",
     val selectedStop: String = "",
     val destination: String = "",
@@ -167,4 +190,10 @@ data class TripUIState(
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val moreTrips: List<Trip> = emptyList(),
     val isAdEnabled: Boolean = false,
-)
+) {
+    val status: Status = when {
+        alertsStatus == Status.ERROR && stopsStatus == Status.ERROR && moreTripsStatus == Status.ERROR -> Status.ERROR
+        alertsStatus == Status.LOADING && stopsStatus == Status.LOADING && moreTripsStatus == Status.LOADING -> Status.LOADING
+        else -> Status.LOADED
+    }
+}
