@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -233,7 +233,7 @@ class MainViewModel(
             transitRepository.getAllAlerts("en"),
         ) { readAlerts, alertsList ->
             alertsList.count { it.id !in readAlerts }
-        }.onEach { count ->
+        }.map { count ->
             _uiState.update {
                 it.copy(unreadAlertsCount = count)
             }

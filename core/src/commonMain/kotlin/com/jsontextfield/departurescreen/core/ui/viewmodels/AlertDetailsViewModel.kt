@@ -56,7 +56,7 @@ class AlertDetailsViewModel(
         }
         transitRepository.getAllAlerts(language).map { alerts ->
             try {
-                val alert = alerts.find { it.id == alertId }
+                val alert = alerts.firstOrNull { it.id == alertId }
                 _uiState.update {
                     it.copy(
                         status = Status.LOADED,

@@ -5,15 +5,16 @@ import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.entities.TripDetails
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.Flow
 
 interface ITransitRepository {
     suspend fun getTrips(stopCode: String): List<Trip>
 
-    suspend fun getTripDetails(tripId: String, stopCode: String) : TripDetails?
+    suspend fun getTripDetails(tripId: String, stopCode: String): TripDetails?
 
-    suspend fun getMoreTrips(tripId: String, stopCode: String) : Set<String>
-
+    suspend fun getMoreTrips(tripId: String, stopCode: String): Set<String>
+    @NativeCoroutines
     fun getAllAlerts(language: String): Flow<List<Alert>>
 
     suspend fun getAllStops(): List<Stop>

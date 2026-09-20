@@ -44,6 +44,7 @@ import org.koin.core.parameter.parametersOf
 
 const val BASE_URL = "go-departures.app"
 const val TRIPS_URL = "$BASE_URL/trips"
+const val ALERTS_URL = "$BASE_URL/alerts"
 
 @Composable
 fun App(
@@ -142,13 +143,16 @@ fun App(
                     )
                 }
 
-                composable<AlertDetailsRoute> (
+                composable<AlertDetailsRoute>(
                     enterTransition = { slideInHorizontally { it } },
                     exitTransition = { slideOutHorizontally { it } },
+                    deepLinks = listOf(
+                        navDeepLink<AlertDetailsRoute>(basePath = ALERTS_URL)
+                    )
                 ) {
-                    val alertId = it.toRoute<AlertDetailsRoute>().alertId
+                    val route = it.toRoute<AlertDetailsRoute>()
                     val alertDetailsViewModel = koinViewModel<AlertDetailsViewModel> {
-                        parametersOf(alertId)
+                        parametersOf(route.alertId)
                     }
                     AlertDetailsScreen(
                         alertDetailsViewModel = alertDetailsViewModel,
