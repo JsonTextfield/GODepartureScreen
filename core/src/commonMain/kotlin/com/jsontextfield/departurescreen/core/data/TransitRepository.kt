@@ -20,6 +20,7 @@ import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDateTime
@@ -257,25 +258,25 @@ class TransitRepository(
         }
     }
 
-    override fun getServiceAlerts(): Flow<List<Alert>> = pollAlerts(
+    private fun getServiceAlerts(): Flow<List<Alert>> = pollAlerts(
         apiCall = { departureScreenAPI.getServiceAlerts() },
         getCache = { serviceAlerts },
         updateCache = { serviceAlerts = it }
     )
 
-    override fun getInformationAlerts(): Flow<List<Alert>> = pollAlerts(
+    private fun getInformationAlerts(): Flow<List<Alert>> = pollAlerts(
         apiCall = { departureScreenAPI.getInformationAlerts() },
         getCache = { informationAlerts },
         updateCache = { informationAlerts = it }
     )
 
-    override fun getMarketingAlerts(): Flow<List<Alert>> = pollAlerts(
+    private fun getMarketingAlerts(): Flow<List<Alert>> = pollAlerts(
         apiCall = { departureScreenAPI.getMarketingAlerts() },
         getCache = { marketingAlerts },
         updateCache = { marketingAlerts = it }
     )
 
-    override fun getServiceUpdates(language: String): Flow<List<Alert>> = flow {
+    private fun getServiceUpdates(language: String): Flow<List<Alert>> = flow {
         while (currentCoroutineContext().isActive) {
             try {
                 val responseAll = departureScreenAPI.getServiceUpdates("all", language)
@@ -440,7 +441,7 @@ class TransitRepository(
         }
 
         return Alert(
-            id = code ?: (dateStr + subject).hashCode().toString(),
+            id = (dateStr + subject).hashCode().toString(),
             date = date,
             affectedLines = finalLines,
             affectedStops = affectedStops,
@@ -449,6 +450,20 @@ class TransitRepository(
             bodyEn = body,
             bodyFr = body,
         )
+    }
+
+    override fun getAllAlerts(language: String): Flow<List<Alert>> {
+        return combine(
+            getServiceAlerts(),
+            getInformationAlerts(),
+            getMarketingAlerts(),
+            getServiceUpdates(language = language)
+        ) { serviceAlerts, informationAlerts, marketingAlerts, serviceUpdates ->
+            val combinedList = serviceUpdates + serviceAlerts + informationAlerts + marketingAlerts
+            combinedList
+                .distinctBy { alert -> alert.getSubject(language) to alert.date }
+                .sortedByDescending { it.date }
+        }
     }
 
     companion object {

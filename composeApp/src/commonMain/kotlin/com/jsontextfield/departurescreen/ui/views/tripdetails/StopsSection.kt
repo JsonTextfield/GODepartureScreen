@@ -3,13 +3,18 @@ package com.jsontextfield.departurescreen.ui.views.tripdetails
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Schedule
+import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListHeader
 import com.jsontextfield.departurescreen.core.ui.components.TripDetailStopListItem
@@ -21,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun StopsSection(
     stops: List<Schedule>,
+    status: Status,
     timeFormat: TimeFormat,
     selectedStop: String,
     onStopSelected: (String) -> Unit,
@@ -30,26 +36,38 @@ fun StopsSection(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        SectionHeader(stringResource(Res.string.stops))
-        Column(modifier = Modifier.sectionBorder()) {
-            TripDetailStopListHeader(
-                modifier = Modifier.padding(
-                    horizontal = 8.dp,
-                    vertical = 4.dp
-                )
-            )
-            stops.forEachIndexed { index, stop ->
-                Surface(tonalElevation = if (index.isEven) 1.dp else 0.dp) {
-                    TripDetailStopListItem(
-                        stop = stop,
-                        timeFormat = timeFormat,
-                        isSelected = stop.name == selectedStop,
-                        isEnabled = index >= stops.indexOfFirst { it.name == selectedStop },
-                        modifier = Modifier
-                            .heightIn(min = 60.dp)
-                            .clickable(onClick = { onStopSelected(stop.name) })
-                            .padding(8.dp)
+        if (status != Status.ERROR) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SectionHeader(stringResource(Res.string.stops))
+                if (status == Status.LOADING) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                }
+            }
+        }
+        if (stops.isNotEmpty()) {
+            Column(modifier = Modifier.sectionBorder()) {
+                TripDetailStopListHeader(
+                    modifier = Modifier.padding(
+                        horizontal = 8.dp,
+                        vertical = 4.dp
                     )
+                )
+                stops.forEachIndexed { index, stop ->
+                    Surface(tonalElevation = if (index.isEven) 1.dp else 0.dp) {
+                        TripDetailStopListItem(
+                            stop = stop,
+                            timeFormat = timeFormat,
+                            isSelected = stop.name == selectedStop,
+                            isEnabled = index >= stops.indexOfFirst { it.name == selectedStop },
+                            modifier = Modifier
+                                .heightIn(min = 60.dp)
+                                .clickable(onClick = { onStopSelected(stop.name) })
+                                .padding(8.dp)
+                        )
+                    }
                 }
             }
         }

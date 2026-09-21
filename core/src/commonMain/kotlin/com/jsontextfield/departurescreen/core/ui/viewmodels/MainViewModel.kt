@@ -12,6 +12,8 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
+import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
+import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.Status
@@ -27,7 +29,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -39,8 +40,9 @@ import kotlin.time.ExperimentalTime
 class MainViewModel(
     private val getSelectedStopUseCase: GetSelectedStopUseCase,
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
-    private val goTrainDataSource: ITransitRepository,
+    private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
+    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
@@ -51,6 +53,18 @@ class MainViewModel(
     private var timerJob: Job? = null
 
     init {
+        viewModelScope.launch {
+            val isAdEnabled = try {
+                isAdEnabled(featureFlagApi)
+            } catch (_: Exception) {
+                false
+            }
+            _uiState.update {
+                it.copy(
+                    isAdEnabled = isAdEnabled
+                )
+            }
+        }
         combine(
             preferencesRepository.getVisibleTrains(),
             preferencesRepository.getSortMode(),
@@ -155,7 +169,7 @@ class MainViewModel(
         val stopCodes = stop.code.split(",")
         viewModelScope.launch {
             runCatching {
-                stopCodes.flatMap { goTrainDataSource.getTrips(it) }
+                stopCodes.flatMap { transitRepository.getTrips(it) }
             }.onSuccess { trains ->
                 val trainCodes = trains.map { it.code }.toSet() intersect uiState.value.visibleTrains
                 _uiState.update {
@@ -214,23 +228,11 @@ class MainViewModel(
     }
 
     fun getUnreadAlertsCount() {
-        preferencesRepository.getUseAlertsWithLinks().flatMapLatest { useLinks ->
-            val alertsFlow = if (useLinks) {
-                goTrainDataSource.getServiceUpdates("en")
-            } else {
-                combine(
-                    goTrainDataSource.getServiceAlerts(),
-                    goTrainDataSource.getInformationAlerts()
-                ) { service, info ->
-                    service + info
-                }
-            }
-            combine(
-                preferencesRepository.getReadAlerts(),
-                alertsFlow
-            ) { readAlerts, alertsList ->
-                alertsList.count { it.id !in readAlerts }
-            }
+        combine(
+            preferencesRepository.getReadAlerts(),
+            transitRepository.getAllAlerts("en"),
+        ) { readAlerts, alertsList ->
+            alertsList.count { it.id !in readAlerts }
         }.onEach { count ->
             _uiState.update {
                 it.copy(unreadAlertsCount = count)
@@ -257,6 +259,7 @@ data class MainUIState(
     val timeFormat: TimeFormat = TimeFormat.RELATIVE,
     val isRefreshing: Boolean = false,
     val unreadAlertsCount: Int = 0,
+    val isAdEnabled: Boolean = false,
 ) {
     val allTrips: List<Trip> = _allTrips.map { train ->
         train.copy(isVisible = train.code in visibleTrains || visibleTrains.isEmpty())

@@ -71,9 +71,9 @@ fun createDataStore(): DataStore<Preferences> = createDataStore(
 
 class WidgetHelper : KoinComponent {
     val preferencesRepository: IPreferencesRepository by inject()
-    val goTrainDataSource: ITransitRepository by inject()
+    val transitRepository: ITransitRepository by inject()
     val getSelectedStopUseCase = GetSelectedStopUseCase(
-        goTrainDataSource = goTrainDataSource,
+        goTrainDataSource = transitRepository,
         preferencesRepository = preferencesRepository,
     )
 }

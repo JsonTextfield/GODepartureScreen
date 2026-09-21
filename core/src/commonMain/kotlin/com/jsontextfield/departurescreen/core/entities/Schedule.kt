@@ -3,6 +3,7 @@
 package com.jsontextfield.departurescreen.core.entities
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.intl.Locale
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.Padding
@@ -25,7 +26,11 @@ data class Schedule(
         char(':')
         minute()
         char(' ')
-        amPmMarker("AM", "PM")
+        if (Locale.current.language == "fr") {
+            amPmMarker("a.m.", "p.m.")
+        } else {
+            amPmMarker("AM", "PM")
+        }
     }) ?: "-"
     val twentyFourHourDepartureTime: String = time?.format(DateTimeComponents.Format {
         hour()

@@ -1,14 +1,22 @@
 package com.jsontextfield.departurescreen.ui.views
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -38,6 +46,7 @@ import com.jsontextfield.departurescreen.core.ui.components.TripFilterChipStrip
 import com.jsontextfield.departurescreen.core.ui.components.TripList
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.ui.BannerAd
 import com.jsontextfield.departurescreen.ui.intents.MainScreenAction
 import com.jsontextfield.departurescreen.ui.intents.MainScreenNavigationAction
 import com.jsontextfield.departurescreen.ui.intents.Refresh
@@ -112,7 +121,22 @@ fun MainScreen(
                     modifier = Modifier.shadow(4.dp)
                 )
             }
-
+        },
+        bottomBar = {
+            if (uiState.isAdEnabled) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    BannerAd(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                    LayoutDirection.Ltr
+                                ),
+                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                            ),
+                    )
+                }
+            }
         },
         floatingActionButton = {
             if (uiState.status == Status.LOADED) {
@@ -129,47 +153,54 @@ fun MainScreen(
             }
         },
     ) { innerPadding ->
-        when (uiState.status) {
-            Status.LOADING -> {
-                LoadingScreen()
-            }
+        AnimatedContent(
+            uiState.status,
+            transitionSpec = {
+                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+            },
+        ) { state ->
+            when (state) {
+                Status.LOADING -> {
+                    LoadingScreen()
+                }
 
-            Status.ERROR -> {
-                ErrorScreen(onRetry = { onAction(Retry) })
-            }
+                Status.ERROR -> {
+                    ErrorScreen(onRetry = { onAction(Retry) })
+                }
 
-            Status.LOADED -> {
-                Surface {
-                    val pullToRefreshState = rememberPullToRefreshState()
-                    PullToRefreshBox(
-                        isRefreshing = uiState.isRefreshing,
-                        onRefresh = { onAction(Refresh) },
-                        state = pullToRefreshState,
-                        modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-                        indicator = {
-                            PullToRefreshDefaults.Indicator(
-                                state = pullToRefreshState,
-                                isRefreshing = uiState.isRefreshing,
-                                modifier = Modifier.align(Alignment.TopCenter),
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    ) {
-                        Column {
-                            uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
-                                AnimatedVisibility(data.size > 1) {
-                                    TripFilterChipStrip(
-                                        data = data.sortedBy { it.code },
-                                        selectedItems = uiState.visibleTrains,
-                                        onSelectionChanged = { onAction(SetVisibleTrains(it)) },
-                                    )
-                                }
+                Status.LOADED -> {
+                    Surface {
+                        val pullToRefreshState = rememberPullToRefreshState()
+                        PullToRefreshBox(
+                            isRefreshing = uiState.isRefreshing,
+                            onRefresh = { onAction(Refresh) },
+                            state = pullToRefreshState,
+                            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+                            indicator = {
+                                PullToRefreshDefaults.Indicator(
+                                    state = pullToRefreshState,
+                                    isRefreshing = uiState.isRefreshing,
+                                    modifier = Modifier.align(Alignment.TopCenter),
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
                             }
-                            TripList(
-                                trips = uiState.allTrips.filter { it.isVisible },
-                                timeFormat = uiState.timeFormat,
-                                onItemClick = { onAction(TripDetails(it)) },
-                            )
+                        ) {
+                            Column {
+                                uiState.allTrips.distinctBy { it.code to it.name }.let { data ->
+                                    AnimatedVisibility(data.size > 1) {
+                                        TripFilterChipStrip(
+                                            data = data.sortedBy { it.code },
+                                            selectedItems = uiState.visibleTrains,
+                                            onSelectionChanged = { onAction(SetVisibleTrains(it)) },
+                                        )
+                                    }
+                                }
+                                TripList(
+                                    trips = uiState.allTrips.filter { it.isVisible },
+                                    timeFormat = uiState.timeFormat,
+                                    onItemClick = { onAction(TripDetails(it)) },
+                                )
+                            }
                         }
                     }
                 }

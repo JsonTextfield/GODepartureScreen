@@ -10,27 +10,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.AlertDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.SettingsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
+import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertDetailsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
-import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkDestination
-import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkHolder
-import com.jsontextfield.departurescreen.ui.deeplink.DeepLinkParser
 import com.jsontextfield.departurescreen.ui.intents.Alerts
 import com.jsontextfield.departurescreen.ui.intents.Settings
 import com.jsontextfield.departurescreen.ui.intents.Stops
 import com.jsontextfield.departurescreen.ui.intents.TripDetails
+import com.jsontextfield.departurescreen.ui.views.AlertDetailsScreen
 import com.jsontextfield.departurescreen.ui.views.AlertsScreen
 import com.jsontextfield.departurescreen.ui.views.MainScreen
 import com.jsontextfield.departurescreen.ui.views.SettingsScreen
@@ -40,12 +42,15 @@ import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+const val BASE_URL = "go-departures.app"
+const val TRIPS_URL = "$BASE_URL/trips"
+
 @Composable
 fun App(
     mainViewModel: MainViewModel = koinViewModel<MainViewModel>(),
-    initialTripDetails: TripDetailsRoute? = null,
 ) {
     val uiState by mainViewModel.uiState.collectAsState()
+    val pendingUrl by DeepLinkHolder.pendingUrl.collectAsState()
     val navController = rememberNavController()
     var isNavigating by remember { mutableStateOf(false) }
 
@@ -56,34 +61,10 @@ fun App(
         }
     }
 
-    val pendingUrl by DeepLinkHolder.pendingUrl.collectAsState()
-
     LaunchedEffect(pendingUrl) {
         pendingUrl?.let { url ->
-            DeepLinkParser.parse(url)?.let { destination ->
-                when (destination) {
-                    is DeepLinkDestination.Stop -> {
-                        mainViewModel.setSelectedStop(destination.stopName)
-                        navController.navigate(HomeRoute(destination.stopName)) {
-                            launchSingleTop = true
-                        }
-                    }
-
-                    is DeepLinkDestination.Trip -> {
-                        navController.navigate(
-                            TripDetailsRoute(
-                                selectedStop = destination.stopName,
-                                stopCode = destination.stopCode,
-                                tripId = destination.tripId,
-                                lineCode = destination.code,
-                                destination = destination.destination,
-                            )
-                        ) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
-            }
+            val fullUrl = if (!url.contains("://")) "https://$url" else url
+            navController.navigate(NavUri(fullUrl))
             DeepLinkHolder.consume()
         }
     }
@@ -93,20 +74,17 @@ fun App(
             isNavigating = false
         }
     }
-    LaunchedEffect(initialTripDetails) {
-        initialTripDetails?.let {
-            navController.navigate(it) {
-                launchSingleTop = true
-            }
-        }
-    }
     AppTheme(uiState.theme, uiState.contrast, uiState.useDynamicTheme) {
         Surface {
             NavHost(
                 navController = navController,
                 startDestination = HomeRoute(),
             ) {
-                composable<HomeRoute> {
+                composable<HomeRoute>(
+                    deepLinks = listOf(
+                        navDeepLink<HomeRoute>(basePath = "$BASE_URL/")
+                    )
+                ) {
                     it.toRoute<HomeRoute>().selectedStop?.let(mainViewModel::setSelectedStop)
                     MainScreen(
                         mainViewModel = mainViewModel,
@@ -125,7 +103,7 @@ fun App(
                                 }
 
                                 is Stops -> {
-                                    navController.navigate(StopsRoute(action.selectedStopCode)) {
+                                    navController.navigate(StopsRoute(action.selectedStopName)) {
                                         launchSingleTop = true
                                     }
                                 }
@@ -133,7 +111,7 @@ fun App(
                                 is TripDetails -> {
                                     navController.navigate(
                                         TripDetailsRoute(
-                                            selectedStop = action.trip.stopName.orEmpty(),
+                                            stopName = action.trip.stopName.orEmpty(),
                                             stopCode = action.trip.stopCode.orEmpty(),
                                             tripId = action.trip.id,
                                             lineCode = action.trip.code,
@@ -155,6 +133,25 @@ fun App(
                     val alertsViewModel = koinViewModel<AlertsViewModel>()
                     AlertsScreen(
                         alertsViewModel = alertsViewModel,
+                        onBackPressed = {
+                            safeNavigation { navController.popBackStack() }
+                        },
+                        onAlertClicked = { alertId ->
+                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
+                        }
+                    )
+                }
+
+                composable<AlertDetailsRoute> (
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { it } },
+                ) {
+                    val alertId = it.toRoute<AlertDetailsRoute>().alertId
+                    val alertDetailsViewModel = koinViewModel<AlertDetailsViewModel> {
+                        parametersOf(alertId)
+                    }
+                    AlertDetailsScreen(
+                        alertDetailsViewModel = alertDetailsViewModel,
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
@@ -180,11 +177,14 @@ fun App(
                 composable<TripDetailsRoute>(
                     enterTransition = { slideInHorizontally { it } },
                     exitTransition = { slideOutHorizontally { it } },
+                    deepLinks = listOf(
+                        navDeepLink<TripDetailsRoute>(basePath = TRIPS_URL)
+                    ),
                 ) {
                     val route = it.toRoute<TripDetailsRoute>()
                     val tripDetailsViewModel = koinViewModel<TripDetailsViewModel> {
                         parametersOf(
-                            route.selectedStop,
+                            route.stopName,
                             route.stopCode,
                             route.tripId,
                             route.lineCode,
@@ -197,17 +197,22 @@ fun App(
                             safeNavigation { navController.popBackStack() }
                         },
                         onTripSelected = { trip ->
-                            navController.navigate(
-                                TripDetailsRoute(
-                                    selectedStop = route.selectedStop,
-                                    stopCode = route.stopCode,
-                                    tripId = trip.id,
-                                    lineCode = trip.code,
-                                    destination = trip.destination,
-                                )
-                            ) {
-                                popUpTo<TripDetailsRoute> { inclusive = true }
+                            safeNavigation {
+                                navController.navigate(
+                                    TripDetailsRoute(
+                                        stopName = route.stopName,
+                                        stopCode = route.stopCode,
+                                        tripId = trip.id,
+                                        lineCode = trip.code,
+                                        destination = trip.destination,
+                                    )
+                                ) {
+                                    popUpTo<TripDetailsRoute> { inclusive = true }
+                                }
                             }
+                        },
+                        onAlertClicked = { alertId ->
+                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
                         }
                     )
                 }

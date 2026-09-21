@@ -18,7 +18,7 @@ struct Provider: AppIntentTimelineProvider {
     let departureScreenUseCase: CoreGetSelectedStopUseCase
 
     init() {
-        transitRepository = widgetHelper.goTrainDataSource
+        transitRepository = widgetHelper.transitRepository
         departureScreenUseCase = widgetHelper.getSelectedStopUseCase
     }
 
@@ -29,40 +29,22 @@ struct Provider: AppIntentTimelineProvider {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
-        let selectedStopCode =
-            configuration.selectedStop?.id
-            ?? userDefaults?.object(
-                forKey: "selectedStopCode"
-            ) as? String
-            ?? userDefaults?.object(
-                forKey: "selectedStationCode"
-            ) as? String
-            ?? "UN"
 
         let timeFormat: TimeFormat = configuration.timeFormat
         let sortMode: SortMode = configuration.sortMode
 
         do {
             let allStops = try await transitRepository.getAllStops()
-            if let stop =
-                allStops
-                .first(where: {
-                    $0.code.contains(selectedStopCode)
-                })
-                ?? allStops
-                .first(where: {
-                    $0.code.contains("UN")
-                })
-                ?? allStops.first
+            if let stopName = configuration.selectedStop?.name
+                ?? allStops.first(where: { $0.code.contains("UN") })?.name
             {
-                let trips: [CoreTrip]
                 let visibleTrains: String =
-                    userDefaults?.object(forKey: "hiddenTrains")
-                    as? String ?? ""
+                    userDefaults?.object(forKey: "hiddenTrains") as? String
+                    ?? ""
 
                 // Parse comma-separated stop codes
-                let codes: [String] = stop.code
-                    .split(separator: ",")
+                let codes: [String] = (configuration.selectedStop?.id ?? "UN")
+                    .split(separator: ", ")
                     .map {
                         String($0)
                     }
@@ -76,9 +58,8 @@ struct Provider: AppIntentTimelineProvider {
                     fetchedTrips.append(contentsOf: result)
                 }
                 // Sort according to mode
-                trips = fetchedTrips.filter { trip in
-                    visibleTrains.isEmpty
-                        || visibleTrains.contains(trip.code)
+                let trips = fetchedTrips.filter { trip in
+                    visibleTrains.isEmpty || visibleTrains.contains(trip.code)
                 }
                 .sorted(by: {
                     switch sortMode {
@@ -96,7 +77,7 @@ struct Provider: AppIntentTimelineProvider {
                 })
                 return SimpleEntry(
                     date: Date(),
-                    stop: stop,
+                    stopName: stopName,
                     trips: trips,
                     timeFormat: timeFormat
                 )
@@ -106,13 +87,7 @@ struct Provider: AppIntentTimelineProvider {
 
         return SimpleEntry(
             date: Date(),
-            stop: CoreStop(
-                name: "",
-                code: "",
-                types: [],
-                isEnabled: false,
-                isFavourite: false
-            ),
+            stopName: "",
             trips: [],
             timeFormat: .relative
         )
@@ -129,13 +104,7 @@ struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            stop: CoreStop(
-                name: "Union Station GO",
-                code: "UN",
-                types: [.train],
-                isEnabled: true,
-                isFavourite: false
-            ),
+            stopName: "Union Station GO",
             trips: [
                 CoreTrip(
                     id: "X1234",
@@ -170,21 +139,29 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let stop: CoreStop
+    let stopName: String
     let trips: [CoreTrip]
     let timeFormat: TimeFormat
 }
 
 extension SimpleEntry {
     func getTripDestination(trip: CoreTrip) -> URL {
-        let data: [String: String] = [
-            "stopName": stop.name,
-            "stopCode": stop.code,
+        let data: [String: String?] = [
+            "tripId": trip.id,
+            "stopName": trip.stopName,
+            "stopCode": trip.stopCode,
             "lineCode": trip.code,
             "destination": trip.destination,
         ]
-        var components = URLComponents(string: "go-departures://app/trips/\(trip.id)")!
-        components.queryItems = data.map { URLQueryItem(name: $0.key, value: $0.value) }
+        var components = URLComponents(
+            string: AppKt.TRIPS_URL,
+        )!
+        components.queryItems =
+            data
+            .filter { $0.value != nil }
+            .map {
+                URLQueryItem(name: $0.key, value: $0.value)
+            }
 
         return components.url!
     }
@@ -193,7 +170,13 @@ extension SimpleEntry {
 @main
 struct GODepartures: Widget {
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(
+        var supportedFamilies: [WidgetFamily] = [
+                .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
+        ]
+        if #available(iOS 27.0, *) {
+            supportedFamilies.append(.systemExtraLargePortrait)
+        }
+        return AppIntentConfiguration(
             kind: "com.jsontextfield.godepartures.GODepartures",
             intent: ConfigurationIntent.self,
             provider: Provider()
@@ -205,9 +188,7 @@ struct GODepartures: Widget {
         }
         .configurationDisplayName("Upcoming departures")
         .description("Shows departure information for a stop")
-        .supportedFamilies([
-            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
-        ])
+        .supportedFamilies(supportedFamilies)
         .contentMarginsDisabled()
     }
 

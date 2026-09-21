@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -37,11 +36,9 @@ import departure_screen.composeapp.generated.resources.Res
 import departure_screen.composeapp.generated.resources.appearance
 import departure_screen.composeapp.generated.resources.contrast
 import departure_screen.composeapp.generated.resources.dynamic_theme
-import departure_screen.composeapp.generated.resources.experimental
 import departure_screen.composeapp.generated.resources.settings
 import departure_screen.composeapp.generated.resources.theme
 import departure_screen.composeapp.generated.resources.time_format
-import departure_screen.composeapp.generated.resources.use_alerts_with_links
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,13 +54,11 @@ fun SettingsScreen(
         contrastMode = uiState.contrastMode,
         useDynamicTheme = uiState.useDynamicTheme,
         timeFormat = uiState.timeFormat,
-        useAlertsWithLinks = uiState.useAlertsWithLinks,
         onBackPressed = onBackPressed,
         onThemeChanged = settingsViewModel::onThemeModeChange,
         onContrastChanged = settingsViewModel::onContrastModeChange,
         onDynamicThemeChanged = settingsViewModel::onDynamicThemeChange,
         onTimeFormatChanged = settingsViewModel::onTimeFormatChange,
-        onUseAlertsWithLinksChanged = settingsViewModel::onUseAlertsWithLinksChange,
     )
 }
 
@@ -74,13 +69,11 @@ private fun SettingsScreenContent(
     contrastMode: ContrastMode = ContrastMode.NORMAL,
     useDynamicTheme: Boolean = false,
     timeFormat: TimeFormat = TimeFormat.RELATIVE,
-    useAlertsWithLinks: Boolean = false,
     onBackPressed: () -> Unit = {},
     onThemeChanged: (ThemeMode) -> Unit = {},
     onContrastChanged: (ContrastMode) -> Unit = {},
     onDynamicThemeChanged: (Boolean) -> Unit = {},
     onTimeFormatChanged: (TimeFormat) -> Unit = {},
-    onUseAlertsWithLinksChanged: (Boolean) -> Unit = {},
 ) {
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -123,18 +116,6 @@ private fun SettingsScreenContent(
                 timeFormat,
                 onTimeFormatChanged = onTimeFormatChanged,
                 modifier = Modifier.fillMaxWidth(),
-            )
-
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Text(
-                stringResource(Res.string.experimental),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            SettingsSwitchItem(
-                text = stringResource(Res.string.use_alerts_with_links),
-                checked = useAlertsWithLinks,
-                onCheckedChange = onUseAlertsWithLinksChanged,
             )
         }
     }

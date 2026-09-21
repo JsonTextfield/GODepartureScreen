@@ -26,11 +26,20 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    swiftPMDependencies {
+        swiftPackage(
+            url = url("https://github.com/googleads/swift-package-manager-google-mobile-ads.git"),
+            version = from("13.9.0"), // check GitHub releases for the latest major version
+            products = listOf(product("GoogleMobileAds"))
+        )
+        swiftPackage(
+            url = url("https://github.com/apple/swift-algorithms.git"),
+            version = from("1.2.1"),
+            products = listOf(product("Algorithms"))
+        )
+    }
 
     sourceSets {
-        val desktopMain by getting
-
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -73,11 +82,6 @@ kotlin {
 
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.kotlinx.coroutines.swing)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

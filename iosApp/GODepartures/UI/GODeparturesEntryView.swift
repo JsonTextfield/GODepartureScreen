@@ -24,10 +24,10 @@ struct GODeparturesEntryView: View {
         VStack {
             Link(
                 destination: URL(
-                    string: "go-departures://app/stops/\(entry.stop.name)"
+                    string: "\(AppKt.BASE_URL)/?selectedStop=\(entry.stopName)",
                 )!
             ) {
-                Text(entry.stop.name)
+                Text(entry.stopName)
                     .lineLimit(1)
                     .font(.footnote)
                     .bold()
@@ -38,8 +38,14 @@ struct GODeparturesEntryView: View {
                 SmallWidgetView(entry: entry)
             } else {
                 let columnCount = widgetFamily == .systemExtraLarge ? 2 : 1
-                let rowCount = widgetFamily == .systemMedium ? 1 : 4
-                Grid {
+                let rowCount =
+                    switch widgetFamily {
+                    case .systemMedium: 1
+                    case .systemLarge, .systemExtraLarge: 5
+                    case .systemExtraLargePortrait: 8
+                    default: 1
+                    }
+                Grid(horizontalSpacing: 0, verticalSpacing: 0) {
                     GridRow {
                         ForEach(
                             0..<(min(columnCount, entry.trips.count)),
@@ -57,17 +63,16 @@ struct GODeparturesEntryView: View {
                         GridRow {
                             ForEach(trips, id: \.self.id) { trip in
                                 Link(
-                                    destination: entry.getTripDestination(
-                                        trip: trip
-                                    )
+                                    destination: entry.getTripDestination(trip: trip)
                                 ) {
                                     TripListItemView(
                                         trip: trip,
                                         timeFormat: entry.timeFormat,
                                     )
+                                    .frame(minHeight: 48, maxHeight: 64, alignment: .center)
                                 }
                             }
-                        }.frame(maxHeight: .infinity, alignment: .top)
+                        }
                     }
                 }
                 Spacer()

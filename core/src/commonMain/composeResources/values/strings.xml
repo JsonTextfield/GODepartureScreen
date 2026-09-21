@@ -52,6 +52,19 @@
     <string name="normal">Normal</string>
     <string name="medium">Medium</string>
     <string name="high">High</string>
+    <string name="alert_details_title">Alert details</string>
+    <plurals name="day_difference_full">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+    <plurals name="hour_difference_full">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <plurals name="minute_difference_full">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
     <plurals name="number_of_cars">
         <item quantity="one">%1$s car</item>
         <item quantity="other">%1$s cars</item>

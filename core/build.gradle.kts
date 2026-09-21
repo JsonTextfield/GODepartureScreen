@@ -47,16 +47,12 @@ kotlin {
         }
     }
 
-    jvm("desktop")
-
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
     // common to share sources between related targets.
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
-        val desktopMain by getting
-
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -89,11 +85,6 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
 
             implementation(libs.touchlab.kermit)
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.kotlinx.coroutines.swing)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

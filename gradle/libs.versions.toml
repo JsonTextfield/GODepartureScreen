@@ -1,14 +1,14 @@
 [versions]
 material3 = "1.9.0"
 jetbrains = "1.12.0"
-versionName = "1.15.4"
-versionCode = "56"
+versionName = "1.15.5"
+versionCode = "57"
 minSdk = "28"
 compileSdk = "37"
 targetSdk = "37"
 agp = "9.3.1"
 datastore = "1.2.1"
-kotlin = "2.4.0"
+kotlin = "2.4.20"
 koin = "4.2.2"
 kotlinxDatetime = "0.8.0"
 ktor = "3.5.0"
@@ -38,8 +38,10 @@ watchfaceComplicationsDataSourceKtx = "1.2.1"
 glanceAppwidget = "1.2.0-beta01"
 glanceMaterial3 = "1.1.1"
 glanceWearTiles = "1.0.0-alpha07"
+playServicesAds = "25.3.0"
 
 [libraries]
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-glance = { module = "androidx.glance:glance", version.ref = "glanceAppwidget" }

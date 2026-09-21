@@ -2,8 +2,15 @@
 
 package com.jsontextfield.departurescreen.ui.views
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,6 +19,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -22,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +39,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -41,6 +51,7 @@ import com.jsontextfield.departurescreen.core.ui.components.LoadingScreen
 import com.jsontextfield.departurescreen.core.ui.components.TripCodeBox
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
 import com.jsontextfield.departurescreen.core.ui.viewmodels.TripDetailsViewModel
+import com.jsontextfield.departurescreen.ui.BannerAd
 import com.jsontextfield.departurescreen.ui.views.tripdetails.AlertsSection
 import com.jsontextfield.departurescreen.ui.views.tripdetails.MoreTripsSection
 import com.jsontextfield.departurescreen.ui.views.tripdetails.StopsSection
@@ -53,8 +64,13 @@ fun TripDetailsScreen(
     tripDetailsViewModel: TripDetailsViewModel,
     onBackPressed: () -> Unit,
     onTripSelected: (Trip) -> Unit,
+    onAlertClicked: (String) -> Unit,
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
+    val language = Locale.current.language
+    LaunchedEffect(language) {
+        tripDetailsViewModel.loadAlerts(language)
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,7 +88,7 @@ fun TripDetailsScreen(
                                     shape = SquircleShape
                                 )
                         )
-                        Text(text = uiState.destination)
+                        Text(text = uiState.destination, modifier = Modifier.basicMarquee())
                     }
                 },
                 navigationIcon = {
@@ -81,47 +97,66 @@ fun TripDetailsScreen(
                 modifier = Modifier.shadow(4.dp)
             )
         },
+        bottomBar = {
+            if (uiState.isAdEnabled) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    BannerAd(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
+                                    LayoutDirection.Ltr
+                                ),
+                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                            ),
+                    )
+                }
+            }
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
-            when (uiState.status) {
-                Status.LOADING -> LoadingScreen()
-                Status.ERROR -> ErrorScreen(onRetry = { tripDetailsViewModel.loadData() })
-                Status.LOADED -> {
-                    val density = LocalDensity.current
-                    val widthDp = (LocalWindowInfo.current.containerSize.width / density.density).toInt()
-                    val columns = (widthDp / 320).coerceIn(1, 4)
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalItemSpacing = 8.dp,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        columns = StaggeredGridCells.Fixed(columns),
-                        contentPadding = PaddingValues(
-                            start = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
-                            end = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
-                            bottom = 100.dp,
-                        )
-                    ) {
-                        if (uiState.alerts.isNotEmpty()) {
+            AnimatedContent(
+                uiState.status,
+                transitionSpec = {
+                    fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                },
+            ) { state ->
+                when (state) {
+                    Status.LOADING -> LoadingScreen()
+                    Status.ERROR -> ErrorScreen(onRetry = { tripDetailsViewModel.loadData() })
+                    Status.LOADED -> {
+                        val density = LocalDensity.current
+                        val widthDp = (LocalWindowInfo.current.containerSize.width / density.density).toInt()
+                        val columns = (widthDp / 320).coerceIn(1, 4)
+                        LazyVerticalStaggeredGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalItemSpacing = 8.dp,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            columns = StaggeredGridCells.Fixed(columns),
+                            contentPadding = PaddingValues(
+                                start = WindowInsets.safeDrawing.asPaddingValues()
+                                    .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                                end = WindowInsets.safeDrawing.asPaddingValues()
+                                    .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
+                                bottom = 100.dp,
+                            )
+                        ) {
                             item {
-                                AlertsSection(uiState.alerts)
+                                AlertsSection(uiState.alerts, status = uiState.alertsStatus, onAlertClicked = onAlertClicked)
                             }
-                        }
-                        if (uiState.moreTrips.isNotEmpty()) {
                             item {
                                 MoreTripsSection(
                                     moreTrips = uiState.moreTrips,
+                                    status = uiState.moreTripsStatus,
                                     title = stringResource(Res.string.more_trips, uiState.selectedStop),
                                     timeFormat = uiState.timeFormat,
                                     onTripSelected = onTripSelected,
                                 )
                             }
-                        }
-                        if (uiState.stops.isNotEmpty()) {
                             item {
                                 StopsSection(
                                     stops = uiState.stops,
+                                    status = uiState.stopsStatus,
                                     timeFormat = uiState.timeFormat,
                                     selectedStop = uiState.selectedStop,
                                     onStopSelected = { stopName ->
