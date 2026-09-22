@@ -38,9 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
 import com.jsontextfield.departurescreen.core.ui.SquircleShape
@@ -65,9 +65,12 @@ fun TripDetailsScreen(
     onBackPressed: () -> Unit,
     onTripSelected: (Trip) -> Unit,
     onAlertClicked: (String) -> Unit,
+    onStopClicked: (String) -> Unit,
 ) {
     val uiState by tripDetailsViewModel.uiState.collectAsState()
+    val layoutDirection = LocalLayoutDirection.current
     val language = Locale.current.language
+    val safeDrawingPadding = WindowInsets.safeDrawing.asPaddingValues()
     LaunchedEffect(language) {
         tripDetailsViewModel.loadAlerts(language)
     }
@@ -104,10 +107,8 @@ fun TripDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                start = WindowInsets.safeDrawing.asPaddingValues().calculateStartPadding(
-                                    LayoutDirection.Ltr
-                                ),
-                                bottom = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding(),
+                                start = safeDrawingPadding.calculateStartPadding(layoutDirection),
+                                bottom = safeDrawingPadding.calculateBottomPadding(),
                             ),
                     )
                 }
@@ -134,15 +135,17 @@ fun TripDetailsScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             columns = StaggeredGridCells.Fixed(columns),
                             contentPadding = PaddingValues(
-                                start = WindowInsets.safeDrawing.asPaddingValues()
-                                    .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
-                                end = WindowInsets.safeDrawing.asPaddingValues()
-                                    .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
-                                bottom = 100.dp,
+                                start = safeDrawingPadding.calculateStartPadding(layoutDirection) + 16.dp,
+                                end = safeDrawingPadding.calculateEndPadding(layoutDirection) + 16.dp,
+                                bottom = safeDrawingPadding.calculateBottomPadding() + 40.dp,
                             )
                         ) {
                             item {
-                                AlertsSection(uiState.alerts, status = uiState.alertsStatus, onAlertClicked = onAlertClicked)
+                                AlertsSection(
+                                    uiState.alerts,
+                                    status = uiState.alertsStatus,
+                                    onAlertClicked = onAlertClicked,
+                                )
                             }
                             item {
                                 MoreTripsSection(
@@ -159,10 +162,7 @@ fun TripDetailsScreen(
                                     status = uiState.stopsStatus,
                                     timeFormat = uiState.timeFormat,
                                     selectedStop = uiState.selectedStop,
-                                    onStopSelected = { stopName ->
-                                        tripDetailsViewModel.setSelectedStop(stopName)
-                                        onBackPressed()
-                                    },
+                                    onStopSelected = onStopClicked,
                                 )
                             }
                         }

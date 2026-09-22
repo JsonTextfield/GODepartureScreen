@@ -27,7 +27,7 @@ fun AlertsSection(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        if (status != Status.ERROR) {
+        if ((status == Status.LOADING) || (status == Status.LOADED && alerts.isNotEmpty())) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

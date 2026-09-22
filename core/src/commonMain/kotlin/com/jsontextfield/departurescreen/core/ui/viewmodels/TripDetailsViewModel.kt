@@ -1,5 +1,6 @@
 package com.jsontextfield.departurescreen.core.ui.viewmodels
 
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
@@ -51,6 +52,13 @@ class TripDetailsViewModel(
                 )
             }
         }
+        preferencesRepository.getTimeFormat().map { timeFormat ->
+            _uiState.update {
+                it.copy(
+                    timeFormat = timeFormat,
+                )
+            }
+        }.launchIn(viewModelScope)
         loadData()
     }
 
@@ -65,15 +73,7 @@ class TripDetailsViewModel(
                 destination = destination,
             )
         }
-
-        preferencesRepository.getTimeFormat().map { timeFormat ->
-            _uiState.update {
-                it.copy(
-                    timeFormat = timeFormat,
-                )
-            }
-        }.launchIn(viewModelScope)
-
+        loadAlerts(Locale.current.language)
         loadStops()
         loadMoreTrips()
     }
@@ -167,12 +167,6 @@ class TripDetailsViewModel(
                     moreTrips = moreTrips,
                 )
             }
-        }
-    }
-
-    fun setSelectedStop(stopName: String) {
-        viewModelScope.launch {
-            preferencesRepository.setSelectedStop(stopName)
         }
     }
 }

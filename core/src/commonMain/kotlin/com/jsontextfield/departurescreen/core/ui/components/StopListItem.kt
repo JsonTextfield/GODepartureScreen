@@ -3,6 +3,7 @@ package com.jsontextfield.departurescreen.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,7 +64,10 @@ fun StopListItem(
                         MaterialTheme.colorScheme.onSurface
                     },
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
                 for (code in stop.code.split(",")) {
                     Text(
                         text = code,

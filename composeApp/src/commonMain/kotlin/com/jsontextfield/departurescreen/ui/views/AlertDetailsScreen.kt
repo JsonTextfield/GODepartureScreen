@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -172,14 +171,10 @@ fun AlertDetailsScreen(
                                 alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier
-                                    .padding(bottom = 100.dp)
-                                    .clickable {
-                                        if ("fr" in Locale.current.language) {
-                                            alert.urlFr
-                                        } else {
-                                            alert.urlEn
-                                        }?.let(uriHandler::openUri)
-                                    },
+                                    .padding(
+                                        bottom = WindowInsets.safeDrawing.asPaddingValues()
+                                            .calculateBottomPadding() + 40.dp
+                                    )
                             )
                         }
                     }

@@ -54,21 +54,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun StopsScreen(
     stopsViewModel: StopsViewModel,
-    onBackPressed: () -> Unit = {},
-) {
-    StopsScreen(
-        stopsViewModel = stopsViewModel,
-        onStopSelected = {
-            stopsViewModel.setSelectedStop(it)
-            onBackPressed()
-        },
-        onBackPressed = onBackPressed,
-    )
-}
-
-@Composable
-fun StopsScreen(
-    stopsViewModel: StopsViewModel,
     onStopSelected: (Stop) -> Unit = {},
     onBackPressed: () -> Unit = {},
 ) {

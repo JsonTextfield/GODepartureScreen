@@ -4,8 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
@@ -76,47 +79,58 @@ private fun SettingsScreenContent(
     onTimeFormatChanged: (TimeFormat) -> Unit = {},
 ) {
     Scaffold(topBar = {
-        TopAppBar(title = {
-            Text(stringResource(Res.string.settings))
-        }, navigationIcon = {
-            BackButton(onBackPressed)
-        })
+        TopAppBar(
+            title = {
+                Text(stringResource(Res.string.settings))
+            },
+            navigationIcon = {
+                BackButton(onBackPressed)
+            },
+            modifier = Modifier.shadow(4.dp),
+        )
     }) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .fillMaxSize()
                 .padding(horizontal = 16.dp)
                 .padding(it)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                stringResource(Res.string.appearance),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            ThemeSetting(
-                themeMode,
-                onThemeChanged = onThemeChanged,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            ContrastSetting(
-                contrastMode,
-                onContrastChanged = onContrastChanged,
-                isEnabled = !useDynamicTheme,
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (isDynamicThemeEnabled()) {
-                SettingsSwitchItem(
-                    text = stringResource(Res.string.dynamic_theme),
-                    checked = useDynamicTheme,
-                    onCheckedChange = onDynamicThemeChanged,
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 400.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    stringResource(Res.string.appearance),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                ThemeSetting(
+                    themeMode,
+                    onThemeChanged = onThemeChanged,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                ContrastSetting(
+                    contrastMode,
+                    onContrastChanged = onContrastChanged,
+                    isEnabled = !useDynamicTheme,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (isDynamicThemeEnabled()) {
+                    SettingsSwitchItem(
+                        text = stringResource(Res.string.dynamic_theme),
+                        checked = useDynamicTheme,
+                        onCheckedChange = onDynamicThemeChanged,
+                    )
+                }
+                TimeSetting(
+                    timeFormat,
+                    onTimeFormatChanged = onTimeFormatChanged,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
-            TimeSetting(
-                timeFormat,
-                onTimeFormatChanged = onTimeFormatChanged,
-                modifier = Modifier.fillMaxWidth(),
-            )
         }
     }
 }

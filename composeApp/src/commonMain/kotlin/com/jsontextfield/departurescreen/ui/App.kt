@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -128,8 +129,20 @@ fun App(
                 }
 
                 composable<AlertsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
+                    enterTransition = {
+                        if (initialState.destination.hasRoute<AlertDetailsRoute>()) {
+                            null
+                        } else {
+                            slideInHorizontally { it }
+                        }
+                    },
+                    exitTransition = {
+                        if (targetState.destination.hasRoute<AlertDetailsRoute>()) {
+                            null
+                        } else {
+                            slideOutHorizontally { it }
+                        }
+                    },
                 ) {
                     val alertsViewModel = koinViewModel<AlertsViewModel>()
                     AlertsScreen(
@@ -144,8 +157,6 @@ fun App(
                 }
 
                 composable<AlertDetailsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
                     deepLinks = listOf(
                         navDeepLink<AlertDetailsRoute>(basePath = ALERTS_URL)
                     )
@@ -172,6 +183,11 @@ fun App(
                     }
                     StopsScreen(
                         stopsViewModel = stopsViewModel,
+                        onStopSelected = { stop ->
+                            safeNavigation {
+                                navController.navigate(HomeRoute(stop.name))
+                            }
+                        },
                         onBackPressed = {
                             safeNavigation { navController.popBackStack() }
                         },
@@ -179,8 +195,24 @@ fun App(
                 }
 
                 composable<TripDetailsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
+                    enterTransition = {
+                        if (initialState.destination.hasRoute<AlertDetailsRoute>()) {
+                            null
+                        } else if (initialState.destination.hasRoute<TripDetailsRoute>()) {
+                            null
+                        } else {
+                            slideInHorizontally { it }
+                        }
+                    },
+                    exitTransition = {
+                        if (targetState.destination.hasRoute<AlertDetailsRoute>()) {
+                            null
+                        } else if (targetState.destination.hasRoute<TripDetailsRoute>()) {
+                            null
+                        }  else {
+                            slideOutHorizontally { it }
+                        }
+                    },
                     deepLinks = listOf(
                         navDeepLink<TripDetailsRoute>(basePath = TRIPS_URL)
                     ),
@@ -216,7 +248,14 @@ fun App(
                             }
                         },
                         onAlertClicked = { alertId ->
-                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
+                            safeNavigation {
+                                navController.navigate(AlertDetailsRoute(alertId))
+                            }
+                        },
+                        onStopClicked = { stopName ->
+                            safeNavigation {
+                                navController.navigate(HomeRoute(stopName))
+                            }
                         }
                     )
                 }

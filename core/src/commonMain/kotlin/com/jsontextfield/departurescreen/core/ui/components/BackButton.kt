@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -25,7 +26,10 @@ fun BackButton(
 ) {
     TooltipBox(
         state = rememberTooltipState(),
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below,
+            2.dp,
+        ),
         tooltip = {
             PlainTooltip {
                 Text(text = stringResource(Res.string.back), modifier = Modifier.padding(4.dp))
