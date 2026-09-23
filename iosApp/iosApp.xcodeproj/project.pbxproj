@@ -12,18 +12,14 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		7F9C0EFB2485D96E4F35A03C /* KotlinMultiplatformLinkedPackage in Frameworks */ = {isa = PBXBuildFile; productRef = E9CAD947E7ABABADCE437C8A /* KotlinMultiplatformLinkedPackage */; };
+		9843A89730636CE000188C93 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */; };
+		9843A89930636CE000188C93 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */; };
+		9843A89B30636CE000188C93 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */; };
+		9843A89D30636CE000188C93 /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */; };
 		98555E5B2E6F0021005CD8C4 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 98555E5A2E6F0021005CD8C4 /* InfoPlist.xcstrings */; };
 		986BADAF2E9DCA8500BEC3AB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADAE2E9DCA8500BEC3AB /* WidgetKit.framework */; };
 		986BADB12E9DCA8500BEC3AB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADB02E9DCA8500BEC3AB /* SwiftUI.framework */; };
 		986BADC22E9DCA8600BEC3AB /* GODeparturesExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 986BADAD2E9DCA8500BEC3AB /* GODeparturesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		98B7A2273060823E00A8DE8C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADAE2E9DCA8500BEC3AB /* WidgetKit.framework */; };
-		98B7A2283060823E00A8DE8C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADB02E9DCA8500BEC3AB /* SwiftUI.framework */; };
-		98B7A2353060823F00A8DE8C /* AlertsWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 98B7A2263060823E00A8DE8C /* AlertsWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		98B7A23C3060869100A8DE8C /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 98B7A23B3060869100A8DE8C /* KMPNativeCoroutinesAsync */; };
-		98B7A23E3060869100A8DE8C /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 98B7A23D3060869100A8DE8C /* KMPNativeCoroutinesCombine */; };
-		98B7A2403060869100A8DE8C /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 98B7A23F3060869100A8DE8C /* KMPNativeCoroutinesCore */; };
-		98B7A2423060869100A8DE8C /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 98B7A2413060869100A8DE8C /* KMPNativeCoroutinesRxSwift */; };
-		98B7A27330608B1400A8DE8C /* KotlinMultiplatformLinkedPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 98B7A27230608B1400A8DE8C /* KotlinMultiplatformLinkedPackage */; };
 		98D8E1662DB421530006C762 /* 57.png in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E1522DB421530006C762 /* 57.png */; };
 		98D8E1672DB421530006C762 /* 64.png in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E1552DB421530006C762 /* 64.png */; };
 		98D8E1682DB421530006C762 /* 80.png in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E1582DB421530006C762 /* 80.png */; };
@@ -62,13 +58,6 @@
 			remoteGlobalIDString = 986BADAC2E9DCA8500BEC3AB;
 			remoteInfo = GODeparturesExtension;
 		};
-		98B7A2333060823F00A8DE8C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7555FF73242A565900829871 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 98B7A2253060823E00A8DE8C;
-			remoteInfo = AlertsWidgetExtension;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -89,7 +78,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				986BADC22E9DCA8600BEC3AB /* GODeparturesExtension.appex in Embed Foundation Extensions */,
-				98B7A2353060823F00A8DE8C /* AlertsWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -107,7 +95,6 @@
 		986BADAD2E9DCA8500BEC3AB /* GODeparturesExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GODeparturesExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		986BADAE2E9DCA8500BEC3AB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		986BADB02E9DCA8500BEC3AB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		98B7A2263060823E00A8DE8C /* AlertsWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AlertsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		98D8E14C2DB421530006C762 /* 16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 16.png; sourceTree = "<group>"; };
 		98D8E14D2DB421530006C762 /* 20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 20.png; sourceTree = "<group>"; };
 		98D8E14E2DB421530006C762 /* 29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 29.png; sourceTree = "<group>"; };
@@ -146,18 +133,10 @@
 			);
 			target = 986BADAC2E9DCA8500BEC3AB /* GODeparturesExtension */;
 		};
-		98B7A2363060823F00A8DE8C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 98B7A2253060823E00A8DE8C /* AlertsWidgetExtension */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		986BADB22E9DCA8500BEC3AB /* GODepartures */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (986BADC62E9DCA8600BEC3AB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = GODepartures; sourceTree = "<group>"; };
-		98B7A2293060823E00A8DE8C /* AlertsWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (98B7A2363060823F00A8DE8C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = AlertsWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,22 +154,12 @@
 			files = (
 				98E525F02EC6E68E0013D143 /* Algorithms in Frameworks */,
 				986BADB12E9DCA8500BEC3AB /* SwiftUI.framework in Frameworks */,
+				9843A89B30636CE000188C93 /* KMPNativeCoroutinesCore in Frameworks */,
+				9843A89D30636CE000188C93 /* KMPNativeCoroutinesRxSwift in Frameworks */,
 				986BADAF2E9DCA8500BEC3AB /* WidgetKit.framework in Frameworks */,
+				9843A89930636CE000188C93 /* KMPNativeCoroutinesCombine in Frameworks */,
+				9843A89730636CE000188C93 /* KMPNativeCoroutinesAsync in Frameworks */,
 				7F9C0EFB2485D96E4F35A03C /* KotlinMultiplatformLinkedPackage in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98B7A2233060823E00A8DE8C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				98B7A2283060823E00A8DE8C /* SwiftUI.framework in Frameworks */,
-				98B7A2403060869100A8DE8C /* KMPNativeCoroutinesCore in Frameworks */,
-				98B7A27330608B1400A8DE8C /* KotlinMultiplatformLinkedPackage in Frameworks */,
-				98B7A23E3060869100A8DE8C /* KMPNativeCoroutinesCombine in Frameworks */,
-				98B7A2423060869100A8DE8C /* KMPNativeCoroutinesRxSwift in Frameworks */,
-				98B7A2273060823E00A8DE8C /* WidgetKit.framework in Frameworks */,
-				98B7A23C3060869100A8DE8C /* KMPNativeCoroutinesAsync in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,7 +180,6 @@
 				98DA30302EBB078A00BB4FC1 /* GODeparturesExtension.entitlements */,
 				7555FF7D242A565900829871 /* iosApp */,
 				986BADB22E9DCA8500BEC3AB /* GODepartures */,
-				98B7A2293060823E00A8DE8C /* AlertsWidget */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
 			);
@@ -222,7 +190,6 @@
 			children = (
 				7555FF7B242A565900829871 /* Union GO Departures.app */,
 				986BADAD2E9DCA8500BEC3AB /* GODeparturesExtension.appex */,
-				98B7A2263060823E00A8DE8C /* AlertsWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -302,7 +269,6 @@
 			);
 			dependencies = (
 				986BADC12E9DCA8600BEC3AB /* PBXTargetDependency */,
-				98B7A2343060823F00A8DE8C /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			packageProductDependencies = (
@@ -333,36 +299,13 @@
 			packageProductDependencies = (
 				98E525EF2EC6E68E0013D143 /* Algorithms */,
 				E9CAD947E7ABABADCE437C8A /* KotlinMultiplatformLinkedPackage */,
+				9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */,
+				9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */,
+				9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */,
+				9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */,
 			);
 			productName = GODeparturesExtension;
 			productReference = 986BADAD2E9DCA8500BEC3AB /* GODeparturesExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		98B7A2253060823E00A8DE8C /* AlertsWidgetExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 98B7A2373060823F00A8DE8C /* Build configuration list for PBXNativeTarget "AlertsWidgetExtension" */;
-			buildPhases = (
-				98B7A2223060823E00A8DE8C /* Sources */,
-				98B7A2233060823E00A8DE8C /* Frameworks */,
-				98B7A2243060823E00A8DE8C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				98B7A2293060823E00A8DE8C /* AlertsWidget */,
-			);
-			name = AlertsWidgetExtension;
-			packageProductDependencies = (
-				98B7A23B3060869100A8DE8C /* KMPNativeCoroutinesAsync */,
-				98B7A23D3060869100A8DE8C /* KMPNativeCoroutinesCombine */,
-				98B7A23F3060869100A8DE8C /* KMPNativeCoroutinesCore */,
-				98B7A2413060869100A8DE8C /* KMPNativeCoroutinesRxSwift */,
-				98B7A27230608B1400A8DE8C /* KotlinMultiplatformLinkedPackage */,
-			);
-			productName = AlertsWidgetExtension;
-			productReference = 98B7A2263060823E00A8DE8C /* AlertsWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -380,9 +323,6 @@
 					};
 					986BADAC2E9DCA8500BEC3AB = {
 						CreatedOnToolsVersion = 26.0.1;
-					};
-					98B7A2253060823E00A8DE8C = {
-						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -408,7 +348,6 @@
 			targets = (
 				7555FF7A242A565900829871 /* iosApp */,
 				986BADAC2E9DCA8500BEC3AB /* GODeparturesExtension */,
-				98B7A2253060823E00A8DE8C /* AlertsWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -451,13 +390,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		986BADAB2E9DCA8500BEC3AB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98B7A2243060823E00A8DE8C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -539,13 +471,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		98B7A2223060823E00A8DE8C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -553,11 +478,6 @@
 			isa = PBXTargetDependency;
 			target = 986BADAC2E9DCA8500BEC3AB /* GODeparturesExtension */;
 			targetProxy = 986BADC02E9DCA8600BEC3AB /* PBXContainerItemProxy */;
-		};
-		98B7A2343060823F00A8DE8C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 98B7A2253060823E00A8DE8C /* AlertsWidgetExtension */;
-			targetProxy = 98B7A2333060823F00A8DE8C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -692,7 +612,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_PREVIEWS = YES;
@@ -709,7 +629,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.15.7;
+				MARKETING_VERSION = 1.16.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -732,7 +652,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 59;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_PREVIEWS = YES;
@@ -749,7 +669,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.15.7;
+				MARKETING_VERSION = 1.16.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -840,80 +760,6 @@
 			};
 			name = Release;
 		};
-		98B7A2383060823F00A8DE8C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = U9AJ65RLSN;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AlertsWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AlertsWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 orgName. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jsontextfield.godepartures.AlertsWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		98B7A2393060823F00A8DE8C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = U9AJ65RLSN;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = AlertsWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AlertsWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 orgName. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jsontextfield.godepartures.AlertsWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -940,15 +786,6 @@
 			buildConfigurations = (
 				986BADC42E9DCA8600BEC3AB /* Debug */,
 				986BADC52E9DCA8600BEC3AB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		98B7A2373060823F00A8DE8C /* Build configuration list for PBXNativeTarget "AlertsWidgetExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				98B7A2383060823F00A8DE8C /* Debug */,
-				98B7A2393060823F00A8DE8C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -990,30 +827,25 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		98B7A23B3060869100A8DE8C /* KMPNativeCoroutinesAsync */ = {
+		9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesAsync;
 		};
-		98B7A23D3060869100A8DE8C /* KMPNativeCoroutinesCombine */ = {
+		9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesCombine;
 		};
-		98B7A23F3060869100A8DE8C /* KMPNativeCoroutinesCore */ = {
+		9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesCore;
 		};
-		98B7A2413060869100A8DE8C /* KMPNativeCoroutinesRxSwift */ = {
+		9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
 			productName = KMPNativeCoroutinesRxSwift;
-		};
-		98B7A27230608B1400A8DE8C /* KotlinMultiplatformLinkedPackage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A99E98BC435B84B261F1EBEB /* XCLocalSwiftPackageReference "KotlinMultiplatformLinkedPackage" */;
-			productName = KotlinMultiplatformLinkedPackage;
 		};
 		98E525EF2EC6E68E0013D143 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;

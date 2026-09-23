@@ -27,6 +27,22 @@
         }
       }
     },
+    "%@%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@%2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@%2$@"
+          }
+        }
+      }
+    },
     "%d" : {
       "localizations" : {
         "fr" : {
@@ -67,6 +83,16 @@
         }
       }
     },
+    "Alerts" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alertes"
+          }
+        }
+      }
+    },
     "cancelled" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -90,6 +116,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configurer le widget Départs GO"
+          }
+        }
+      }
+    },
+    "Displays the most recent GO Transit alerts" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affiche les alertes les plus récentes de GO Transit"
           }
         }
       }

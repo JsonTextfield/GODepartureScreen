@@ -1,3 +1,4 @@
+import ComposeApp
 //
 //  AlertsWidgetEntryView.swift
 //  iosApp
@@ -6,12 +7,11 @@
 //  Copyright © 2026 orgName. All rights reserved.
 //
 import SwiftUI
-import coreKit
 import WidgetKit
-import ComposeApp
+import coreKit
 
 struct AlertsWidgetEntryView: View {
-    let entry: Provider.Entry
+    let entry: AlertsWidgetProvider.Entry
     @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
     @Environment(\.locale) var locale
 
@@ -48,8 +48,11 @@ struct AlertsWidgetEntryView: View {
                         .bold()
                         .lineLimit(2)
                         Text(
-                            alert.getAnnotatedBody(language: languageCode, linkColor: Color.accentColor.toRGBInt() ?? 0)
-                                .text.trimmingCharacters(in: .whitespaces)
+                            alert.getAnnotatedBody(
+                                language: languageCode,
+                                linkColor: Color.accentColor.toRGBInt() ?? 0
+                            )
+                            .text.trimmingCharacters(in: .whitespaces)
                         )
                         .font(.caption)
                     }.frame(
@@ -66,38 +69,5 @@ struct AlertsWidgetEntryView: View {
             maxHeight: .infinity,
             alignment: .topLeading
         )
-    }
-}
-
-extension Color {
-    /// Returns RGB packed as 0xRRGGBB
-    func toRGBInt() -> UInt64? {
-        let uiColor = UIColor(self)
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        guard uiColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
-            return nil
-        }
-
-        let ri = UInt64(lround(r * 255))
-        let gi = UInt64(lround(g * 255))
-        let bi = UInt64(lround(b * 255))
-
-        return (ri << 16) | (gi << 8) | bi
-    }
-
-    /// Returns RGBA packed as 0xRRGGBBAA
-    func toRGBAInt() -> UInt64? {
-        let uiColor = UIColor(self)
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        guard uiColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
-            return nil
-        }
-
-        let ri = UInt64(lround(r * 255))
-        let gi = UInt64(lround(g * 255))
-        let bi = UInt64(lround(b * 255))
-        let ai = UInt64(lround(a * 255))
-
-        return (ri << 24) | (gi << 16) | (bi << 8) | ai
     }
 }

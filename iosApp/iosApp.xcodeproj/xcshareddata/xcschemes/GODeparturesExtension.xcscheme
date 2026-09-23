@@ -64,7 +64,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "986BADAC2E9DCA8500BEC3AB"
             BuildableName = "GODeparturesExtension.appex"
-            BlueprintName = "GODeparturesExtension"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
@@ -80,7 +79,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCWidgetKind"
-            value = "com.jsontextfield.godepartures.GODepartures"
+            value = "DeparturesWidget"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

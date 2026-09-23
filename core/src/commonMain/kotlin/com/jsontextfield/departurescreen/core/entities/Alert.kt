@@ -237,3 +237,8 @@ val Alert.twentyFourHourDate: String
         })
     }
 
+fun Alert.getFullSubject(language: String) : String {
+    return affectedStops.takeIf { it.isNotEmpty() }
+        ?.joinToString(", ", postfix = ": ").orEmpty() + getSubject(language)
+}
+

@@ -33,10 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.entities.getFullSubject
 import com.jsontextfield.departurescreen.core.entities.relativeDate
 import com.jsontextfield.departurescreen.core.entities.twelveHourDate
 import com.jsontextfield.departurescreen.core.entities.twentyFourHourDate
@@ -64,7 +64,6 @@ fun AlertDetailsScreen(
     alertDetailsViewModel: AlertDetailsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
-    val uriHandler = LocalUriHandler.current
     val language = Locale.current.language
     val fontScale = LocalDensity.current.fontScale
     val uiState by alertDetailsViewModel.uiState.collectAsState()
@@ -132,7 +131,7 @@ fun AlertDetailsScreen(
                                     )
                                 }
                             }
-                            Text(alert.getSubject(language), style = MaterialTheme.typography.titleMedium)
+                            Text(alert.getFullSubject(language), style = MaterialTheme.typography.titleMedium)
                             Text(
                                 text = when (uiState.timeFormat) {
                                     TimeFormat.RELATIVE -> {

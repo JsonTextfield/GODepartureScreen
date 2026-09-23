@@ -14,9 +14,9 @@ import WidgetKit
 import coreKit
 
 @MainActor
-struct Provider: AppIntentTimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(
+struct AlertsWidgetProvider: AppIntentTimelineProvider {
+    func placeholder(in context: Context) -> AlertsEntry {
+        AlertsEntry(
             date: Date(),
             configuration: ConfigurationAppIntent(),
             alerts: []
@@ -26,14 +26,7 @@ struct Provider: AppIntentTimelineProvider {
     func snapshot(
         for configuration: ConfigurationAppIntent,
         in context: Context
-    ) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration, alerts: [])
-    }
-
-    func timeline(
-        for configuration: ConfigurationAppIntent,
-        in context: Context
-    ) async -> Timeline<SimpleEntry> {
+    ) async -> AlertsEntry {
         var allAlerts: [CoreAlert] = []
 
         let widgetHelper: WidgetHelper = WidgetHelper()
@@ -44,8 +37,8 @@ struct Provider: AppIntentTimelineProvider {
             )
             for try await alerts in sequence {
                 allAlerts = Array(Set(alerts)).sorted(by: { alert1, alert2 in
-                    return alert2.date.toEpochMilliseconds()
-                        > alert1.date.toEpochMilliseconds()
+                    return alert1.date.toEpochMilliseconds()
+                        > alert2.date.toEpochMilliseconds()
                 })
                 break
             }
@@ -53,11 +46,18 @@ struct Provider: AppIntentTimelineProvider {
             print("Failed with error: \(error)")
         }
 
-        let entry = SimpleEntry(
+        return AlertsEntry(
             date: Date(),
             configuration: configuration,
             alerts: allAlerts
         )
+    }
+
+    func timeline(
+        for configuration: ConfigurationAppIntent,
+        in context: Context
+    ) async -> Timeline<AlertsEntry> {
+        let entry = await snapshot(for: configuration, in: context)
 
         return Timeline(entries: [entry], policy: .atEnd)
     }
@@ -67,41 +67,23 @@ struct Provider: AppIntentTimelineProvider {
     //    }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct AlertsEntry: TimelineEntry {
     let date: Date
     let configuration: ConfigurationAppIntent
     let alerts: [CoreAlert]
 }
 
 struct AlertsWidget: Widget {
-    let kind: String = "AlertsWidget"
-
     var body: some WidgetConfiguration {
         AppIntentConfiguration(
-            kind: kind,
+            kind: "AlertsWidget",
             intent: ConfigurationAppIntent.self,
-            provider: Provider()
+            provider: AlertsWidgetProvider()
         ) { entry in
             AlertsWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-    }
-
-    init() {
-        KoinKt.doInitKoin()
-    }
-}
-
-extension ConfigurationAppIntent {
-    fileprivate static var smiley: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
-        return intent
-    }
-
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
+        .configurationDisplayName("Alerts")
+        .description("Displays the most recent GO Transit alerts")
     }
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.getFullSubject
 import com.jsontextfield.departurescreen.core.entities.relativeDate
 import com.jsontextfield.departurescreen.core.entities.twelveHourDate
 import com.jsontextfield.departurescreen.core.entities.twentyFourHourDate
@@ -76,8 +77,7 @@ fun AlertItem(
                         .weight(10 / 12f),
                 ) {
                     Text(
-                        text = alert.affectedStops.takeIf { it.isNotEmpty() }
-                            ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
+                        text = alert.getFullSubject(language),
                         modifier = Modifier
                             .semantics { heading() },
                         style = MaterialTheme.typography.titleSmall,
