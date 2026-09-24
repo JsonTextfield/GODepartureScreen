@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -30,12 +29,9 @@ import androidx.glance.appwidget.lazy.LazyVerticalGrid
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
 import androidx.glance.layout.Column
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.material3.ColorProviders
 import androidx.glance.text.Text
@@ -184,21 +180,19 @@ fun DepartureScreenWidget(
                                 textAlign = TextAlign.Center,
                                 color = GlanceTheme.colors.onBackground,
                             ),
+                            modifier = GlanceModifier.defaultWeight(),
                         )
-                        Spacer(modifier = GlanceModifier.height(8.dp))
-                        Button(context.getString(R.string.retry), onClick = onRefresh)
                     }
 
                     Status.LOADING -> {
-                        Box(
-                            modifier = GlanceModifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = context.getString(R.string.loading),
-                                style = TextDefaults.defaultTextStyle.copy(color = GlanceTheme.colors.onBackground)
-                            )
-                        }
+                        Text(
+                            text = context.getString(R.string.loading),
+                            style = TextDefaults.defaultTextStyle.copy(
+                                textAlign = TextAlign.Center,
+                                color = GlanceTheme.colors.onBackground,
+                            ),
+                            modifier = GlanceModifier.defaultWeight(),
+                        )
                     }
 
                     Status.LOADED -> {
@@ -228,20 +222,20 @@ fun DepartureScreenWidget(
                                                     tripIdKey to trip.id,
                                                     lineCodeKey to trip.code,
                                                     destinationKey to trip.destination,
-                                                    stopCodeKey to (trip.stopCode ?: uiState.selectedStop?.code ?: ""),
-                                                    selectedStopKey to (trip.stopName ?: uiState.selectedStop?.name ?: ""),
+                                                    stopCodeKey to (trip.stopCode ?: ""),
+                                                    selectedStopKey to (trip.stopName ?: ""),
                                                 )
                                             )
                                         ),
                                 )
                             }
                         }
-                        RefreshButton(
-                            title = context.getString(R.string.updated, uiState.lastUpdated),
-                            onClick = onRefresh,
-                        )
                     }
                 }
+                RefreshButton(
+                    title = context.getString(R.string.updated, uiState.lastUpdated),
+                    onClick = onRefresh,
+                )
             }
         }
     }
