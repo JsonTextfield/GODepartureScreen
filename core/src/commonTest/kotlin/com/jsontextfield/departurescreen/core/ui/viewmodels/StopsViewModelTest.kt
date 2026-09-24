@@ -54,6 +54,11 @@ class StopsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * GIVEN a target stop selection
+     * WHEN setSelectedStop is called
+     * THEN selected stop is persisted in preferences and exposed via selectedStop state
+     */
     @Test
     fun testSetSelectedStop() = runTest(testDispatcher) {
         val stop = Stop(
@@ -75,7 +80,7 @@ class StopsViewModelTest {
         assertEquals(true, "UN" in (stopsViewModel.uiState.value.selectedStop?.code ?: ""))
         stopsViewModel.setSelectedStop(stop)
         advanceUntilIdle()
-        assertEquals(stop.code.split(",").first(), preferencesRepository.getSelectedStop().first())
+        assertEquals(stop.name, preferencesRepository.getSelectedStop().first())
         assertEquals(stop, getSelectedStopUseCase().first())
         stopsViewModel = StopsViewModel(
             getSelectedStopUseCase = getSelectedStopUseCase,

@@ -17,7 +17,7 @@ import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class FeatureFlagApi {
+object FeatureFlagApi {
     private val json =
         Json {
             isLenient = true
@@ -62,4 +62,4 @@ class FeatureFlagApi {
     }
 }
 
-expect suspend fun isAdEnabled(featureFlagApi: FeatureFlagApi): Boolean
+expect suspend fun isAdEnabled(): Boolean

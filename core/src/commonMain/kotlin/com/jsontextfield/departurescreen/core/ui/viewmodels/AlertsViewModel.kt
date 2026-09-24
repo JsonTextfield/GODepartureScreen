@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.jsontextfield.departurescreen.core.data.IPreferencesRepository
 import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
-import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -30,7 +29,6 @@ import kotlin.time.ExperimentalTime
 class AlertsViewModel(
     private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
-    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<AlertsUIState> = MutableStateFlow(AlertsUIState())
     val uiState: StateFlow<AlertsUIState> = _uiState.asStateFlow()
@@ -38,7 +36,7 @@ class AlertsViewModel(
     init {
         viewModelScope.launch {
             val isAdEnabled = try {
-                isAdEnabled(featureFlagApi)
+                isAdEnabled()
             } catch (_: Exception) {
                 false
             }

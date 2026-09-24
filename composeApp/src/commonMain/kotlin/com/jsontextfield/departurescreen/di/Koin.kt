@@ -10,7 +10,6 @@ import com.jsontextfield.departurescreen.core.data.fake.FakeTransitRepository
 import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.network.DepartureScreenAPI
-import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertDetailsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
@@ -29,7 +28,6 @@ import org.koin.dsl.module
 
 val networkModule = module {
     singleOf(::DepartureScreenAPI)
-    singleOf(::FeatureFlagApi)
 }
 
 val dataModule = module {
@@ -67,7 +65,6 @@ val viewModelModule = module {
         TripDetailsViewModel(
             preferencesRepository = get<IPreferencesRepository>(),
             transitRepository = get<ITransitRepository>(),
-            featureFlagApi = get<FeatureFlagApi>(),
             selectedStop = params[0],
             stopCode = params[1],
             tripId = params[2],
@@ -77,7 +74,6 @@ val viewModelModule = module {
     }
     viewModel { params ->
         AlertDetailsViewModel(
-            featureFlagApi = get<FeatureFlagApi>(),
             transitRepository = get<ITransitRepository>(),
             preferencesRepository = get<IPreferencesRepository>(),
             alertId = params[0],

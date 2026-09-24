@@ -31,6 +31,11 @@ class AlertsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * GIVEN an AlertsViewModel instance
+     * WHEN refresh is called
+     * THEN uiState indicates refreshing state and completes successfully
+     */
     @Test
     fun testRefresh() = runTest(testDispatcher) {
         val goTrainDataSource = FakeTransitRepository()
@@ -51,12 +56,17 @@ class AlertsViewModelTest {
         assertEquals(false, alertsViewModel.uiState.value.isRefreshing)
     }
 
+    /**
+     * GIVEN an AlertsViewModel instance
+     * WHEN loadData is called
+     * THEN uiState transitions through LOADING to LOADED status
+     */
     @Test
     fun testLoadData() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeTransitRepository()
+        val transitRepository = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = transitRepository,
             preferencesRepository = preferencesRepository,
         )
 
@@ -71,12 +81,17 @@ class AlertsViewModelTest {
 
     }
 
+    /**
+     * GIVEN selected lines and unread status flag
+     * WHEN setFilter is called
+     * THEN uiState reflects the updated line filter and unread selection
+     */
     @Test
     fun testSetFilter() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeTransitRepository()
+        val transitRepository = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
         val alertsViewModel = AlertsViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = transitRepository,
             preferencesRepository = preferencesRepository,
         )
 
@@ -91,9 +106,14 @@ class AlertsViewModelTest {
         assertEquals(true, alertsViewModel.uiState.value.isUnreadSelected)
     }
 
+    /**
+     * GIVEN pre-set alert line and unread preferences
+     * WHEN AlertsViewModel is initialized
+     * THEN uiState correctly loads persisted preferences
+     */
     @Test
     fun testPersistence() = runTest(testDispatcher) {
-        val goTrainDataSource = FakeTransitRepository()
+        val transitRepository = FakeTransitRepository()
         val preferencesRepository = FakePreferencesRepository()
 
         // Pre-set some preferences
@@ -102,7 +122,7 @@ class AlertsViewModelTest {
         preferencesRepository.setIsUnreadAlertsSelected(true)
 
         val alertsViewModel = AlertsViewModel(
-            goTrainDataSource = goTrainDataSource,
+            transitRepository = transitRepository,
             preferencesRepository = preferencesRepository,
         )
 

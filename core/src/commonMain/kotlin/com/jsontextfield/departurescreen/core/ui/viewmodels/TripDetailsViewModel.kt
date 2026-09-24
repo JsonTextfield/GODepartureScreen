@@ -8,7 +8,6 @@ import com.jsontextfield.departurescreen.core.data.ITransitRepository
 import com.jsontextfield.departurescreen.core.entities.Alert
 import com.jsontextfield.departurescreen.core.entities.Schedule
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.Status
 import com.jsontextfield.departurescreen.core.ui.TimeFormat
@@ -29,7 +28,6 @@ import kotlinx.coroutines.withContext
 class TripDetailsViewModel(
     private val preferencesRepository: IPreferencesRepository,
     private val transitRepository: ITransitRepository,
-    private val featureFlagApi: FeatureFlagApi,
     private val selectedStop: String,
     private val stopCode: String,
     private val tripId: String,
@@ -42,7 +40,7 @@ class TripDetailsViewModel(
     init {
         viewModelScope.launch {
             val isAdEnabled = try {
-                isAdEnabled(featureFlagApi)
+                isAdEnabled()
             } catch (_: Exception) {
                 false
             }

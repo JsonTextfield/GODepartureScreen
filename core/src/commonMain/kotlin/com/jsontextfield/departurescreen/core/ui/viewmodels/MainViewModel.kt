@@ -12,7 +12,6 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
@@ -42,7 +41,6 @@ class MainViewModel(
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
     private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
-    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
@@ -55,7 +53,7 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             val isAdEnabled = try {
-                isAdEnabled(featureFlagApi)
+                isAdEnabled()
             } catch (_: Exception) {
                 false
             }

@@ -47,7 +47,7 @@ class SetFavouriteStopUseCaseTest {
 
         setFavouriteStopUseCase(stop)
 
-        val expectedFavourites = setOf("EF", "AB", "CD")
+        val expectedFavourites = setOf("EF", "Test Stop")
         assertEquals(expectedFavourites, fakePreferencesRepository.getFavouriteStops().first())
     }
 
@@ -60,7 +60,7 @@ class SetFavouriteStopUseCaseTest {
             code = "AB,CD",
             name = "Test Stop",
         )
-        fakePreferencesRepository.setFavouriteStops(setOf("AB", "EF"))
+        fakePreferencesRepository.setFavouriteStops(setOf("Test Stop", "EF"))
 
         setFavouriteStopUseCase(stop)
 
