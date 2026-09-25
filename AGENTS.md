@@ -1,31 +1,39 @@
 # Project: Departure_Screen
 
-This project is an Android and Wear OS application for displaying transit departure information, specifically tailored for GO Transit services based on the provided API Data Catalogue.
+This project is an Android, Wear OS, and iOS application for displaying transit departure information, specifically tailored for GO Transit services based on the provided API Data Catalogue.
 
 ## Project Structure
 
-- `:composeApp`: Main Android application module using Jetpack Compose.
+- `:composeApp`: Main Android & Desktop application module using Jetpack Compose Multiplatform.
 - `:wearApp`: Wear OS application module.
-- `:core`: Shared logic and domain models (Kotlin Multiplatform).
-- `iosApp`: Swift-based iOS application.
+- `:core`: Shared logic, repository implementations, and domain models (Kotlin Multiplatform).
+- `iosApp`: Swift-based iOS application, including iOS widgets and deep linking integration.
 
 ## Key Technologies
 
-- **Language:** Kotlin
-- **UI Framework:** Jetpack Compose (Multiplatform)
-- **Architecture:** Clean Architecture with Use Cases.
+- **Language:** Kotlin & Swift
+- **UI Framework:** Jetpack Compose Multiplatform (Compose / Wear Compose) & SwiftUI
+- **Architecture:** Clean Architecture with Use Cases and Dependency Injection (Koin).
+
+## Key Features & Capabilities
+
+- **Departures & Schedules:** Real-time predictions, stop services, and schedule journey planning.
+- **Service Updates & Alerts:** Comprehensive alert aggregation, alert details screen, alert linking, and filter persistence.
+- **Widgets:** Home screen widgets for Android (`DeparturesWidget`, `AlertsWidget`) and iOS widgets for quick glanceable transit info.
+- **Deep Linking:** Cross-platform deep link support for navigation.
+- **Modular UI:** Structured views including modularized Trip Details sections (Alerts, Stops, More Trips) and searchable stop codes.
 
 ## Domain Context
 
 The application interacts with the Open API Data Catalogue for transit information including:
 - Stop Services (Predictions, details, facilities)
-- Service Updates (Alerts)
+- Service Updates (Alerts & notifications)
 - Schedules (Journey planning)
 - Real-time GTFS feeds (Vehicle positions and trip updates)
 
 ## Agent Instructions
 
-- Maintain consistency with the existing architecture in the `:core` and `:composeApp` modules.
-- Ensure that UI components in `composeApp` are reusable where possible.
+- Maintain consistency with the existing architecture in the `:core`, `:composeApp`, and `:wearApp` modules.
+- Ensure that UI components in `composeApp` are reusable and modularized where possible.
 - Refer to `API_Data_Catalogue.md` for data structures and attribute meanings when working on data parsing or domain models.
 - Refer to `docs/notification-response-fields.md` for details on processing service update notifications from the API.
