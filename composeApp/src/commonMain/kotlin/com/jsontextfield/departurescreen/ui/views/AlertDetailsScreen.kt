@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.intl.Locale
@@ -76,7 +77,7 @@ fun AlertDetailsScreen(
                 Text(stringResource(Res.string.alert_details_title))
             }, navigationIcon = {
                 BackButton(onBackPressed)
-            })
+            }, modifier = Modifier.shadow(4.dp))
         },
         bottomBar = {
             if (uiState.isAdEnabled) {
@@ -98,7 +99,7 @@ fun AlertDetailsScreen(
         AnimatedContent(
             uiState.status,
             transitionSpec = {
-                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                fadeIn(tween(150)) togetherWith fadeOut(tween(150))
             },
             modifier = Modifier
                 .padding(it)

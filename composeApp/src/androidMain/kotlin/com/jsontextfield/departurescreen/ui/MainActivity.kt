@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                 glanceAppWidgetManager.setWidgetPreviews(AlertsWidgetReceiver::class)
             }
         }
+        intent?.let { handleIntent(it) }
         setContent {
             val mainViewModel = koinViewModel<MainViewModel>()
             val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
@@ -76,11 +77,13 @@ class MainActivity : ComponentActivity() {
         val showBookmarksOrAlerts = intent.getBooleanExtra("alerts", false)
 
         alertId?.let {
-            DeepLinkHolder.handle("$BASE_URL/alerts/$it")
+            DeepLinkHolder.handle("$ALERTS_URL/$it")
+            intent.data = null
             return
         }
         if (showBookmarksOrAlerts) {
-            DeepLinkHolder.handle("$BASE_URL/alerts")
+            DeepLinkHolder.handle(ALERTS_URL)
+            intent.data = null
             return
         }
 
@@ -104,8 +107,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
             DeepLinkHolder.handle(url.toString())
+            intent.data = null
         } ?: selectedStop?.let {
             DeepLinkHolder.handle("$BASE_URL/?selectedStop=$selectedStop")
+            intent.data = null
         }
     }
 }

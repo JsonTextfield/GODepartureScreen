@@ -68,7 +68,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(compose.preview)
 
-            implementation(libs.navigation.compose)
+            implementation(libs.androidx.navigation3.runtime)
+            implementation(libs.androidx.navigation3.ui)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,9 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Trip
@@ -119,27 +118,27 @@ fun TripDetailsScreen(
             AnimatedContent(
                 uiState.status,
                 transitionSpec = {
-                    fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                    fadeIn(tween(150)) togetherWith fadeOut(tween(150))
                 },
             ) { state ->
                 when (state) {
                     Status.LOADING -> LoadingScreen()
                     Status.ERROR -> ErrorScreen(onRetry = { tripDetailsViewModel.loadData() })
                     Status.LOADED -> {
-                        val density = LocalDensity.current
-                        val widthDp = (LocalWindowInfo.current.containerSize.width / density.density).toInt()
-                        val columns = (widthDp / 320).coerceIn(1, 4)
-                        LazyVerticalStaggeredGrid(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalItemSpacing = 8.dp,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            columns = StaggeredGridCells.Fixed(columns),
-                            contentPadding = PaddingValues(
-                                start = safeDrawingPadding.calculateStartPadding(layoutDirection) + 16.dp,
-                                end = safeDrawingPadding.calculateEndPadding(layoutDirection) + 16.dp,
-                                bottom = safeDrawingPadding.calculateBottomPadding() + 40.dp,
-                            )
-                        ) {
+                        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                            val widthDp = maxWidth.value.toInt()
+                            val columns = (widthDp / 320).coerceIn(1, 4)
+                            LazyVerticalStaggeredGrid(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalItemSpacing = 8.dp,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                columns = StaggeredGridCells.Fixed(columns),
+                                contentPadding = PaddingValues(
+                                    start = safeDrawingPadding.calculateStartPadding(layoutDirection) + 16.dp,
+                                    end = safeDrawingPadding.calculateEndPadding(layoutDirection) + 16.dp,
+                                    bottom = safeDrawingPadding.calculateBottomPadding() + 40.dp,
+                                )
+                            ) {
                             item {
                                 AlertsSection(
                                     uiState.alerts,
@@ -171,4 +170,5 @@ fun TripDetailsScreen(
             }
         }
     }
+}
 }

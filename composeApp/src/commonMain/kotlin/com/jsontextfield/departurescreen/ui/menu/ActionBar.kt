@@ -2,13 +2,14 @@ package com.jsontextfield.departurescreen.ui.menu
 
 import OverflowMenu
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import com.jsontextfield.departurescreen.core.ui.SortMode
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainUIState
 import com.jsontextfield.departurescreen.ui.intents.ActionBarAction
@@ -39,74 +40,71 @@ fun ActionBar(
     uiState: MainUIState,
     onActionClicked: (ActionBarAction) -> Unit,
 ) {
-    var openMenuIndex by remember { mutableStateOf(-1) }
+    BoxWithConstraints {
+        var openMenuIndex by remember { mutableStateOf(-1) }
 
-    val actions = getActions(
-        uiState = uiState,
-        onAction = onActionClicked,
-    )
+        val actions = getActions(
+            uiState = uiState,
+            onAction = onActionClicked,
+        )
 
-    val maxActions = with(LocalDensity.current) {
-        val screenWidthDp = LocalWindowInfo.current.containerSize.width.toDp()
-        val fraction = when {
-            screenWidthDp.value < 400 -> 1 / 4f
-            screenWidthDp.value < 600 -> 1 / 3f
-            screenWidthDp.value < 800 -> 1 / 2f
-            else -> 2 / 3f
-        }
-        val max = (screenWidthDp.value * fraction / 48f).toInt()
-        if (actions.size - max == 1) {
-            max + 1
-        } else {
-            max
-        }
-    }
-
-    val (displayActions, overflowActions) = actions.partition { actions.indexOf(it) < maxActions }
-
-    displayActions.forEachIndexed { index, action ->
-        Box {
-            MenuItem(
-                icon = action.icon,
-                tooltip = action.tooltip,
-                onClick = {
-                    if (action.menuContent != null) {
-                        openMenuIndex = index
-                    } else {
-                        action.onClick?.invoke()
-                    }
-                },
-                isAlertIndicatorVisible = action.isAlertIndicatorVisible,
-            )
-
-            if (action.menuContent != null && openMenuIndex == index) {
-                PopupMenu(
-                    showMenu = true,
-                    onDismissRequest = { openMenuIndex = -1 },
-                    menuContent = {
-                        action.menuContent { openMenuIndex = -1 }
-                    },
-                )
+        val maxActions = with(LocalDensity.current) {
+            val max = (maxWidth.value / 48f).toInt() - 4
+            if (actions.size - max == 1) {
+                max + 1
+            } else {
+                max
             }
         }
-    }
 
-    if (overflowActions.isNotEmpty()) {
-        Box {
-            var showOverflowMenu by remember { mutableStateOf(false) }
+        val (displayActions, overflowActions) = actions.partition { actions.indexOf(it) < maxActions }
 
-            MenuItem(
-                icon = Res.drawable.rounded_more_vert_24,
-                tooltip = stringResource(Res.string.more),
-                onClick = { showOverflowMenu = true },
-                isAlertIndicatorVisible = overflowActions.any { it.isAlertIndicatorVisible }
-            )
+        Row {
+            displayActions.forEachIndexed { index, action ->
+                Box {
+                    MenuItem(
+                        icon = action.icon,
+                        tooltip = action.tooltip,
+                        onClick = {
+                            if (action.menuContent != null) {
+                                openMenuIndex = index
+                            } else {
+                                action.onClick?.invoke()
+                            }
+                        },
+                        isAlertIndicatorVisible = action.isAlertIndicatorVisible,
+                    )
 
-            OverflowMenu(
-                isExpanded = showOverflowMenu,
-                actions = overflowActions,
-                onDismissRequest = { showOverflowMenu = false },
-            )
+                    if (action.menuContent != null && openMenuIndex == index) {
+                        PopupMenu(
+                            showMenu = true,
+                            onDismissRequest = { openMenuIndex = -1 },
+                            menuContent = {
+                                action.menuContent { openMenuIndex = -1 }
+                            },
+                        )
+                    }
+                }
+            }
+
+            if (overflowActions.isNotEmpty()) {
+                Box {
+                    var showOverflowMenu by remember { mutableStateOf(false) }
+
+                    MenuItem(
+                        icon = Res.drawable.rounded_more_vert_24,
+                        tooltip = stringResource(Res.string.more),
+                        onClick = { showOverflowMenu = true },
+                        isAlertIndicatorVisible = overflowActions.any { it.isAlertIndicatorVisible }
+                    )
+
+                    OverflowMenu(
+                        isExpanded = showOverflowMenu,
+                        actions = overflowActions,
+                        onDismissRequest = { showOverflowMenu = false },
+                    )
+                }
+            }
         }
     }
 }
