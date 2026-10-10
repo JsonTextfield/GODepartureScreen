@@ -13,10 +13,10 @@ import SwiftUI
 import WidgetKit
 
 struct GODeparturesEntryView: View {
-    var entry: SimpleEntry
+    var entry: DeparturesEntry
     @Environment(\.widgetFamily) var widgetFamily: WidgetFamily
 
-    init(entry: SimpleEntry) {
+    init(entry: DeparturesEntry) {
         self.entry = entry
     }
 

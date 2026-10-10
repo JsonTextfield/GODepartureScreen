@@ -12,7 +12,7 @@ import SwiftUI
 import WidgetKit
 import coreKit
 
-struct Provider: AppIntentTimelineProvider {
+struct GODeparturesProvider: AppIntentTimelineProvider {
     let widgetHelper = WidgetHelper()
     let transitRepository: CoreITransitRepository
     let departureScreenUseCase: CoreGetSelectedStopUseCase
@@ -25,7 +25,7 @@ struct Provider: AppIntentTimelineProvider {
     func snapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> SimpleEntry {
+    ) async -> DeparturesEntry {
         let userDefaults = UserDefaults(
             suiteName: "group.com.jsontextfield.godepartures"
         )
@@ -75,7 +75,7 @@ struct Provider: AppIntentTimelineProvider {
                         return $0.code < $1.code
                     }
                 })
-                return SimpleEntry(
+                return DeparturesEntry(
                     date: Date(),
                     stopName: stopName,
                     trips: trips,
@@ -85,7 +85,7 @@ struct Provider: AppIntentTimelineProvider {
         } catch {
         }
 
-        return SimpleEntry(
+        return DeparturesEntry(
             date: Date(),
             stopName: "",
             trips: [],
@@ -96,38 +96,16 @@ struct Provider: AppIntentTimelineProvider {
     func timeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-    ) async -> Timeline<SimpleEntry> {
+    ) async -> Timeline<DeparturesEntry> {
         let entry = await snapshot(for: configuration, in: context)
         return Timeline(entries: [entry], policy: .atEnd)
     }
 
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(
+    func placeholder(in context: Context) -> DeparturesEntry {
+        DeparturesEntry(
             date: Date(),
             stopName: "Union Station GO",
-            trips: [
-                CoreTrip(
-                    id: "X1234",
-                    code: "LW",
-                    name: "Lakeshore East",
-                    destination: "Durham College Oshawa GO",
-                    platform: "9 & 10",
-                    departureTime: KotlinInstant.companion
-                        .fromEpochMilliseconds(epochMilliseconds: 180_000),
-                    lastUpdated: KotlinInstant.companion
-                        .fromEpochMilliseconds(epochMilliseconds: 0),
-                    color: 0xFF56_789F_0000_0000,
-                    tripOrder: 1,
-                    info: "Wait",
-                    isVisible: true,
-                    isCancelled: false,
-                    isBus: true,
-                    cars: nil,
-                    busType: nil,
-                    stopName: "Union Station GO",
-                    stopCode: "UN",
-                )
-            ],
+            trips: [],
             timeFormat: .relative
         )
     }
@@ -137,14 +115,14 @@ struct Provider: AppIntentTimelineProvider {
     //    }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct DeparturesEntry: TimelineEntry {
     let date: Date
     let stopName: String
     let trips: [CoreTrip]
     let timeFormat: TimeFormat
 }
 
-extension SimpleEntry {
+extension DeparturesEntry {
     func getTripDestination(trip: CoreTrip) -> URL {
         let data: [String: String?] = [
             "tripId": trip.id,
@@ -167,19 +145,12 @@ extension SimpleEntry {
     }
 }
 
-@main
 struct GODepartures: Widget {
     var body: some WidgetConfiguration {
-        var supportedFamilies: [WidgetFamily] = [
-                .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
-        ]
-        if #available(iOS 27.0, *) {
-            supportedFamilies.append(.systemExtraLargePortrait)
-        }
         return AppIntentConfiguration(
-            kind: "com.jsontextfield.godepartures.GODepartures",
+            kind: "DeparturesWidget",
             intent: ConfigurationIntent.self,
-            provider: Provider()
+            provider: GODeparturesProvider()
         ) { entry in
             GODeparturesEntryView(entry: entry).containerBackground(
                 .fill.tertiary,
@@ -188,11 +159,6 @@ struct GODepartures: Widget {
         }
         .configurationDisplayName("Upcoming departures")
         .description("Shows departure information for a stop")
-        .supportedFamilies(supportedFamilies)
         .contentMarginsDisabled()
-    }
-
-    init() {
-        KoinKt.doInitKoin()
     }
 }

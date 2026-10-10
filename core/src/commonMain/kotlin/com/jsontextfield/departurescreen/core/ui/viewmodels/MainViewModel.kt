@@ -12,7 +12,6 @@ import com.jsontextfield.departurescreen.core.domain.GetSelectedStopUseCase
 import com.jsontextfield.departurescreen.core.domain.SetFavouriteStopUseCase
 import com.jsontextfield.departurescreen.core.entities.Stop
 import com.jsontextfield.departurescreen.core.entities.Trip
-import com.jsontextfield.departurescreen.core.network.FeatureFlagApi
 import com.jsontextfield.departurescreen.core.network.isAdEnabled
 import com.jsontextfield.departurescreen.core.ui.ContrastMode
 import com.jsontextfield.departurescreen.core.ui.SortMode
@@ -30,7 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -42,7 +41,6 @@ class MainViewModel(
     private val setFavouriteStopUseCase: SetFavouriteStopUseCase,
     private val transitRepository: ITransitRepository,
     private val preferencesRepository: IPreferencesRepository,
-    private val featureFlagApi: FeatureFlagApi,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState.asStateFlow()
@@ -55,7 +53,7 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             val isAdEnabled = try {
-                isAdEnabled(featureFlagApi)
+                isAdEnabled()
             } catch (_: Exception) {
                 false
             }
@@ -233,7 +231,7 @@ class MainViewModel(
             transitRepository.getAllAlerts("en"),
         ) { readAlerts, alertsList ->
             alertsList.count { it.id !in readAlerts }
-        }.onEach { count ->
+        }.map { count ->
             _uiState.update {
                 it.copy(unreadAlertsCount = count)
             }

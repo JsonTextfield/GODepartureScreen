@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.jsontextfield.departurescreen.core.ui.ThemeMode
 import com.jsontextfield.departurescreen.core.ui.viewmodels.MainViewModel
+import com.jsontextfield.departurescreen.widget.AlertsWidgetReceiver
 import com.jsontextfield.departurescreen.widget.MyAppWidgetReceiver
 import io.ktor.http.URLProtocol
 import io.ktor.http.buildUrl
@@ -31,11 +32,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.Default) {
                 val glanceAppWidgetManager = GlanceAppWidgetManager(this@MainActivity)
                 glanceAppWidgetManager.setWidgetPreviews(MyAppWidgetReceiver::class)
+                glanceAppWidgetManager.setWidgetPreviews(AlertsWidgetReceiver::class)
             }
         }
+        intent?.let { handleIntent(it) }
         setContent {
             val mainViewModel = koinViewModel<MainViewModel>()
             val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
@@ -70,6 +73,19 @@ class MainActivity : ComponentActivity() {
         val tripId = intent.getStringExtra("tripId")
         val lineCode = intent.getStringExtra("lineCode")
         val destination = intent.getStringExtra("destination")
+        val alertId = intent.getStringExtra("alertId")
+        val showBookmarksOrAlerts = intent.getBooleanExtra("alerts", false)
+
+        alertId?.let {
+            DeepLinkHolder.handle("$ALERTS_URL/$it")
+            intent.data = null
+            return
+        }
+        if (showBookmarksOrAlerts) {
+            DeepLinkHolder.handle(ALERTS_URL)
+            intent.data = null
+            return
+        }
 
         tripId?.let {
             val data = buildMap {
@@ -91,8 +107,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
             DeepLinkHolder.handle(url.toString())
+            intent.data = null
         } ?: selectedStop?.let {
             DeepLinkHolder.handle("$BASE_URL/?selectedStop=$selectedStop")
+            intent.data = null
         }
     }
 }

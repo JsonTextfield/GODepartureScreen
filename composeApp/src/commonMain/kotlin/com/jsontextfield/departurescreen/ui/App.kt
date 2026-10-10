@@ -2,6 +2,9 @@ package com.jsontextfield.departurescreen.ui
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,18 +13,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.navigation.NavUri
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
-import androidx.navigation.toRoute
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.metadata
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertDetailsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.AlertsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.HomeRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.SettingsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.navigation.TripDetailsRoute
+import com.jsontextfield.departurescreen.core.ui.navigation.coreNavConfig
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertDetailsViewModel
 import com.jsontextfield.departurescreen.core.ui.viewmodels.AlertsViewModel
@@ -44,6 +49,8 @@ import org.koin.core.parameter.parametersOf
 
 const val BASE_URL = "go-departures.app"
 const val TRIPS_URL = "$BASE_URL/trips"
+const val ALERTS_URL = "$BASE_URL/alerts"
+
 
 @Composable
 fun App(
@@ -51,7 +58,17 @@ fun App(
 ) {
     val uiState by mainViewModel.uiState.collectAsState()
     val pendingUrl by DeepLinkHolder.pendingUrl.collectAsState()
-    val navController = rememberNavController()
+
+    val initialKeys = remember {
+        val url = DeepLinkHolder.pendingUrl.value
+        val keys = url?.let { DeepLinkHolder.parseDeepLink(url) } ?: listOf(HomeRoute())
+        if (url != null) {
+            DeepLinkHolder.consume()
+        }
+        keys
+    }
+
+    val backStack = rememberNavBackStack(coreNavConfig, *initialKeys.toTypedArray())
     var isNavigating by remember { mutableStateOf(false) }
 
     fun safeNavigation(navigation: () -> Unit) {
@@ -63,168 +80,268 @@ fun App(
 
     LaunchedEffect(pendingUrl) {
         pendingUrl?.let { url ->
-            val fullUrl = if (!url.contains("://")) "https://$url" else url
-            navController.navigate(NavUri(fullUrl))
+            val keys = DeepLinkHolder.parseDeepLink(url)
+            if (keys.isNotEmpty()) {
+                val lastKey = keys.last()
+                if (lastKey is HomeRoute) {
+                    lastKey.selectedStop?.let(mainViewModel::setSelectedStop)
+                }
+                backStack.clear()
+                backStack.addAll(keys)
+            }
             DeepLinkHolder.consume()
         }
     }
+
     LaunchedEffect(isNavigating) {
         if (isNavigating) {
             delay(500)
             isNavigating = false
         }
     }
+
     AppTheme(uiState.theme, uiState.contrast, uiState.useDynamicTheme) {
         Surface {
-            NavHost(
-                navController = navController,
-                startDestination = HomeRoute(),
-            ) {
-                composable<HomeRoute>(
-                    deepLinks = listOf(
-                        navDeepLink<HomeRoute>(basePath = "$BASE_URL/")
-                    )
-                ) {
-                    it.toRoute<HomeRoute>().selectedStop?.let(mainViewModel::setSelectedStop)
-                    MainScreen(
-                        mainViewModel = mainViewModel,
-                        onNavigationAction = { action ->
-                            when (action) {
-                                Alerts -> {
-                                    navController.navigate(AlertsRoute) {
-                                        launchSingleTop = true
-                                    }
-                                }
-
-                                Settings -> {
-                                    navController.navigate(SettingsRoute) {
-                                        launchSingleTop = true
-                                    }
-                                }
-
-                                is Stops -> {
-                                    navController.navigate(StopsRoute(action.selectedStopName)) {
-                                        launchSingleTop = true
-                                    }
-                                }
-
-                                is TripDetails -> {
-                                    navController.navigate(
-                                        TripDetailsRoute(
-                                            stopName = action.trip.stopName.orEmpty(),
-                                            stopCode = action.trip.stopCode.orEmpty(),
-                                            tripId = action.trip.id,
-                                            lineCode = action.trip.code,
-                                            destination = action.trip.destination,
-                                        )
-                                    ) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            }
-                        },
-                    )
-                }
-
-                composable<AlertsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    val alertsViewModel = koinViewModel<AlertsViewModel>()
-                    AlertsScreen(
-                        alertsViewModel = alertsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
-                        },
-                        onAlertClicked = { alertId ->
-                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
-                        }
-                    )
-                }
-
-                composable<AlertDetailsRoute> (
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    val alertId = it.toRoute<AlertDetailsRoute>().alertId
-                    val alertDetailsViewModel = koinViewModel<AlertDetailsViewModel> {
-                        parametersOf(alertId)
-                    }
-                    AlertDetailsScreen(
-                        alertDetailsViewModel = alertDetailsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
-                        },
-                    )
-                }
-
-                composable<StopsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    val selectedStopCode = it.toRoute<StopsRoute>().selectedStopName
-                    val stopsViewModel = koinViewModel<StopsViewModel> {
-                        parametersOf(selectedStopCode)
-                    }
-                    StopsScreen(
-                        stopsViewModel = stopsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
-                        },
-                    )
-                }
-
-                composable<TripDetailsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                    deepLinks = listOf(
-                        navDeepLink<TripDetailsRoute>(basePath = TRIPS_URL)
-                    ),
-                ) {
-                    val route = it.toRoute<TripDetailsRoute>()
-                    val tripDetailsViewModel = koinViewModel<TripDetailsViewModel> {
-                        parametersOf(
-                            route.stopName,
-                            route.stopCode,
-                            route.tripId,
-                            route.lineCode,
-                            route.destination,
-                        )
-                    }
-                    TripDetailsScreen(
-                        tripDetailsViewModel = tripDetailsViewModel,
-                        onBackPressed = {
-                            safeNavigation { navController.popBackStack() }
-                        },
-                        onTripSelected = { trip ->
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val isWideScreen = maxWidth >= 1200.dp
+                val isExtraWideScreen = maxWidth >= 1600.dp
+                val adaptiveSceneStrategy = remember(isWideScreen, isExtraWideScreen) {
+                    TransitAdaptiveSceneStrategy<NavKey>(
+                        isWideScreen = isWideScreen,
+                        isExtraWideScreen = isExtraWideScreen,
+                        onDismissAlert = {
                             safeNavigation {
-                                navController.navigate(
-                                    TripDetailsRoute(
-                                        stopName = route.stopName,
-                                        stopCode = route.stopCode,
-                                        tripId = trip.id,
-                                        lineCode = trip.code,
-                                        destination = trip.destination,
-                                    )
-                                ) {
-                                    popUpTo<TripDetailsRoute> { inclusive = true }
+                                if (backStack.lastOrNull() is AlertDetailsRoute) {
+                                    backStack.removeLastOrNull()
                                 }
                             }
                         },
-                        onAlertClicked = { alertId ->
-                            safeNavigation { navController.navigate(AlertDetailsRoute(alertId)) }
+                        onDismissStops = {
+                            safeNavigation {
+                                if (backStack.lastOrNull() is StopsRoute) {
+                                    backStack.removeLastOrNull()
+                                }
+                            }
+                        },
+                        onDismissSettings = {
+                            safeNavigation {
+                                if (backStack.lastOrNull() is SettingsRoute) {
+                                    backStack.removeLastOrNull()
+                                }
+                            }
+                        }
+                    )
+                }
+                val alertsAdaptiveSceneStrategy = remember(isWideScreen) {
+                    AlertsAdaptiveSceneStrategy<NavKey>(isWideScreen = isWideScreen)
+                }
+                val stopsDrawerSceneStrategy = remember(isWideScreen) {
+                    StopsDrawerSceneStrategy<NavKey>(
+                        isWideScreen = isWideScreen,
+                        onDismissStops = {
+                            safeNavigation {
+                                if (backStack.lastOrNull() is StopsRoute) {
+                                    backStack.removeLastOrNull()
+                                }
+                            }
+                        }
+                    )
+                }
+                val settingsDrawerSceneStrategy = remember(isWideScreen) {
+                    SettingsDrawerSceneStrategy<NavKey>(
+                        isWideScreen = isWideScreen,
+                        onDismissSettings = {
+                            safeNavigation {
+                                if (backStack.lastOrNull() is SettingsRoute) {
+                                    backStack.removeLastOrNull()
+                                }
+                            }
                         }
                     )
                 }
 
-                composable<SettingsRoute>(
-                    enterTransition = { slideInHorizontally { it } },
-                    exitTransition = { slideOutHorizontally { it } },
-                ) {
-                    SettingsScreen(onBackPressed = {
-                        safeNavigation { navController.popBackStack() }
-                    })
-                }
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { safeNavigation { backStack.removeLastOrNull() } },
+                    sceneStrategies = listOf(
+                        adaptiveSceneStrategy,
+                        alertsAdaptiveSceneStrategy,
+                        stopsDrawerSceneStrategy,
+                        settingsDrawerSceneStrategy
+                    ),
+                    transitionSpec = {
+                        slideInHorizontally(initialOffsetX = { it }) togetherWith
+                                slideOutHorizontally(targetOffsetX = { -it })
+                    },
+                    popTransitionSpec = {
+                        slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                slideOutHorizontally(targetOffsetX = { it })
+                    },
+                    predictivePopTransitionSpec = {
+                        slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                slideOutHorizontally(targetOffsetX = { it })
+                    },
+                    entryProvider = entryProvider {
+                        entry<HomeRoute>(
+                            metadata = TransitAdaptiveScene.homePane()
+                        ) { route ->
+                            route.selectedStop?.let(mainViewModel::setSelectedStop)
+                            MainScreen(
+                                mainViewModel = mainViewModel,
+                                onNavigationAction = { action ->
+                                    when (action) {
+                                        Alerts -> {
+                                            while (backStack.size > 1 && backStack.lastOrNull() !is HomeRoute) {
+                                                backStack.removeLastOrNull()
+                                            }
+                                            backStack.add(AlertsRoute)
+                                        }
+
+                                        Settings -> {
+                                            backStack.add(SettingsRoute)
+                                        }
+
+                                        is Stops -> {
+                                            backStack.add(StopsRoute(action.selectedStopName))
+                                        }
+
+                                        is TripDetails -> {
+                                            backStack.add(
+                                                TripDetailsRoute(
+                                                    stopName = action.trip.stopName.orEmpty(),
+                                                    stopCode = action.trip.stopCode.orEmpty(),
+                                                    tripId = action.trip.id,
+                                                    lineCode = action.trip.code,
+                                                    destination = action.trip.destination,
+                                                )
+                                            )
+                                        }
+                                    }
+                                },
+                            )
+                        }
+
+                        entry<AlertsRoute>(
+                            metadata = AlertsAdaptiveScene.alertsPane()
+                        ) {
+                            val alertsViewModel = koinViewModel<AlertsViewModel>()
+                            AlertsScreen(
+                                alertsViewModel = alertsViewModel,
+                                onBackPressed = {
+                                    safeNavigation {
+                                        while (backStack.size > 1 && backStack.lastOrNull() !is HomeRoute) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                    }
+                                },
+                                onAlertClicked = { alertId ->
+                                    safeNavigation {
+                                        if (backStack.lastOrNull() is AlertDetailsRoute) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                        backStack.add(AlertDetailsRoute(alertId))
+                                    }
+                                }
+                            )
+                        }
+
+                        entry<AlertDetailsRoute>(
+                            metadata = metadata {
+                                put(TransitAdaptiveScene.AlertKey, true)
+                                put(AlertsAdaptiveScene.AlertDetailsKey, true)
+                            }
+                        ) { route ->
+                            val alertDetailsViewModel = koinViewModel<AlertDetailsViewModel>(key = route.alertId) {
+                                parametersOf(route.alertId)
+                            }
+                            AlertDetailsScreen(
+                                alertDetailsViewModel = alertDetailsViewModel,
+                                onBackPressed = {
+                                    safeNavigation { backStack.removeLastOrNull() }
+                                },
+                            )
+                        }
+
+                        entry<StopsRoute>(
+                            metadata = StopsDrawerScene.stopsPane()
+                        ) { route ->
+                            val selectedStopCode = route.selectedStopName
+                            val stopsViewModel = koinViewModel<StopsViewModel>(key = selectedStopCode.orEmpty()) {
+                                parametersOf(selectedStopCode)
+                            }
+                            StopsScreen(
+                                stopsViewModel = stopsViewModel,
+                                onStopSelected = { stop ->
+                                    safeNavigation {
+                                        backStack.clear()
+                                        backStack.add(HomeRoute(stop.name))
+                                    }
+                                },
+                                onBackPressed = {
+                                    safeNavigation { backStack.removeLastOrNull() }
+                                },
+                            )
+                        }
+
+                        entry<TripDetailsRoute>(
+                            metadata = TransitAdaptiveScene.tripPane()
+                        ) { route ->
+                            val tripDetailsViewModel = koinViewModel<TripDetailsViewModel>(key = route.tripId) {
+                                parametersOf(
+                                    route.stopName,
+                                    route.stopCode,
+                                    route.tripId,
+                                    route.lineCode,
+                                    route.destination,
+                                )
+                            }
+                            TripDetailsScreen(
+                                tripDetailsViewModel = tripDetailsViewModel,
+                                onBackPressed = {
+                                    safeNavigation {
+                                        while (backStack.size > 1 && backStack.lastOrNull() !is HomeRoute) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                    }
+                                },
+                                onTripSelected = { trip ->
+                                    safeNavigation {
+                                        if (backStack.lastOrNull() is TripDetailsRoute) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                        backStack.add(
+                                            TripDetailsRoute(
+                                                stopName = route.stopName,
+                                                stopCode = route.stopCode,
+                                                tripId = trip.id,
+                                                lineCode = trip.code,
+                                                destination = trip.destination,
+                                            )
+                                        )
+                                    }
+                                },
+                                onAlertClicked = { alertId ->
+                                    safeNavigation {
+                                        backStack.add(AlertDetailsRoute(alertId))
+                                    }
+                                },
+                                onStopClicked = { stopName ->
+                                    safeNavigation {
+                                        backStack.add(HomeRoute(stopName))
+                                    }
+                                }
+                            )
+                        }
+
+                        entry<SettingsRoute>(
+                            metadata = SettingsDrawerScene.settingsPane()
+                        ) {
+                            SettingsScreen(onBackPressed = {
+                                safeNavigation { backStack.removeLastOrNull() }
+                            })
+                        }
+                    }
+                )
             }
         }
     }

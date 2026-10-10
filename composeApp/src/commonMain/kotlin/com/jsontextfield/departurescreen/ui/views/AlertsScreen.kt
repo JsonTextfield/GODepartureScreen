@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -43,9 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.collectionInfo
@@ -162,7 +161,7 @@ fun AlertsScreen(
         AnimatedContent(
             uiState.status,
             transitionSpec = {
-                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                fadeIn(tween(150)) togetherWith fadeOut(tween(150))
             },
         ) { state ->
             when (state) {
@@ -175,98 +174,94 @@ fun AlertsScreen(
                 }
 
                 Status.LOADED -> {
-                    val density = LocalDensity.current
-                    val widthDp =
-                        (LocalWindowInfo.current.containerSize.width / density.density - WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateLeftPadding(
-                                LayoutDirection.Ltr
-                            ).value - WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateRightPadding(LayoutDirection.Ltr).value).toInt()
-                    val columns = (widthDp / 320).coerceAtLeast(1)
+                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                        val widthDp = maxWidth.value.toInt()
+                        val columns = (widthDp / 320).coerceAtLeast(1)
 
-                    val visibleItems by remember {
-                        derivedStateOf {
-                            gridState.layoutInfo.visibleItemsInfo
-                        }
-                    }
-                    LaunchedEffect(visibleItems) {
-                        for (item in visibleItems) {
-                            val alert = if (item.key in uiState.alerts.map { it.id }) {
-                                uiState.alerts.firstOrNull { it.id == item.key }
-                            } else {
-                                null
-                            }
-                            if (alert?.isRead == false) {
-                                onReadAlert(alert.id)
+                        val visibleItems by remember {
+                            derivedStateOf {
+                                gridState.layoutInfo.visibleItemsInfo
                             }
                         }
-                    }
-                    val pullToRefreshState = rememberPullToRefreshState()
-                    PullToRefreshBox(
-                        isRefreshing = uiState.isRefreshing,
-                        onRefresh = onRefresh,
-                        state = pullToRefreshState,
-                        modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-                        indicator = {
-                            PullToRefreshDefaults.Indicator(
-                                state = pullToRefreshState,
-                                isRefreshing = uiState.isRefreshing,
-                                modifier = Modifier.align(Alignment.TopCenter),
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    ) {
-                        Column {
-                            AlertFilterChipStrip(
-                                data = uiState.allLines,
-                                selectedItems = uiState.selectedLines,
-                                onSelectionChanged = onLinesSelected,
-                                isUnreadSelected = uiState.isUnreadSelected,
-                            )
-                            LazyVerticalStaggeredGrid(
-                                state = gridState,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .semantics {
-                                        collectionInfo = CollectionInfo(
-                                            rowCount = uiState.alerts.size,
-                                            columnCount = columns,
-                                        )
-                                    },
-                                verticalItemSpacing = 8.dp,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                contentPadding = PaddingValues(
-                                    top = 16.dp,
-                                    start = WindowInsets.safeDrawing.asPaddingValues()
-                                        .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
-                                    end = WindowInsets.safeDrawing.asPaddingValues()
-                                        .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
-                                    bottom = 100.dp,
-                                ),
-                                columns = StaggeredGridCells.Fixed(columns),
-                            ) {
-                                itemsIndexed(
-                                    items = uiState.alerts,
-                                    span = { _, _ -> StaggeredGridItemSpan.SingleLane },
-                                    key = { _, item -> item.id },
-                                    contentType = { _, _ -> Alert::class },
-                                ) { index, alert ->
-                                    AlertItem(
-                                        alert,
-                                        timeFormat = uiState.timeFormat,
-                                        modifier = Modifier.semantics {
-                                            collectionItemInfo = CollectionItemInfo(
-                                                rowIndex = index / columns,
-                                                columnIndex = index % columns,
-                                                rowSpan = 1,
-                                                columnSpan = 1,
-                                            )
-                                        }.animateItem(),
-                                        onClick = { onAlertClicked(alert.id) }
-                                    )
+                        LaunchedEffect(visibleItems) {
+                            for (item in visibleItems) {
+                                val alert = if (item.key in uiState.alerts.map { it.id }) {
+                                    uiState.alerts.firstOrNull { it.id == item.key }
+                                } else {
+                                    null
                                 }
-                                item {
-                                    Spacer(modifier = Modifier.height(100.dp))
+                                if (alert?.isRead == false) {
+                                    onReadAlert(alert.id)
+                                }
+                            }
+                        }
+                        val pullToRefreshState = rememberPullToRefreshState()
+                        PullToRefreshBox(
+                            isRefreshing = uiState.isRefreshing,
+                            onRefresh = onRefresh,
+                            state = pullToRefreshState,
+                            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+                            indicator = {
+                                PullToRefreshDefaults.Indicator(
+                                    state = pullToRefreshState,
+                                    isRefreshing = uiState.isRefreshing,
+                                    modifier = Modifier.align(Alignment.TopCenter),
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        ) {
+                            Column {
+                                AlertFilterChipStrip(
+                                    data = uiState.allLines,
+                                    selectedItems = uiState.selectedLines,
+                                    onSelectionChanged = onLinesSelected,
+                                    isUnreadSelected = uiState.isUnreadSelected,
+                                )
+                                LazyVerticalStaggeredGrid(
+                                    state = gridState,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .semantics {
+                                            collectionInfo = CollectionInfo(
+                                                rowCount = uiState.alerts.size,
+                                                columnCount = columns,
+                                            )
+                                        },
+                                    verticalItemSpacing = 8.dp,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    contentPadding = PaddingValues(
+                                        top = 16.dp,
+                                        start = WindowInsets.safeDrawing.asPaddingValues()
+                                            .calculateStartPadding(LayoutDirection.Ltr) + 16.dp,
+                                        end = WindowInsets.safeDrawing.asPaddingValues()
+                                            .calculateEndPadding(LayoutDirection.Ltr) + 16.dp,
+                                        bottom = 100.dp,
+                                    ),
+                                    columns = StaggeredGridCells.Fixed(columns),
+                                ) {
+                                    itemsIndexed(
+                                        items = uiState.alerts,
+                                        span = { _, _ -> StaggeredGridItemSpan.SingleLane },
+                                        key = { _, item -> item.id },
+                                        contentType = { _, _ -> Alert::class },
+                                    ) { index, alert ->
+                                        AlertItem(
+                                            alert,
+                                            timeFormat = uiState.timeFormat,
+                                            modifier = Modifier.semantics {
+                                                collectionItemInfo = CollectionItemInfo(
+                                                    rowIndex = index / columns,
+                                                    columnIndex = index % columns,
+                                                    rowSpan = 1,
+                                                    columnSpan = 1,
+                                                )
+                                            }.animateItem(),
+                                            onClick = { onAlertClicked(alert.id) }
+                                        )
+                                    }
+                                    item {
+                                        Spacer(modifier = Modifier.height(100.dp))
+                                    }
                                 }
                             }
                         }

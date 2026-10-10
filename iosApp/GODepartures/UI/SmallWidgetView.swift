@@ -14,9 +14,9 @@ import coreKit
 struct SmallWidgetView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    var entry: SimpleEntry
+    var entry: DeparturesEntry
 
-    init(entry: SimpleEntry) {
+    init(entry: DeparturesEntry) {
         self.entry = entry
     }
 

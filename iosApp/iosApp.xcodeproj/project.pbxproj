@@ -12,6 +12,10 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		7F9C0EFB2485D96E4F35A03C /* KotlinMultiplatformLinkedPackage in Frameworks */ = {isa = PBXBuildFile; productRef = E9CAD947E7ABABADCE437C8A /* KotlinMultiplatformLinkedPackage */; };
+		9843A89730636CE000188C93 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */; };
+		9843A89930636CE000188C93 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */; };
+		9843A89B30636CE000188C93 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */; };
+		9843A89D30636CE000188C93 /* KMPNativeCoroutinesRxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */; };
 		98555E5B2E6F0021005CD8C4 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 98555E5A2E6F0021005CD8C4 /* InfoPlist.xcstrings */; };
 		986BADAF2E9DCA8500BEC3AB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADAE2E9DCA8500BEC3AB /* WidgetKit.framework */; };
 		986BADB12E9DCA8500BEC3AB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BADB02E9DCA8500BEC3AB /* SwiftUI.framework */; };
@@ -150,7 +154,11 @@
 			files = (
 				98E525F02EC6E68E0013D143 /* Algorithms in Frameworks */,
 				986BADB12E9DCA8500BEC3AB /* SwiftUI.framework in Frameworks */,
+				9843A89B30636CE000188C93 /* KMPNativeCoroutinesCore in Frameworks */,
+				9843A89D30636CE000188C93 /* KMPNativeCoroutinesRxSwift in Frameworks */,
 				986BADAF2E9DCA8500BEC3AB /* WidgetKit.framework in Frameworks */,
+				9843A89930636CE000188C93 /* KMPNativeCoroutinesCombine in Frameworks */,
+				9843A89730636CE000188C93 /* KMPNativeCoroutinesAsync in Frameworks */,
 				7F9C0EFB2485D96E4F35A03C /* KotlinMultiplatformLinkedPackage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +299,10 @@
 			packageProductDependencies = (
 				98E525EF2EC6E68E0013D143 /* Algorithms */,
 				E9CAD947E7ABABADCE437C8A /* KotlinMultiplatformLinkedPackage */,
+				9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */,
+				9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */,
+				9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */,
+				9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */,
 			);
 			productName = GODeparturesExtension;
 			productReference = 986BADAD2E9DCA8500BEC3AB /* GODeparturesExtension.appex */;
@@ -302,7 +314,7 @@
 		7555FF73242A565900829871 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = orgName;
 				TargetAttributes = {
@@ -328,6 +340,7 @@
 				98E525EE2EC6E58D0013D143 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				98F6F31E305A134300A1D402 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				A99E98BC435B84B261F1EBEB /* XCLocalSwiftPackageReference "KotlinMultiplatformLinkedPackage" */,
+				98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -420,7 +433,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :core:embedAndSignAppleFrameworkForXcode\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode\n";
 		};
 		98F074212EE5719200310BA2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -599,7 +612,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_PREVIEWS = YES;
@@ -616,7 +629,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.15.5;
+				MARKETING_VERSION = 1.16.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -639,7 +652,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_PREVIEWS = YES;
@@ -656,7 +669,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.15.5;
+				MARKETING_VERSION = 1.16.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -678,7 +691,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = GODeparturesExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 60;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -695,7 +708,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.15.5;
+				MARKETING_VERSION = 1.16.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jsontextfield.godepartures.GODepartures;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -718,7 +731,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = GODeparturesExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 60;
 				DEVELOPMENT_TEAM = U9AJ65RLSN;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\"";
@@ -734,7 +747,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.15.5;
+				MARKETING_VERSION = 1.16.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jsontextfield.godepartures.GODepartures;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -787,6 +800,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.5;
+			};
+		};
 		98E525EE2EC6E58D0013D143 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-algorithms.git";
@@ -806,6 +827,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9843A89630636CE000188C93 /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		9843A89830636CE000188C93 /* KMPNativeCoroutinesCombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCombine;
+		};
+		9843A89A30636CE000188C93 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
+		};
+		9843A89C30636CE000188C93 /* KMPNativeCoroutinesRxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98B7A23A3060869100A8DE8C /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesRxSwift;
+		};
 		98E525EF2EC6E68E0013D143 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98E525EE2EC6E58D0013D143 /* XCRemoteSwiftPackageReference "swift-algorithms" */;

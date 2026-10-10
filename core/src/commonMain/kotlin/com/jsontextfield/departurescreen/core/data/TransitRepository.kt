@@ -17,6 +17,7 @@ import com.jsontextfield.departurescreen.core.network.model.ServiceUpdatesRespon
 import com.jsontextfield.departurescreen.core.network.model.StopResponse
 import com.jsontextfield.departurescreen.core.ui.StopType
 import com.jsontextfield.departurescreen.core.ui.theme.lineColours
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -452,6 +453,7 @@ class TransitRepository(
         )
     }
 
+    @NativeCoroutines
     override fun getAllAlerts(language: String): Flow<List<Alert>> {
         return combine(
             getServiceAlerts(),

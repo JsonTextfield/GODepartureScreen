@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,12 +31,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.jsontextfield.departurescreen.core.entities.getFullSubject
 import com.jsontextfield.departurescreen.core.entities.relativeDate
 import com.jsontextfield.departurescreen.core.entities.twelveHourDate
 import com.jsontextfield.departurescreen.core.entities.twentyFourHourDate
@@ -65,7 +65,6 @@ fun AlertDetailsScreen(
     alertDetailsViewModel: AlertDetailsViewModel,
     onBackPressed: () -> Unit = {},
 ) {
-    val uriHandler = LocalUriHandler.current
     val language = Locale.current.language
     val fontScale = LocalDensity.current.fontScale
     val uiState by alertDetailsViewModel.uiState.collectAsState()
@@ -78,7 +77,7 @@ fun AlertDetailsScreen(
                 Text(stringResource(Res.string.alert_details_title))
             }, navigationIcon = {
                 BackButton(onBackPressed)
-            })
+            }, modifier = Modifier.shadow(4.dp))
         },
         bottomBar = {
             if (uiState.isAdEnabled) {
@@ -100,7 +99,7 @@ fun AlertDetailsScreen(
         AnimatedContent(
             uiState.status,
             transitionSpec = {
-                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                fadeIn(tween(150)) togetherWith fadeOut(tween(150))
             },
             modifier = Modifier
                 .padding(it)
@@ -133,7 +132,7 @@ fun AlertDetailsScreen(
                                     )
                                 }
                             }
-                            Text(alert.getSubject(language), style = MaterialTheme.typography.titleMedium)
+                            Text(alert.getFullSubject(language), style = MaterialTheme.typography.titleMedium)
                             Text(
                                 text = when (uiState.timeFormat) {
                                     TimeFormat.RELATIVE -> {
@@ -172,14 +171,10 @@ fun AlertDetailsScreen(
                                 alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier
-                                    .padding(bottom = 100.dp)
-                                    .clickable {
-                                        if ("fr" in Locale.current.language) {
-                                            alert.urlFr
-                                        } else {
-                                            alert.urlEn
-                                        }?.let(uriHandler::openUri)
-                                    },
+                                    .padding(
+                                        bottom = WindowInsets.safeDrawing.asPaddingValues()
+                                            .calculateBottomPadding() + 40.dp
+                                    )
                             )
                         }
                     }

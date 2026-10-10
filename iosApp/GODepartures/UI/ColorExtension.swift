@@ -55,4 +55,35 @@ extension Color {
             self.init(rgb: UInt64(argb))
         }
     }
+    
+    /// Returns RGB packed as 0xRRGGBB
+    func toRGBInt() -> UInt64? {
+        let uiColor = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        guard uiColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
+            return nil
+        }
+
+        let ri = UInt64(lround(r * 255))
+        let gi = UInt64(lround(g * 255))
+        let bi = UInt64(lround(b * 255))
+
+        return (ri << 16) | (gi << 8) | bi
+    }
+
+    /// Returns RGBA packed as 0xRRGGBBAA
+    func toRGBAInt() -> UInt64? {
+        let uiColor = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        guard uiColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
+            return nil
+        }
+
+        let ri = UInt64(lround(r * 255))
+        let gi = UInt64(lround(g * 255))
+        let bi = UInt64(lround(b * 255))
+        let ai = UInt64(lround(a * 255))
+
+        return (ri << 24) | (gi << 16) | (bi << 8) | ai
+    }
 }

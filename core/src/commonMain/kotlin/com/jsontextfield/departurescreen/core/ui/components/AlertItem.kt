@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp.Companion.Hairline
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.departurescreen.core.entities.Alert
+import com.jsontextfield.departurescreen.core.entities.getFullSubject
 import com.jsontextfield.departurescreen.core.entities.relativeDate
 import com.jsontextfield.departurescreen.core.entities.twelveHourDate
 import com.jsontextfield.departurescreen.core.entities.twentyFourHourDate
@@ -64,78 +64,75 @@ fun AlertItem(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = .2f),
         ),
     ) {
-        SelectionContainer {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-                    .semantics(mergeDescendants = true) {},
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(
-                        modifier = Modifier
-                            .weight(10 / 12f),
-                    ) {
-                        Text(
-                            text = alert.affectedStops.takeIf { it.isNotEmpty() }
-                                ?.joinToString(", ", postfix = ": ").orEmpty() + alert.getSubject(language),
-                            modifier = Modifier
-                                .semantics { heading() },
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            for (line in alert.affectedLines) {
-                                TripCodeBox(
-                                    tripCode = line,
-                                    modifier = Modifier
-                                        .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
-                                        .background(
-                                            color = lineColours[line] ?: Color.Gray,
-                                            shape = SquircleShape,
-                                        )
-                                )
-                            }
-                        }
-                    }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+                .semantics(mergeDescendants = true) {},
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier
+                        .weight(10 / 12f),
+                ) {
                     Text(
-                        text = when (timeFormat) {
-                            TimeFormat.RELATIVE -> {
-                                if (alert.relativeDate.inWholeDays > 0) {
-                                    stringResource(Res.string.day_difference, alert.relativeDate.inWholeDays)
-                                } else if (alert.relativeDate.inWholeHours > 0) {
-                                    stringResource(Res.string.hour_difference, alert.relativeDate.inWholeHours)
-                                } else {
-                                    stringResource(Res.string.minute_difference, alert.relativeDate.inWholeMinutes)
-                                }
-                            }
-
-                            TimeFormat.TWELVE_HOUR -> {
-                                alert.twelveHourDate
-                            }
-
-                            TimeFormat.TWENTY_FOUR_HOUR -> {
-                                alert.twentyFourHourDate
-                            }
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(2 / 12f)
+                        text = alert.getFullSubject(language),
+                        modifier = Modifier
+                            .semantics { heading() },
+                        style = MaterialTheme.typography.titleSmall,
                     )
-                    if (!alert.isRead) {
-                        Badge()
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        for (line in alert.affectedLines) {
+                            TripCodeBox(
+                                tripCode = line,
+                                modifier = Modifier
+                                    .size((MaterialTheme.typography.titleMedium.fontSize.value * fontScale * 2).dp)
+                                    .background(
+                                        color = lineColours[line] ?: Color.Gray,
+                                        shape = SquircleShape,
+                                    )
+                            )
+                        }
                     }
                 }
                 Text(
-                    text = alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 4,
-                    overflow = TextOverflow.Ellipsis
+                    text = when (timeFormat) {
+                        TimeFormat.RELATIVE -> {
+                            if (alert.relativeDate.inWholeDays > 0) {
+                                stringResource(Res.string.day_difference, alert.relativeDate.inWholeDays)
+                            } else if (alert.relativeDate.inWholeHours > 0) {
+                                stringResource(Res.string.hour_difference, alert.relativeDate.inWholeHours)
+                            } else {
+                                stringResource(Res.string.minute_difference, alert.relativeDate.inWholeMinutes)
+                            }
+                        }
+
+                        TimeFormat.TWELVE_HOUR -> {
+                            alert.twelveHourDate
+                        }
+
+                        TimeFormat.TWENTY_FOUR_HOUR -> {
+                            alert.twentyFourHourDate
+                        }
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(2 / 12f)
                 )
+                if (!alert.isRead) {
+                    Badge()
+                }
             }
+            Text(
+                text = alert.getAnnotatedBody(language, MaterialTheme.colorScheme.primary),
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

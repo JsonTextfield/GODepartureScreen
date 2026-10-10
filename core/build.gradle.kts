@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.kmpNativeCoroutines)
 }
 
 compose.resources {
@@ -53,6 +54,11 @@ kotlin {
     // common to share sources between related targets.
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.experimental.ExperimentalObjCName")
+            }
+        }
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -77,7 +83,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.navigation.compose)
+            implementation(libs.androidx.navigation3.runtime)
+            implementation(libs.androidx.navigation3.ui)
 
             implementation(libs.kotlinx.datetime)
 

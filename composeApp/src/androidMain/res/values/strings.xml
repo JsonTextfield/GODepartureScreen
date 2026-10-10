@@ -10,6 +10,9 @@
     <string name="error">An error occurred</string>
     <string name="retry">Retry</string>
     <string name="widget_description">Shows the departure information for the stop currently selected in the app</string>
+    <string name="departures">Departures</string>
+    <string name="alerts">Alerts</string>
+    <string name="alerts_widget_description">Shows the most recent GO Transit alerts</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="opacity">Opacity</string>

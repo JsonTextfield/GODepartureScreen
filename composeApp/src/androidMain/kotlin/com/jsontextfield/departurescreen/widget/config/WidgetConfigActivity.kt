@@ -19,10 +19,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
 import com.jsontextfield.departurescreen.core.ui.navigation.StopsRoute
 import com.jsontextfield.departurescreen.core.ui.theme.AppTheme
 import com.jsontextfield.departurescreen.core.ui.viewmodels.StopsViewModel
@@ -30,6 +31,8 @@ import com.jsontextfield.departurescreen.ui.views.StopsScreen
 import com.jsontextfield.departurescreen.widget.WidgetSettingsRoute
 import com.jsontextfield.departurescreen.widget.ui.DeparturesWidget
 import kotlinx.coroutines.launch
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -44,7 +47,15 @@ class WidgetConfigActivity : ComponentActivity() {
         setContent {
             val view = LocalView.current
             val haptic = LocalHapticFeedback.current
-            val navController = rememberNavController()
+            val widgetNavConfig = SavedStateConfiguration {
+                serializersModule = SerializersModule {
+                    polymorphic(NavKey::class) {
+                        subclass(WidgetSettingsRoute::class, WidgetSettingsRoute.serializer())
+                        subclass(StopsRoute::class, StopsRoute.serializer())
+                    }
+                }
+            }
+            val backStack = rememberNavBackStack(widgetNavConfig, WidgetSettingsRoute)
             val configViewModel = koinViewModel<WidgetConfigViewModel> {
                 parametersOf(widgetId)
             }
@@ -56,66 +67,70 @@ class WidgetConfigActivity : ComponentActivity() {
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isAppearanceLightStatusBars
             }
             AppTheme {
-                NavHost(navController, startDestination = WidgetSettingsRoute) {
-                    composable<WidgetSettingsRoute> {
-                        WidgetConfigScreen(
-                            widgetConfig = widgetConfig,
-                            onSortModeChanged = configViewModel::onSortModeChanged,
-                            onTimeFormatChanged = configViewModel::onTimeFormatChanged,
-                            onOpacityChanged = {
-                                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                                configViewModel.onOpacityChanged(it)
-                            },
-                            onStopButtonClicked = {
-                                navController.navigate(StopsRoute(widgetConfig.selectedStopName))
-                            },
-                            onCancel = {
-                                glanceId?.let {
-                                    val resultValue = Intent().putExtra(
-                                        AppWidgetManager.EXTRA_APPWIDGET_ID,
-                                        glanceWidgetManager.getAppWidgetId(glanceId)
-                                    )
-                                    setResult(RESULT_CANCELED, resultValue)
-                                }
-                                finish()
-                            },
-                            onDone = {
-                                widgetId?.let {
-                                    configViewModel.saveConfig(widgetId)
-                                }
-                                glanceId?.let {
-                                    scope.launch {
-                                        DeparturesWidget().update(this@WidgetConfigActivity, glanceId)
-                                    }
-                                    setResult(
-                                        RESULT_OK,
-                                        Intent().putExtra(
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { backStack.removeLastOrNull() },
+                    entryProvider = entryProvider {
+                        entry<WidgetSettingsRoute> {
+                            WidgetConfigScreen(
+                                widgetConfig = widgetConfig,
+                                onSortModeChanged = configViewModel::onSortModeChanged,
+                                onTimeFormatChanged = configViewModel::onTimeFormatChanged,
+                                onOpacityChanged = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                    configViewModel.onOpacityChanged(it)
+                                },
+                                onStopButtonClicked = {
+                                    backStack.add(StopsRoute(widgetConfig.selectedStopName))
+                                },
+                                onCancel = {
+                                    glanceId?.let {
+                                        val resultValue = Intent().putExtra(
                                             AppWidgetManager.EXTRA_APPWIDGET_ID,
                                             glanceWidgetManager.getAppWidgetId(glanceId)
-                                        ),
-                                    )
+                                        )
+                                        setResult(RESULT_CANCELED, resultValue)
+                                    }
                                     finish()
-                                }
-                            },
-                        )
-                    }
-                    composable<StopsRoute> {
-                        val selectedStopCode = it.toRoute<StopsRoute>().selectedStopName
-                        val stopsViewModel = koinViewModel<StopsViewModel> {
-                            parametersOf(selectedStopCode)
+                                },
+                                onDone = {
+                                    widgetId?.let {
+                                        configViewModel.saveConfig(widgetId)
+                                    }
+                                    glanceId?.let {
+                                        scope.launch {
+                                            DeparturesWidget().update(this@WidgetConfigActivity, glanceId)
+                                        }
+                                        setResult(
+                                            RESULT_OK,
+                                            Intent().putExtra(
+                                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                                glanceWidgetManager.getAppWidgetId(glanceId)
+                                            ),
+                                        )
+                                        finish()
+                                    }
+                                },
+                            )
                         }
-                        StopsScreen(
-                            stopsViewModel = stopsViewModel,
-                            onStopSelected = {
-                                configViewModel.onStopChanged(it)
-                                navController.popBackStack()
-                            },
-                            onBackPressed = {
-                                navController.popBackStack()
-                            },
-                        )
+                        entry<StopsRoute> { route ->
+                            val selectedStopCode = route.selectedStopName
+                            val stopsViewModel = koinViewModel<StopsViewModel> {
+                                parametersOf(selectedStopCode)
+                            }
+                            StopsScreen(
+                                stopsViewModel = stopsViewModel,
+                                onStopSelected = {
+                                    configViewModel.onStopChanged(it)
+                                    backStack.removeLastOrNull()
+                                },
+                                onBackPressed = {
+                                    backStack.removeLastOrNull()
+                                },
+                            )
+                        }
                     }
-                }
+                )
             }
         }
     }

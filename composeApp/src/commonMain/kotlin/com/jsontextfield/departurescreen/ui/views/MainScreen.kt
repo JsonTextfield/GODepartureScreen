@@ -106,8 +106,7 @@ fun MainScreen(
                                 text = uiState.selectedStop?.name.orEmpty(),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .widthIn(max = 400.dp)
-                                    .fillMaxWidth(11 / 12f)
+                                    .widthIn(min = 200.dp, max = 400.dp)
                                     .basicMarquee(),
                             )
                         }
@@ -156,7 +155,7 @@ fun MainScreen(
         AnimatedContent(
             uiState.status,
             transitionSpec = {
-                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
+                fadeIn(tween(150)) togetherWith fadeOut(tween(150))
             },
         ) { state ->
             when (state) {

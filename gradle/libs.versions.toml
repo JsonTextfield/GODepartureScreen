@@ -1,8 +1,8 @@
 [versions]
 material3 = "1.9.0"
 jetbrains = "1.12.0"
-versionName = "1.15.5"
-versionCode = "57"
+versionName = "1.16.0"
+versionCode = "60"
 minSdk = "28"
 compileSdk = "37"
 targetSdk = "37"
@@ -17,7 +17,8 @@ androidx-activityCompose = "1.13.0"
 compose-multiplatform = "1.11.1"
 kotlinx-coroutines = "1.11.0"
 materialIconsExtended = "1.7.3"
-navigationCompose = "2.9.2"
+nav3 = "1.2.0"
+nav3Jetbrains = "1.1.2"
 playServicesWearable = "19.0.0"
 composeBom = "2026.05.01"
 composeMaterial = "1.6.2"
@@ -35,10 +36,12 @@ horologistComposeTools = "0.6.17"
 horologistTiles = "0.6.17"
 watchfaceComplicationsDataSourceKtx = "1.2.1"
 # Glance
-glanceAppwidget = "1.2.0-beta01"
-glanceMaterial3 = "1.1.1"
+glanceAppwidget = "1.2.0"
+glanceMaterial3 = "1.2.0"
 glanceWearTiles = "1.0.0-alpha07"
 playServicesAds = "25.3.0"
+
+kmpNativeCoroutines = "1.0.6"
 
 [libraries]
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
@@ -67,7 +70,8 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
+androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3Jetbrains" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -100,3 +104,4 @@ kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidLint = { id = "com.android.lint", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kmpNativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmpNativeCoroutines" }

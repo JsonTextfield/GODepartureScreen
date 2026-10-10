@@ -11,6 +11,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -34,7 +35,10 @@ fun MenuItem(
         content = {
             TooltipBox(
                 state = rememberTooltipState(),
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    TooltipAnchorPosition.Below,
+                    2.dp,
+                ),
                 tooltip = {
                     PlainTooltip {
                         Text(text = tooltip, modifier = Modifier.padding(4.dp))
